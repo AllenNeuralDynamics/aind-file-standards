@@ -1,21 +1,36 @@
 # Standards on electrophysiology acquisition
+
 Version: 0.0.1
 
-## Acquisition/Raw Data Format
+## Introduction
+
+This document describes the standards for the acquisition of electrophysiology data in the Allen Institute for Neural Dynamics, which primarily consists of extracellular electrophysiology signals
+acquired using Neuropixels probes.
+
+## Raw Data Format
 
 Following SciComp standards, ecephys data from experiments should be saved to the "ecephys" modality folder.
 
-The **primary data format** is a folder produced by the Open Ephys GUI (version>=0.6.0), which is organized as outlined in the official [Open Ephys Documentation](https://github.com/open-ephys/gui-docs/blob/b608d57a155b5af86f39048238492728fcd4e161/source/User-Manual/Recording-data/Binary-format.rst).
+### File format
+
+The raw data format is a folder produced by the Open Ephys GUI (version>=0.6.0) in binary format and is organized as outlined in the official [Open Ephys Documentation](https://github.com/open-ephys/gui-docs/blob/b608d57a155b5af86f39048238492728fcd4e161/source/User-Manual/Recording-data/Binary-format.rst).
 
 ### Application notes
 
-[example SpikeInterface script]
+The raw data can be directly read using the [open-ephys-python-tools](https://github.com/open-ephys/open-ephys-python-tools) or the [SpikeInterface](https://spikeinterface.readthedocs.io/en/latest/index.html) package.
 
-### Relationship to aind-data-schema Session
+### Relationship to aind-data-schema
 
-[how key metadata is related to files in the format - e.g. "this fluorophore/wavelength corresponds to channel0.zarr"]
+The `rig.json` will contain relevant metadata from the Open Ephys settings, such as the probe names and serial numbers.
+
+### File Quality Assurance and Assumptions
+
+The electrophysiology data is visually inspected during the experiments. In addition, after a session is acquired, a quality control report is generated using the [aind-ephys-rig-qc](https://github.com/AllenNeuralDynamics/aind-ephys-rig-qc) `generate_qc_report` function.
+This report is used to assess the quality of the data and to identify potential issues with the acquisition, including timestamps misalignments, abnormal noise levels and power spectra, and excessive drift.
 
 ## Primary Data Format
+
+### File format
 
 Before the data is uploaded to the cloud, it undergoes a data transformation to compress 
 the raw data using the [aind-data-transformation](https://github.com/AllenNeuralDynamics/aind-data-transformation). 
@@ -26,7 +41,7 @@ The `.dat` files are compressed to `zarr` using the
 [SpikeInterface](https://spikeinterface.readthedocs.io/en/latest/index.html) library.
 The compressed data is saved in the `ecephys_compressed` folder.
 
-The **secondary data format**, therefore, is organized as follows:
+The primary data format is organized as follows:
 
 ```plaintext
 📦ecephys
@@ -53,14 +68,10 @@ The **secondary data format**, therefore, is organized as follows:
   ┗ ...
 ```
 
-### "ecephys_clipped" folder
-
 The `ecephys_clipped` folder contains all the original Open Ephys folders and files, with the only difference that 
 the `.dat` files are clipped to 100 samples. Therefore, this folder can be opened by the normal sowtware tools 
 that can read Open Ephys data, such as the [open-ephys-python-tools](https://github.com/open-ephys/open-ephys-python-tools)
 and the [SpikeInterface](https://spikeinterface.readthedocs.io/en/latest/index.html) library.
-
-### "ecephys_compressed" folder
 
 The `ecephys_compressed` folder contains the compressed data in the `zarr` format. 
 Data from different Open Ephys "experiments" and different streams are saved in different `.zarr` files.
@@ -68,14 +79,14 @@ The `zarr` file is produced from the `spikeinterface.BaseRecording.save_to_zarr(
 which saves and compresses the data and its metadata to a `.zarr` file. In case of multiple Open Ephys "recordings",
 the data is saved in different "segments" (e.g. `traces_seg0`, `traces_seg1`, etc.).
 
-Here is a bried description of the content of the `.zarr` file:
+Here is a brief description of the content of the `.zarr` file:
 
 - `channel_ids`: list of channel ids from the original Open Ephys data
 - `properties`: dictionary with the properties of the recording (e.g. `channel_locations`, `gains`, etc.)
 - `times_seg*K-1*`: Open Ephys timestamps for each segment
 - `traces_seg*K-1*`: compressed traces for each segment
 
-### Compression details
+#### Compression details
 
 The `traces_seg*K-1*` is chunked in (30000, 384), so that each chunk corresponds to 1 second of data for all channels.
 By default, we use the [`wavpack`](https://www.wavpack.com/) codec, implemented as a `zarr` compressor 
@@ -86,8 +97,40 @@ which improves the compression ratio. For more information, see [Buccino et al. 
 
 ### Application notes
 
-[example SpikeInterface script] 
+Here is a snippet of code that shows how to read the clipped and compressed data
+using the [SpikeInterface](https://spikeinterface.readthedocs.io/en/latest/index.html) library:
 
-## File Quality Assurance and Assumptions
+```python
+import spikeinterface as si
+import spikeinterface.extractors as se
 
-[e.g. "the timestamps are sorted in time already", "how to detect dropped frames in this format", "the frames in this file match the number of rows in this CSV"] 
+# read number of blocks (experiments) and streams (probes) from the clipped data
+num_blocks = se.get_neo_num_blocks("openephysbinary", "ecephys/ecephys_clipped")
+stream_names, stream_ids = se.get_neo_streams("openephysbinary", "ecephys/ecephys_clipped")
+
+# read the first block and stream
+block_index = 0
+stream_name = stream_names[0]
+recording_clipped = se.read_openephys(
+  "ecephys/ecephys_clipped/",
+  block_index=block_index,
+  stream_name=stream_name
+)
+
+# read the openephys events
+events = se.read_openephys_events("ecephys/ecephys_clipped/")
+
+# read the compressed data for the first block and stream
+recording_compressed = si.read_zarr(
+  f"ecephys/ecephys_compressed/experiment{block_index+1}_{stream_name}.zarr"
+)
+```
+
+### Relationship to aind-data-schema
+
+The `processing.json` includes the compression details and parameters.
+
+### File Quality Assurance and Assumptions
+
+No further quality assurance is performed during the conversion from the raw data to the primary data format.
+
