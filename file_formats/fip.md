@@ -68,5 +68,5 @@ procedures.json documents the relevant fiber probe implantation metadata (stereo
 
 ### File Quality Assurances
 
-Identical to the `File Quality Assurances` section in the `Acquisition/Raw Data Format` section.
+None.
 
