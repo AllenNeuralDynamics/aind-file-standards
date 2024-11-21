@@ -60,7 +60,7 @@ Since this format will depend on the scientific question and software/hardware c
   Note: this has been tested with monochrome videos with the raw pixel format
   `gray`. For color videos, the input arguments might need to be altered to
   match the color space of the input.
-  
+
   - output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full,format=bgr24,scale=out_range=full" -c:v h264_nvenc -pix_fmt yuv420p -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M`
   - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
 
@@ -70,8 +70,17 @@ and the following encoding codec string for offline re-encoding (optimized for q
 - output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:sws_dither=none,format=yuv420p10le,colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p" -c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
 
 For higher bitdepth (more than eight) recordings, change the output arguments of the online encoding to be as follows:
-  - output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full,format=rgb48le,scale=out_range=full" -c:v h264_nvenc -pix_fmt yuv420p10le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M`
-This is almost the same, except the intermediate color representation is 48 bits per pixel instead of 24.
+  - output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full,format=rgb48le,scale=out_range=full" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M`
+
+This is almost the same, except the intermediate color representation is 48 bits
+per pixel instead of 24, the HEVC encoder must be used to support 10 bit depth,
+and the pixel format has been changed to `p010le` which is a yuv420-like 10 bit
+pixel format that is accepted by NVENC. Note that this saves the pixel data at
+10 bit depth, even if the camera is acquiring 12 or higher. NVENC does not
+support saving more than 10 bit pixel depths. However, saving 10 bit pixel depth
+before gamma encoding will result in more accurate gamma encoding for the second
+stage encoding.
+
 ### Application notes
 
 We currently support the following cameras:
