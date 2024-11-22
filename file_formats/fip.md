@@ -10,7 +10,7 @@ This document describes the standards for the acquisition of frame-projected ind
 
 ## Raw Data Format
 
-Following SciComp standards, FIP data from experiments should be saved to the "fib" (short for "fiber photometry") modality folder.
+Following SciComp standards, FIP data should be saved in their own folder named "fib" (short for "fiber photometry"). Data from other modalities go in separate folders.
 
 ### File format 
 
