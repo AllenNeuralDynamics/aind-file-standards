@@ -14,7 +14,7 @@ Following SciComp standards, FIP data should be saved in their own folder named 
 
 ### File format 
 
-In most cases, FIP fiber photometry data will be stored in 3 CSV files (extracted traces + timestamp; 6 time-series) and 3 bin files (raw camera-detector movie file).
+In most cases, FIP fiber photometry data will be stored in 3 photometry readout CSV files (extracted traces + timestamp; 6 time-series), 3 bin files (raw camera-detector movie file), and 3 ROI coordinate CSVs.
 
 For example:
 
