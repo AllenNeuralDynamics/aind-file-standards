@@ -66,15 +66,17 @@ The CSV files can be used to reconstitute images like this:
 
 ![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
 
-Each row of a CSV is a point position. The columns are, in this order:
+Each row of a CSV is a point position in an ROI. The columns are, in this order:
 * `RoiIndex`: 0->N index of which ROI the point lives on
 * `PointIndex`: 0->N index of the point within an ROI
-* `X`: horizontal position of the point
-* `Y`: vertical position of the point
+* `X`: pixel coordinate of the ROI point on the first (horizontal) dimension of the video 
+* `Y`: pixel coordinate of the ROI point on the second (vertical) dimensions of the video
 
 ### Application notes
 
 The .bin binary files are raw CMOS movie data recorded with `MatrixWriter` Bonsai node (https://bonsai-rx.org/docs/api/Bonsai.Dsp.MatrixWriter.html).
+
+When plotting ROI points on a video in matplotlib, the Y coordinate must be flipped vertically relative to the video frame. 
 
 ### Relationship to aind-data-schema
 
