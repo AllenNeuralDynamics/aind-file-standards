@@ -45,22 +45,20 @@ These files contain photometry readouts. The files have no headers. Each column 
 
 #### BIN files
 
-These are movies that document the fiber implants during the recording.
-
-[TBD - how to interpret these files?]
+These are movies that document the fiber implants during the recording. During data acquisition, operators place circular ROIs 
+over the videos. The photometry readouts above are integrated signal inside these ROIs.
 
 * 200x200 pixels
 * 16bit depth
 * 20Hz (effective sampling frequency per channel)
 * column major
 
-These files are optional and may be removed once QC is complete. 
+These files are optional and may be removed once QC is complete. Quality Control consists of verifying that ROIs were placed in the
+correct location, and not, for example, shifted with respect to the visual display on the rig due to e.g. physical bumping of the hardware.
 
 ### Application notes
 
 The .bin binary files are raw CMOS movie data recorded with `MatrixWriter` Bonsai node (https://bonsai-rx.org/docs/api/Bonsai.Dsp.MatrixWriter.html).
-
-The photometry data is generated...
 
 ### Relationship to aind-data-schema
 
