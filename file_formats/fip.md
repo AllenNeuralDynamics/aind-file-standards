@@ -58,7 +58,7 @@ over the videos. The photometry readouts above are integrated signal inside thes
 These files are optional and may be removed once QC is complete. Quality Control consists of verifying that ROIs were placed in the
 correct location, and not, for example, shifted with respect to the visual display on the rig due to e.g. physical bumping of the hardware.
 
-#### ROI CSV files
+#### ROI Coordinate CSV files
 
 The ROI CSV files contain the vector representation of the ROIs used to integrate BIN video signal. There is one CSV file per camera, corresponding to G and Iso 
 (time-multiplexing) and the other camera is recording only R. The CSV files can be used to reconstitute images like this:
