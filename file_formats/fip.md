@@ -70,7 +70,7 @@ Each row of a CSV is a point position in an ROI. The columns are, in this order:
 * `RoiIndex`: 0->N index of which ROI the point lives on
 * `PointIndex`: 0->N index of the point within an ROI
 * `X`: pixel coordinate of the ROI point on the first (horizontal) dimension of the video 
-* `Y`: pixel coordinate of the ROI point on the second (vertical) dimensions of the video
+* `Y`: pixel coordinate of the ROI point on the second (vertical) dimension of the video
 
 ### Application notes
 
