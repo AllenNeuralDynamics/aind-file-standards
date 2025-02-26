@@ -60,8 +60,9 @@ correct location, and not, for example, shifted with respect to the visual displ
 
 #### ROI Coordinate CSV files
 
-The ROI CSV files contain the vector representation of the ROIs used to integrate BIN video signal. There is one CSV file per camera, corresponding to G and Iso 
-(time-multiplexing) and the other camera is recording only R. The CSV files can be used to reconstitute images like this:
+The ROI CSV files contain the vector representation of the ROIs used to integrate BIN video signal. The files have no headers. 
+There is one CSV file per camera, corresponding to G and Iso (time-multiplexing) and the other camera is recording only R. 
+The CSV files can be used to reconstitute images like this:
 
 ![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
 
