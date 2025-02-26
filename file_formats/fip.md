@@ -2,7 +2,7 @@
 
 ## Version
 
-`0.1.0`
+`0.2.0`
 
 ## Introduction
 
@@ -25,7 +25,9 @@ For example:
 ┣ FIP_DataR_2024-06-05T08_25_33.csv
 ┣ FIP_RawG_2024-06-05T08_25_33.bin
 ┣ FIP_RawIso_2024-06-05T08_25_33.bin
-┗ FIP_RawR_2024-06-05T08_25_33.bin
+┣ FIP_RawR_2024-06-05T08_25_33.bin
+┣ FIP_ROIsG-Iso_2024-06-05T08_25_33.csv
+┗ FIP_ROIsR_2024-06-05T08_25_33.csv
 ```
 The file names are `FIP_[channel-name]_[datetime].csv`.  The `[channel-name]` token can be one of the following:
 
@@ -33,15 +35,15 @@ The file names are `FIP_[channel-name]_[datetime].csv`.  The `[channel-name]` to
 * `DataR`: data for red channel
 * `DataIso`: data for isosbestic channel
   
-#### CSV files
+#### Photometry Readout CSV files
 
 These files contain photometry readouts. The files have no headers. Each column is a timeseries, ordered as follows:
 
-* timestamp (in millisecond, total time of the day)
-* ROI0 (corresponding to fiber branch1) values
-* ROI1 (corresponding to fiber branch2) values
-* ...  (depending on how many fibers are used; in most of the experiments: ROI0-3/4branches)
-* Blank ROI: CMOS dark count floor signal
+* `timestamp` (in millisecond, total time of the day)
+* `ROI0` (corresponding to fiber branch1) values
+* `ROI1` (corresponding to fiber branch2) values
+* `...`  (depending on how many fibers are used; in most of the experiments: ROI0-3/4branches)
+* `Blank ROI`: CMOS dark count floor signal
 
 #### BIN files
 
@@ -55,6 +57,19 @@ over the videos. The photometry readouts above are integrated signal inside thes
 
 These files are optional and may be removed once QC is complete. Quality Control consists of verifying that ROIs were placed in the
 correct location, and not, for example, shifted with respect to the visual display on the rig due to e.g. physical bumping of the hardware.
+
+#### ROI CSV files
+
+The ROI CSV files contain the vector representation of the ROIs used to integrate BIN video signal. There is one CSV file per camera, corresponding to G and Iso 
+(time-multiplexing) and the other camera is recording only R. The CSV files can be used to reconstitute images like this:
+
+![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
+
+Each row of a CSV is a point position. The columns are, in this order:
+* `RoiIndex`: 0->N index of which ROI the point lives on
+* `PointIndex`: 0->N index of the point within an ROI
+* `X`: horizontal position of the point
+* `Y`: vertical position of the point
 
 ### Application notes
 
