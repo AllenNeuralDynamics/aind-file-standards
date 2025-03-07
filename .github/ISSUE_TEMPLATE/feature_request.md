@@ -1,20 +1,28 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
+name: Create a new specification
+about: For proposals that have been invited by a team member
+title: 'Feature name'
+labels: proposal
 assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**Summary**
+General description of the change, should also list the affected standard(s)
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**Motivation**
+Why is the change necessary?
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**Detailed Design**
+Proposed change, if applicable
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+**Drawbacks / Potential impact**
+What can go wrong? Will it affect an existing standard?
+
+**Alternatives**
+
+**Unresolved Questions**
+
+**Stakeholders**
+Who should be involved in the discussion/potentially affected by the chance?
+
