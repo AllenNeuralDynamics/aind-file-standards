@@ -52,7 +52,7 @@ correct location, and not, for example, shifted with respect to the visual displ
 
 These files contain photometry readouts. Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. The files have no headers. Each column is a timeseries, ordered as follows:
 
-* `software timestamp` (in milliseconds, total time of the day)
+* `timestamp` (software timestamp, in milliseconds, total time of the day)
 * `ROI0` (corresponding to fiber branch1) values
 * `ROI1` (corresponding to fiber branch2) values
 * `...`  (depending on how many fibers are used; in most of the experiments: ROI0-3/4branches)
