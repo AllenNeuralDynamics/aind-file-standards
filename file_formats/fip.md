@@ -2,7 +2,7 @@
 
 ## Version
 
-`0.2.1`
+`0.2.2`
 
 ## Introduction
 
@@ -74,7 +74,7 @@ correct location, and not, for example, shifted with respect to the visual displ
 
 These files can be read by specifying the structure of the videos as follows:
 
-```code
+```python
 import numpy as np
 
 frame_width = 200
