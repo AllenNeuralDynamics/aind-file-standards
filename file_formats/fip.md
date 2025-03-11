@@ -35,19 +35,6 @@ The file names are `FIP_[channel-name]_[datetime].csv`.  The `[channel-name]` to
 * `DataR`: data for red channel
 * `DataIso`: data for isosbestic channel
 
-#### BIN files
-
-These are movies that document the fiber implants during the recording. During data acquisition, operators place circular ROIs 
-over the videos. The photometry readouts above are integrated signal inside these ROIs.
-
-* 200x200 pixels
-* 16bit depth
-* 20Hz (effective sampling frequency per channel)
-* column major
-
-These files are optional and may be removed once QC is complete. Quality Control consists of verifying that ROIs were placed in the
-correct location, and not, for example, shifted with respect to the visual display on the rig due to e.g. physical bumping of the hardware.
-
 #### Photometry Readout CSV files
 
 These files contain photometry readouts. Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. The files have no headers. Each column is a timeseries, ordered as follows:
@@ -71,6 +58,63 @@ Each row of a CSV is a point position in an ROI. The columns are, in this order:
 * `PointIndex`: 0->N index of the point within an ROI
 * `X`: pixel coordinate of the ROI point on the first (horizontal) dimension of the video 
 * `Y`: pixel coordinate of the ROI point on the second (vertical) dimension of the video
+
+#### BIN files
+
+These are movies that document the fiber implants during the recording. During data acquisition, operators place circular ROIs 
+over the videos. The photometry readouts above are integrated signal inside these ROIs.
+
+* 200x200 pixels
+* 16bit depth
+* 20Hz (effective sampling frequency per channel)
+* column major
+
+These files are optional and may be removed once QC is complete. Quality Control consists of verifying that ROIs were placed in the
+correct location, and not, for example, shifted with respect to the visual display on the rig due to e.g. physical bumping of the hardware.
+
+These files can be read by specifying the structure of the videos as follows:
+
+```code
+import numpy as np
+
+frame_width = 200
+frame_height = 200
+bit_depth = 16  # 16-bit
+dtype = np.uint16  # 16-bit
+frame_size = frame_width * frame_height * 2
+
+def load_average_frame(video_file, start_frame, end_frame, frame_size, dtype, frame_width, frame_height):
+    
+    Parameters:
+        video_file (str): Path to the video file.
+        start_frame (int): Index of the starting frame.
+        end_frame (int): Index of the ending frame (exclusive).
+        frame_size (int): Byte size of a single frame.
+        dtype (numpy.dtype): Data type of the frame.
+        frame_width (int): Width of the frame.
+        frame_height (int): Height of the frame.
+
+    Returns:
+        numpy.ndarray: Average image (frame_height x frame_width).
+    """
+    num_frames = end_frame - start_frame
+    if num_frames <= 0:
+        raise ValueError("Invalid frame range specified.")
+    
+    accumulated_frame = np.zeros((frame_height, frame_width), dtype=np.float64)
+    
+    with open(video_file, "rb") as f:
+        for frame_index in range(start_frame, end_frame):
+            f.seek(frame_index * frame_size)
+            frame_data = np.frombuffer(f.read(frame_size), dtype=dtype)
+            
+            if frame_data.size != frame_width * frame_height:
+                raise ValueError("Reached end of file.")
+            
+            accumulated_frame += frame_data.reshape((frame_height, frame_width))
+    
+    return (accumulated_frame / num_frames).astype(dtype)
+```
 
 ### Application notes
 
