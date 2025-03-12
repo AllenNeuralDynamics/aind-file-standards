@@ -1,6 +1,6 @@
 # Standards on electrophysiology acquisition
 
-Version: 0.0.1
+Version: 0.0.2
 
 ## Introduction
 
@@ -14,6 +14,12 @@ Following SciComp standards, ecephys data from experiments should be saved to th
 ### File format
 
 The raw data format is a folder produced by the Open Ephys GUI (version>=0.6.0) in binary format and is organized as outlined in the official [Open Ephys Documentation](https://github.com/open-ephys/gui-docs/blob/b608d57a155b5af86f39048238492728fcd4e161/source/User-Manual/Recording-data/Binary-format.rst).
+
+In addition, it is required that the Open Ephys folder is temporally aligned using the `generate_report` or the `align_timestamps` functions from the [aind-ephys-rig-qc](https://github.com/AllenNeuralDynamics/aind-ephys-rig-qc) package to ensure that different streams are synced 
+with each other either *locally* or to the HARP clock (see [HARP format](harp.md)).
+Time alignment will produce additional timestamps files for each continuous/event stream:
+- `original_timestamps.npy`
+- `localsync_timestamps.npy` (only if HARP clock is detected)
 
 ### Application notes
 
