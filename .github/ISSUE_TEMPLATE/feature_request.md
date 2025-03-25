@@ -1,28 +1,31 @@
 ---
-name: Create a new specification
-about: For proposals that have been invited by a team member
-title: 'Feature name'
+name: Issues and feature requests for current standards
+title: 'Describe the issue or feature request'
 labels: proposal
 assignees: ''
 
 ---
 
-**Summary**
-General description of the change, should also list the affected standard(s)
+## Summary
 
-**Motivation**
-Why is the change necessary?
+- General description of the change, should also list the affected standard(s)
 
-**Detailed Design**
-Proposed change, if applicable
+## Motivation
 
-**Drawbacks / Potential impact**
-What can go wrong? Will it affect an existing standard?
+- Why is the change necessary? What improvements does it provide?
 
-**Alternatives**
+## Detailed Design
 
-**Unresolved Questions**
+- Proposed change, if applicable.
 
-**Stakeholders**
-Who should be involved in the discussion/potentially affected by the chance?
+## Drawbacks / Potential impact
 
+- What can go wrong? Will it affect an existing standard?
+
+## Alternatives
+
+## Unresolved Questions
+
+## Stakeholders
+
+- Who should be involved in the discussion/potentially affected by the chance?
