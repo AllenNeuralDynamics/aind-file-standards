@@ -2,7 +2,7 @@
 
 ## Version
 
-0.1.0-draft
+0.2.0
 
 ## Introduction
 
@@ -31,7 +31,7 @@ Thus, for each device, the container of all data will be a single directory with
  ┣ 📜<DeviceName>_1.bin
  ┣ ...
  ┣ 📜<DeviceName>_<Reg>.bin
- ┗ 📜device.yml (Optional)
+ ┗ 📜device.yml
 
  ```
 
@@ -41,9 +41,9 @@ where:
 - `<Device>` should match the name of the device in the `rig.json` schema file;
 - `<Reg>` is the register number that is logged in the binary file.
 
-#### The optional `device.yml` file
+#### On the `device.yml` file
 
-Including the `device.yml` file that corresponds to the device interface used to log the device's data is recommended. Currently, this is not mandatory, but as ecosystem adoption progresses and tools improve, it will likely become a standard requirement. Note that while the `device.yml` file specifies the targeted hardware, firmware, and core versions, it does not guarantee that the device from which data was acquired is running those versions. This metadata should instead be queried directly from the corresponding device's registers([see protocol core registers](https://harp-tech.org/protocol/Device.html#table---list-of-available-common-registers))
+Including the `device.yml` file that corresponds to the device interface used to log the device's data is required. This file affords the use of diverse tooling offered by the ecosystem, in particular [device-type-aware data ingestion tools](https://github.com/harp-tech/harp-python). Note that while the `device.yml` file specifies the targeted hardware, firmware, and core versions, it does not guarantee that the device from which data was acquired is running those versions. This metadata should instead be queried directly from the corresponding device's registers([see protocol core registers](https://harp-tech.org/protocol/Device.html#table---list-of-available-common-registers))
 
 - An example of an yml file can be found here: [device.yml](https://raw.githubusercontent.com/harp-tech/device.behavior/main/device.yml)
 - And the schema for the yml file can be found here: [device.yml schema](https://raw.githubusercontent.com/harp-tech/protocol/refs/heads/main/schema/device.json)
@@ -71,8 +71,8 @@ We will only consider two operational modes for devices used in the AIND: `Stand
 
 The following points will describe recommendations and recipes for logging data from harp devices using [Bonsai programming language](https://bonsai-rx.org/). We will assume a basic [understanding of the Bonsai programming language](https://bonsai-rx.org/docs/), and [how to interface with Harp devices from it](https://harp-tech.org/articles/intro.html).
 
-
-Instructions on how to log data from a Harp device using Bonsai can be found in the [Harp Bonsai interface docs](https://harp-tech.org/articles/logging.html#groupbyregister)
+Instructions on how to log data from a Harp device using Bonsai can be found in the [Harp Bonsai interface docs](https://harp-tech.org/articles/logging.html#groupbyregister).
+A "syntactic sugar" operator for logging device data with a corresponding device.yml file is also available in via the [AllenNeuralDynamics.HarpUtils](https://allenneuraldynamics.github.io/Bonsai.AllenNeuralDynamics/articles/core-logging.html#with-metadata) package.
 
 > [!IMPORTANT]
 > In your experiments, always validate that your logging routine has fully initialized before requesting a reading dump from the device. Failure to do so may result in missing data.
