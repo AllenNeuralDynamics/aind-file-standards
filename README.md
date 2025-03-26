@@ -36,7 +36,7 @@ All modality standards documents must include the following sections (naming sho
 - File naming conventions
 - File formats and internal organization
 
-### File Quality Assurance (for Raw Data)
+### File Quality Assurance (for Raw Data) [Optional]
 - Validation criteria for raw data files
 - Tests that should be performed to ensure data integrity
 
