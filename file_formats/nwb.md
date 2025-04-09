@@ -52,7 +52,7 @@ Second, [event-descriptions.csv](https://www.hed-resources.org/en/latest/BidsAnn
 
 BIDS likewise has a standard JSON representations of [event descriptions](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#json-event-sidecars).
 
-A general-purpose, task-agnostic utility for could write this in to NWB ***without any custom code necessary***.
+A general-purpose, task-agnostic utility for could write this in to NWB ***without any custom code necessary*** ([for example](https://gist.github.com/dyf/3e9aef7330ead36f14f0a11099ab619c)).
 
 ### Relationship to aind-data-schema
 
