@@ -48,7 +48,7 @@ Second, [event-descriptions.csv](https://www.hed-resources.org/en/latest/BidsAnn
 | str         | Any          | str         | str |
 ```
 
-There are of course also standard JSON representations of events and [event descriptions](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#json-event-sidecars).
+There are of course also standard JSON representations of [event descriptions](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#json-event-sidecars).
 
 A general-purpose, task-agnostic utility for packaging trials into NWB could write this without any custom code necessary.
 
