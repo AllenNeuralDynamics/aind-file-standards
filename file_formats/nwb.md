@@ -23,7 +23,7 @@ We also take this opportunity to remind readers about some NWB basics:
 ## Events 
 
 - Any other events should be packaged using the [ndx-events](https://github.com/rly/ndx-events) NWB extension.
-- We represent all events in an `EventTable` and all even descriptions in an `EventTypes` table.
+- We represent all events in an `EventTable` and all event descriptions in an `EventTypes` table.
 - Events have `timestamp`, and arbitrary property names and corresponding values.
 - Property values can have `meaning`s (e.g. property name "lick" with value "0" means "the mouse licked the left water port").
 - All event properties and values must be described by [HED tags](https://www.hedtags.org/) or part of AIND's HED extension.
@@ -36,14 +36,14 @@ We also take this opportunity to remind readers about some NWB basics:
 
 [BIDS](https://bids-specification.readthedocs.io/en/stable/) and [HED](https://www.hed-resources.org/en/latest/index.html) have defined two file formats that can generically describe events in a task-agnostic fashion. 
 
-First, [events.csv](https://bids-specification.readthedocs.io/en/stable/modality-specific-files/task-events.html): 
+First, [events.csv](https://bids-specification.readthedocs.io/en/stable/modality-specific-files/task-events.html), which describes individual events: 
 ```
 | onset  | duration | HED | <additional columns> | ... |
 --------------------------------------------------
 | float  | float    | str | ...                  | ... |
 ```
 
-Second, [event-descriptions.csv](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#four-column-spreadsheet-format-anchor):
+Second, [event-descriptions.csv](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#four-column-spreadsheet-format-anchor), which describes event types and their values:
 ```
 | column_name | column_value | description | HED |
 --------------------------------------------------
@@ -52,7 +52,7 @@ Second, [event-descriptions.csv](https://www.hed-resources.org/en/latest/BidsAnn
 
 BIDS likewise has a standard JSON representations of [event descriptions](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#json-event-sidecars).
 
-A general-purpose, task-agnostic utility for could write this in to NWB **without any custom code necessary**.
+A general-purpose, task-agnostic utility for could write this in to NWB ***without any custom code necessary***.
 
 ### Relationship to aind-data-schema
 
