@@ -50,7 +50,7 @@ Second, [event-descriptions.csv](https://www.hed-resources.org/en/latest/BidsAnn
 | str         | Any          | str         | str |
 ```
 
-There are of course also standard JSON representations of [event descriptions](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#json-event-sidecars).
+BIDS likewise has a standard JSON representations of [event descriptions](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#json-event-sidecars).
 
 A general-purpose, task-agnostic utility for could write this in to NWB **without any custom code necessary**.
 
