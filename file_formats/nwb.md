@@ -18,32 +18,33 @@ We also take this opportunity to remind readers about some NWB basics:
 
 ## Timestamps
 
-- If there is a harp board available, all timestamps will be aligned to the harp clock regardless of the recording device.
+- If there is a harp board available, all timestamps will be aligned to the harp clock.
 
 ## Events 
 
 - Any other events should be packaged using the [ndx-events](https://github.com/rly/ndx-events) NWB extension.
-- All event names must be [HED tags](https://www.hedtags.org/)  or part of AIND's HED extension.
 - Events have `timestamp`, and arbitrary property names and corresponding values.
 - Property values can have `meaning`s (e.g. property name "lick" with value "0" means "the mouse licked the left water port").
+- All event properties and values must be described by [HED tags](https://www.hedtags.org/) or part of AIND's HED extension.
 
 ### Trials Events
 
-- Trials have the same representation as events, with an additional `duration` property.
+- Trials have the same representation as events, but also fill in a `duration` property.
 
 ### Application Notes 
 
-Should acquisition software produce a `events.csv` file:
+[BIDS](https://bids-specification.readthedocs.io/en/stable/) and [HED](https://www.hed-resources.org/en/latest/index.html) have defined two file formats that can generically describe events in a task-agnostic fashion. First, [events.csv](https://bids-specification.readthedocs.io/en/stable/modality-specific-files/task-events.html): 
 ```
-| timestamp  | property_1 | property_2 | ... |
-----------------------------------------------
-| float      | Any        | Any        | ... |
+| onset  | duration | <additional columns> | ... |
+--------------------------------------------------
+| float  | float    | ...                  | ... |
 ```
-and a `meanings.csv` file like this:
+
+Second, [meanings.csv](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#four-column-spreadsheet-format-anchor):
 ```
-| property_name | property_value | meaning |
---------------------------------------------
-| str           | str            | str     |
+| column_name | column_value | description | HED |
+--------------------------------------------------
+| str         | Any          | str         | str |
 ```
 
 A general-purpose, task-agnostic utility for packaging trials into NWB could write this without any custom code necessary.
