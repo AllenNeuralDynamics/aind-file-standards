@@ -34,7 +34,9 @@ We also take this opportunity to remind readers about some NWB basics:
 
 ### Application Notes 
 
-[BIDS](https://bids-specification.readthedocs.io/en/stable/) and [HED](https://www.hed-resources.org/en/latest/index.html) have defined two file formats that can generically describe events in a task-agnostic fashion. First, [events.csv](https://bids-specification.readthedocs.io/en/stable/modality-specific-files/task-events.html): 
+[BIDS](https://bids-specification.readthedocs.io/en/stable/) and [HED](https://www.hed-resources.org/en/latest/index.html) have defined two file formats that can generically describe events in a task-agnostic fashion. 
+
+First, [events.csv](https://bids-specification.readthedocs.io/en/stable/modality-specific-files/task-events.html): 
 ```
 | onset  | duration | HED | <additional columns> | ... |
 --------------------------------------------------
@@ -50,7 +52,7 @@ Second, [event-descriptions.csv](https://www.hed-resources.org/en/latest/BidsAnn
 
 There are of course also standard JSON representations of [event descriptions](https://www.hed-resources.org/en/latest/BidsAnnotationQuickstart.html#json-event-sidecars).
 
-A general-purpose, task-agnostic utility for packaging trials into NWB could write this without any custom code necessary.
+A general-purpose, task-agnostic utility for could write this in to NWB **without any custom code necessary**.
 
 ### Relationship to aind-data-schema
 
