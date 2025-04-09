@@ -14,7 +14,7 @@ We also take this opportunity to remind readers about some NWB basics:
 
 - raw data goes in the `acquisition` group
 - processed data goes in the `processing` group
-- all timestamps are globally aligned and internally consistent
+- all timestamps are aligned to a single, common clock
 
 ## Timestamps
 
