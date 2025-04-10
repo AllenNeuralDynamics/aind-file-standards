@@ -10,15 +10,17 @@ Neurodata Without Borders (NWB) files are a standard file format for neurophysio
 
 ## Basics
 
-We also take this opportunity to remind readers about some NWB basics:
+We also take this opportunity to remind readers about some general NWB basics:
 
-- raw data goes in the `acquisition` group
-- processed data goes in the `processing` group
-- all timestamps are aligned to a single, common clock
+- Raw data goes in the `acquisition` group
+- Processed data goes in the `processing` group
+- The root level `session_start_time` is a timezone-aware datetime defining the start of acquisition.
+- All timestamps must relative to the same point in time and require no additional alignment to compare. This is defined in the root level `timestamps_reference_time`, which defaults to `session_start_time`.
+- It is not required that timestamps for different data streams be identical (i.e. resample data such that all timeseries to have exactly the same timestamps).
 
-## Timestamps
+## HARP
 
-- If there is a harp board available, all timestamps will be aligned to the harp clock.
+- At AIND, if there is a HARP board available, timestamps must utilize HARP TTLs to transform timestamps to a common timebase. It is insufficient to store a lookup table.
 
 ## Events 
 
