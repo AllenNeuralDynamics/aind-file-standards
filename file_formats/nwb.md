@@ -15,12 +15,13 @@ We also take this opportunity to remind readers about some general NWB basics:
 - Raw data goes in the `acquisition` group
 - Processed data goes in the `processing` group
 - The root level `session_start_time` is a timezone-aware datetime defining the start of acquisition.
-- All timestamps must relative to the same point in time and require no additional alignment to compare. This is defined in the root level `timestamps_reference_time`, which defaults to `session_start_time`.
-- It is not required that timestamps for different data streams be identical (i.e. resample data such that all timeseries to have exactly the same timestamps).
+- All timestamps must be relative to the same point in time and require no additional alignment to compare. This is defined in the root level `timestamps_reference_time`, which defaults to `session_start_time`.
+- It is not required that timestamps for different data streams be identical (i.e. resample data such that all timeseries have exactly the same timestamps).
 
 ## HARP
 
 - At AIND, if there is a HARP board available, timestamps must utilize HARP TTLs to transform timestamps to a common timebase. It is insufficient to store a lookup table.
+- If it is necessary to preserve the original, misaligned timestamps for a timeseries, they can be stored separately in an appropriately named `DynamicTable`, e.g. `ephys_temporal_alignment` with an `original_timestamps` column. 
 
 ## Events 
 
