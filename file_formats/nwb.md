@@ -57,8 +57,8 @@ A general-purpose, task-agnostic utility for could write this in to NWB ***witho
 
 ### Relationship to aind-data-schema
 
-TBD
+The AIND HED extension will likely live in the [aind-data-schema-models](https://github.com/AllenNeuralDynamics/aind-data-schema-models) repository.
 
 ### File Quality Assurances
 
-TBD
+None.
