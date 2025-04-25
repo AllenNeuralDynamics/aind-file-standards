@@ -26,11 +26,12 @@ We also take this opportunity to remind readers about some general NWB basics:
 ## Events 
 
 - Any events should be packaged using the [ndx-events](https://github.com/rly/ndx-events) NWB extension.
-- We represent all events in an `EventTable` and all event descriptions in a `MeaningsTable` table.
-- Events have a `timestamp` property, and arbitrary property names and corresponding values.
-- Property values can have `meaning`s (e.g. property name "lick" with value "0" means "the mouse licked the left water port").
-- All event properties and values must be described by [HED tags](https://www.hedtags.org/) or part of AIND's HED extension.
+- We represent all *discrete* events in a single a `EventTable` named `events`.
+- Events in the events table have a `timestamp` property, along with arbitrary property names (columns) and values.
+- All event property values and their descriptions are stored in single a `MeaningsTable` table named `event_descriptions` (e.g. property name "lick" with value "0" means "the mouse licked the left water port").
+- All event property values must be described by [HED tags](https://www.hedtags.org/) or part of AIND's HED extension.
 - Trials are represented as events, but also fill in the event `duration` property.
+-*Continuous* data (e.g. running wheel velocity) are stored in `TimeSeries` arrays, not event tables.
 
 ### Application Notes 
 
