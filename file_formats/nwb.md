@@ -31,7 +31,7 @@ We also take this opportunity to remind readers about some general NWB basics:
 - All event property values and their descriptions are stored in single a `MeaningsTable` table named `event_descriptions` (e.g. property name "lick" with value "0" means "the mouse licked the left water port").
 - All event property values must be described by [HED tags](https://www.hedtags.org/) or part of AIND's HED extension.
 - Trials are represented as events, but also fill in the event `duration` property.
--*Continuous* data (e.g. running wheel velocity) are stored in `TimeSeries` arrays, not event tables.
+- *Continuous* data (e.g. running wheel velocity) are stored in `TimeSeries` arrays, not event tables.
 
 ### Application Notes 
 
