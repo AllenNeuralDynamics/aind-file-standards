@@ -29,6 +29,8 @@ For example:
 ┣ green.bin
 ┣ red.bin
 ┣ iso.bin
+┣ roi_green_iso.csv
+┣ roi_red.csv
 ┣ camera_green_iso_metadata.csv
 ┗ camera_red_metadata.csv
 ```
@@ -57,7 +59,11 @@ The ROI CSV files contain the vector representation of the ROIs used to integrat
 There is one CSV file per camera, corresponding to G and Iso (time-multiplexing) and the other camera is recording only R. 
 The CSV files can be used to reconstitute images like this:
 
+* `roi_green_iso.csv`: ROI metadata for the green and isosbestic channels
+* `roi_red.csv`: ROI metadata for the red channel
+
 ![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
+
 
 Each row of a CSV is a point position in an ROI. The columns are, in this order:
 * `RoiIndex`: 0->N index of which ROI the point lives on
