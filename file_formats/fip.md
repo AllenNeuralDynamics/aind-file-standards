@@ -20,30 +20,44 @@ For example:
 
 ```plaintext
 📦 fib
-┣ FIP_DataG_2024-06-05T08_25_33.csv
-┣ FIP_DataIso_2024-06-05T08_25_33.csv
-┣ FIP_DataR_2024-06-05T08_25_33.csv
-┣ FIP_RawG_2024-06-05T08_25_33.bin
-┣ FIP_RawIso_2024-06-05T08_25_33.bin
-┣ FIP_RawR_2024-06-05T08_25_33.bin
-┣ FIP_ROIsG-Iso_2024-06-05T08_25_33.csv
-┗ FIP_ROIsR_2024-06-05T08_25_33.csv
+┣ green.csv
+┣ red.csv
+┣ iso.csv
+┣ green.bin
+┣ red.bin
+┣ iso.bin
+┣ camera_green_iso_metadata.csv
+┗ camera_red_metadata.csv
 ```
-The file names are `FIP_[channel-name]_[datetime].csv`.  The `[channel-name]` token can be one of the following:
+Below describe the files containing the fiber pixel valies. The csv file is named according to the color-channel it is recording from.
 
-* `DataG`: data for green channel
-* `DataR`: data for red channel
-* `DataIso`: data for isosbestic channel
+* `green`: data for green channel
+* `red`: data for red channel
+* `iso`: data for isosbestic channel
+
+The fiber imaging system uses a single camera to capture data from two distinct light sources through temporal multiplexing. Because of that, only two metadata files are dropped; one for each camera. The temporally multiplexed channels are indicated in the file naming format below. These files can be used to QC the cameras.
+
+* `camera_green_iso_metadata`: metadata from the camera recording from both green and iso channels
+* `camera_red_metadata`: metadata from the camera recording from the red channel
+
 
 #### Photometry Readout CSV files
 
 These files contain photometry readouts. Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. The files have no headers. Each column is a timeseries, ordered as follows:
 
-* `timestamp` (software timestamp, in milliseconds, total time of the day)
+* `SoftwareTS` (software timestamp, in milliseconds, total time of the day)
 * `ROI0` (corresponding to fiber branch1) values
 * `ROI1` (corresponding to fiber branch2) values
 * `...`  (depending on how many fibers are used; in most of the experiments: ROI0-3/4branches)
-* `Blank ROI`: CMOS dark count floor signal
+* `Background`: CMOS dark count floor signal
+* `HarpTS` (Harp timestamp, in XXXunit, from Harp device reference)
+
+The files containing the metadata
+
+* `CameraFrameNumber` Camera frame number provided by camera hardware
+* `ReferenceTime` Camera reference time XXX more description here
+* `CameraFrameTime`  XXX
+* `CpuTime`  Software timestamp from the OS, in timezone (XXX)
 
 #### ROI Coordinate CSV files
 
