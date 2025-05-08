@@ -136,7 +136,7 @@ def load_average_frame(video_file, start_frame, end_frame, frame_size, dtype, fr
 
 ### Software Events
 
-Software events contain XXX 
+Software events contain XXX(regions are already stored in csv and are not an event. What is the RepositoryStatus?) 
 
 ### Metadata
 
