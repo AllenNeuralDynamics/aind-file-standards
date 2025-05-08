@@ -20,6 +20,9 @@ For example:
 
 ```plaintext
 📦 fib
+┣📂 SoftwareEvents
+┃ ┣📜RepositoryStatus.json
+┃ ┗📜Region.json
 ┣ green.csv
 ┣ red.csv
 ┣ iso.csv
@@ -29,19 +32,14 @@ For example:
 ┣ camera_green_iso_metadata.csv
 ┗ camera_red_metadata.csv
 ```
-Below describe the files containing the fiber pixel valies. The csv file is named according to the color-channel it is recording from.
 
-* `green`: data for green channel
-* `red`: data for red channel
-* `iso`: data for isosbestic channel
+#### Photometry CSV files
 
-The fiber imaging system uses a single camera to capture data from two distinct light sources through temporal multiplexing. Because of that, only two metadata files are dropped; one for each camera. The temporally multiplexed channels are indicated in the file naming format below. These files can be used to QC the cameras.
+Data files are named by the color of the channel.
 
-* `camera_green_iso_metadata`: metadata from the camera recording from both green and iso channels
-* `camera_red_metadata`: metadata from the camera recording from the red channel
-
-
-#### Photometry Readout CSV files
+* `green.csv`: data for green channel
+* `red.csv`: data for red channel
+* `iso.csv`: data for isosbestic channel
 
 These files contain photometry readouts. Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. The files have no headers. Each column is a timeseries, ordered as follows:
 
@@ -52,12 +50,6 @@ These files contain photometry readouts. Each row describes the average signal o
 * `Background`: CMOS dark count floor signal
 * `HarpTS` (Harp timestamp, in XXXunit, from Harp device reference)
 
-The files containing the metadata
-
-* `CameraFrameNumber` Camera frame number provided by camera hardware
-* `ReferenceTime` Camera reference time XXX more description here
-* `CameraFrameTime`  XXX
-* `CpuTime`  Software timestamp from the OS, in timezone (XXX)
 
 #### ROI Coordinate CSV files
 
@@ -74,6 +66,12 @@ Each row of a CSV is a point position in an ROI. The columns are, in this order:
 * `Y`: pixel coordinate of the ROI point on the second (vertical) dimension of the video
 
 #### BIN files
+
+Data files are named by the color of the channel.
+
+* `green.bin`: data for green channel
+* `red.bin`: data for red channel
+* `iso.bin`: data for isosbestic channel
 
 These are movies that document the fiber implants during the recording. During data acquisition, operators place circular ROIs 
 over the videos. The photometry readouts above are integrated signal inside these ROIs.
@@ -129,6 +127,24 @@ def load_average_frame(video_file, start_frame, end_frame, frame_size, dtype, fr
     
     return (accumulated_frame / num_frames).astype(dtype)
 ```
+
+### Software Events
+
+Software events contain XXX 
+
+### Metadata
+
+The fiber imaging system uses a single camera to capture data from two distinct light sources through temporal multiplexing. Because of that, only two metadata files are dropped; one for each camera. The temporally multiplexed channels are indicated in the file naming format below. These files can be used to QC the cameras.
+
+* `camera_green_iso_metadata.csv`: metadata from the camera recording from both green and iso channels
+* `camera_red_metadata.csv`: metadata from the camera recording from the red channel
+
+Within the metadata files are the following columns
+
+* `CameraFrameNumber` Camera frame number provided by camera hardware
+* `ReferenceTime` Camera reference time XXX more description here
+* `CameraFrameTime`  XXX
+* `CpuTime`  Software timestamp from the OS, in timezone (XXX)
 
 ### Application notes
 
