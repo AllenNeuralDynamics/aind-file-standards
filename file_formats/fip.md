@@ -20,30 +20,38 @@ For example:
 
 ```plaintext
 📦 fib
-┣ FIP_DataG_2024-06-05T08_25_33.csv
-┣ FIP_DataIso_2024-06-05T08_25_33.csv
-┣ FIP_DataR_2024-06-05T08_25_33.csv
-┣ FIP_RawG_2024-06-05T08_25_33.bin
-┣ FIP_RawIso_2024-06-05T08_25_33.bin
-┣ FIP_RawR_2024-06-05T08_25_33.bin
-┣ FIP_ROIsG-Iso_2024-06-05T08_25_33.csv
-┗ FIP_ROIsR_2024-06-05T08_25_33.csv
+┣📂 SoftwareEvents
+┃ ┣📜RepositoryStatus.json
+┃ ┗📜Region.json
+┣ green.csv
+┣ red.csv
+┣ iso.csv
+┣ green.bin
+┣ red.bin
+┣ iso.bin
+┣ roi_green_iso.csv
+┣ roi_red.csv
+┣ camera_green_iso_metadata.csv
+┗ camera_red_metadata.csv
 ```
-The file names are `FIP_[channel-name]_[datetime].csv`.  The `[channel-name]` token can be one of the following:
 
-* `DataG`: data for green channel
-* `DataR`: data for red channel
-* `DataIso`: data for isosbestic channel
+#### Photometry CSV files
 
-#### Photometry Readout CSV files
+Data files are named by the color of the channel.
+
+* `green.csv`: data for green channel
+* `red.csv`: data for red channel
+* `iso.csv`: data for isosbestic channel
 
 These files contain photometry readouts. Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. The files have no headers. Each column is a timeseries, ordered as follows:
 
-* `timestamp` (software timestamp, in milliseconds, total time of the day)
+* `SoftwareTS` (software timestamp, in milliseconds, total time of the day)
 * `ROI0` (corresponding to fiber branch1) values
 * `ROI1` (corresponding to fiber branch2) values
 * `...`  (depending on how many fibers are used; in most of the experiments: ROI0-3/4branches)
-* `Blank ROI`: CMOS dark count floor signal
+* `Background`: CMOS dark count floor signal
+* `HarpTS` (Harp timestamp, in XXXunit, from Harp device reference)
+
 
 #### ROI Coordinate CSV files
 
@@ -51,7 +59,11 @@ The ROI CSV files contain the vector representation of the ROIs used to integrat
 There is one CSV file per camera, corresponding to G and Iso (time-multiplexing) and the other camera is recording only R. 
 The CSV files can be used to reconstitute images like this:
 
+* `roi_green_iso.csv`: ROI metadata for the green and isosbestic channels
+* `roi_red.csv`: ROI metadata for the red channel
+
 ![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
+
 
 Each row of a CSV is a point position in an ROI. The columns are, in this order:
 * `RoiIndex`: 0->N index of which ROI the point lives on
@@ -60,6 +72,12 @@ Each row of a CSV is a point position in an ROI. The columns are, in this order:
 * `Y`: pixel coordinate of the ROI point on the second (vertical) dimension of the video
 
 #### BIN files
+
+Data files are named by the color of the channel.
+
+* `green.bin`: data for green channel
+* `red.bin`: data for red channel
+* `iso.bin`: data for isosbestic channel
 
 These are movies that document the fiber implants during the recording. During data acquisition, operators place circular ROIs 
 over the videos. The photometry readouts above are integrated signal inside these ROIs.
@@ -115,6 +133,24 @@ def load_average_frame(video_file, start_frame, end_frame, frame_size, dtype, fr
     
     return (accumulated_frame / num_frames).astype(dtype)
 ```
+
+### Software Events
+
+Software events contain XXX(regions are already stored in csv and are not an event. What is the RepositoryStatus?) 
+
+### Metadata
+
+The fiber imaging system uses a single camera to capture data from two distinct light sources through temporal multiplexing. Because of that, only two metadata files are dropped; one for each camera. The temporally multiplexed channels are indicated in the file naming format below. These files can be used to QC the cameras.
+
+* `camera_green_iso_metadata.csv`: metadata from the camera recording from both green and iso channels
+* `camera_red_metadata.csv`: metadata from the camera recording from the red channel
+
+Within the metadata files are the following columns
+
+* `CameraFrameNumber` Camera frame number provided by camera hardware
+* `ReferenceTime` Camera reference time XXX more description here
+* `CameraFrameTime`  XXX
+* `CpuTime`  Software timestamp from the OS, in timezone (XXX)
 
 ### Application notes
 
