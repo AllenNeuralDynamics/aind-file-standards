@@ -35,22 +35,28 @@ For example:
 ┗ camera_red_metadata.csv
 ```
 
+### CSV Files
+
+The fiber photometry rig outputs CSV files containing metadata and data. All metadata and data files must contain headers. The order of the headers will not be enforced. Documented below for each type of CSV, the file and header names are specified.
+
 #### Photometry CSV files
 
-Data files are named by the color of the channel.
+Data files are named by the color of the channel and contain the photometry readouts.
 
 * `green.csv`: data for green channel
 * `red.csv`: data for red channel
 * `iso.csv`: data for isosbestic channel
 
-These files contain photometry readouts. Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. These are the string header values required for each csv. Each column is a timeseries defined below:
+Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. The headers include:
 
-* `SoftwareTS` (software timestamp, in milliseconds, total time of the day)
+* `CPUTime` (software timestamp, in milliseconds, total time of the day)
 * `Fiber_0` Average signal values for Fiber_0's selected ROI.
 * `...`  
 * `Fiber_N` Average signal values for Fiber_N's selected ROI.
 * `Background`: CMOS dark count floor signal
-* `HarpTS` (Harp timestamp, in XXXunit, from Harp device reference)
+* `ReferenceTime` Time of the trigger given by hardware (Harp)
+* `CameraFrameNumber` Frame counter given by the camera API or manually added by user (e.g. using OS counter for webcams)
+* `CameraFrameTime` rame acquisition time given by the camera API or manually added by the user (e.g. using OS scheduler for webcams)
 
 
 #### ROI Coordinate CSV files
@@ -62,9 +68,9 @@ There is one CSV file per camera, corresponding to G and Iso (time-multiplexing)
 * `roi_green_iso.csv`: ROI metadata for the green and isosbestic channels
 * `roi_red.csv`: ROI metadata for the red channel
 
-Each row of a CSV is a point position in an ROI. Column headers defined below must be included in the csv:
+Each row of a CSV is a point position in an ROI. The column headers are:
 
-* `RoiIndex`: 0->N index of which ROI the point lives on
+* `ROIIndex`: 0->N index of which ROI the point lives on
 * `PointIndex`: 0->N index of the point within an ROI
 * `X`: pixel coordinate of the ROI point on the first (horizontal) dimension of the video 
 * `Y`: pixel coordinate of the ROI point on the second (vertical) dimension of the video
@@ -73,10 +79,7 @@ The CSV files can be used to reconstitute images like this:
 
 ![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
 
-
-
-
-#### BIN files
+### BIN files
 
 Data files are named by the color of the channel.
 
