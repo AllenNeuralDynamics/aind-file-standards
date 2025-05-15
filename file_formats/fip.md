@@ -43,33 +43,38 @@ Data files are named by the color of the channel.
 * `red.csv`: data for red channel
 * `iso.csv`: data for isosbestic channel
 
-These files contain photometry readouts. Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. The files have no headers. Each column is a timeseries, ordered as follows:
+These files contain photometry readouts. Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. These are the string header values required for each csv. Each column is a timeseries defined below:
 
 * `SoftwareTS` (software timestamp, in milliseconds, total time of the day)
-* `ROI0` (corresponding to fiber branch1) values
-* `ROI1` (corresponding to fiber branch2) values
-* `...`  (depending on how many fibers are used; in most of the experiments: ROI0-3/4branches)
+* `Fiber_0` Average signal values for Fiber_0's selected ROI.
+* `...`  
+* `Fiber_N` Average signal values for Fiber_N's selected ROI.
 * `Background`: CMOS dark count floor signal
 * `HarpTS` (Harp timestamp, in XXXunit, from Harp device reference)
 
 
 #### ROI Coordinate CSV files
 
-The ROI CSV files contain the vector representation of the ROIs used to integrate BIN video signal. The files have no headers. 
+The ROI CSV files contain the vector representation of the ROIs used to integrate BIN video signal. 
+
 There is one CSV file per camera, corresponding to G and Iso (time-multiplexing) and the other camera is recording only R. 
-The CSV files can be used to reconstitute images like this:
 
 * `roi_green_iso.csv`: ROI metadata for the green and isosbestic channels
 * `roi_red.csv`: ROI metadata for the red channel
 
-![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
+Each row of a CSV is a point position in an ROI. Column headers defined below must be included in the csv:
 
-
-Each row of a CSV is a point position in an ROI. The columns are, in this order:
 * `RoiIndex`: 0->N index of which ROI the point lives on
 * `PointIndex`: 0->N index of the point within an ROI
 * `X`: pixel coordinate of the ROI point on the first (horizontal) dimension of the video 
 * `Y`: pixel coordinate of the ROI point on the second (vertical) dimension of the video
+
+The CSV files can be used to reconstitute images like this:
+
+![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
+
+
+
 
 #### BIN files
 
