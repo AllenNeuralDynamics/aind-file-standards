@@ -45,15 +45,15 @@ Data files are named by the color of the channel and contain the photometry read
 * `red.csv`: data for red channel
 * `iso.csv`: data for isosbestic channel
 
-Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. The headers include:
+Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. Column headers defined below:
 
-* `Fiber_0` Average signal values for Fiber_0's selected ROI.
+* `Fiber_0` Average signal values for Fiber_0's selected ROI
 * `...`  
 * `Fiber_N` Average signal values for Fiber_N's selected ROI.
 * `Background`: CMOS dark count floor signal
 * `ReferenceTime` Time of the trigger given by hardware (Harp)
 * `CameraFrameNumber` Frame counter given by the camera API or manually added by user (e.g. using OS counter for webcams)
-* `CameraFrameTime` frame acquisition time given by the camera API.
+* `CameraFrameTime` frame acquisition time given by the camera API
 
 
 #### ROI metadata files
