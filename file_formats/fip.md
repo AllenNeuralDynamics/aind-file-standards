@@ -168,7 +168,7 @@ This json file contains the ROI coordinates. The coordinates are given by the ce
 }
 ```
 
-An image like the one below can be drawn from these coordinates
+An image like the one below can be drawn from these coordinates.
 
 ![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
 
