@@ -253,7 +253,7 @@ Within the metadata files are the following columns
 
 * `ReferenceTime` Time of the trigger given by hardware (Harp)
 * `CameraFrameNumber` Frame counter given by the camera API or manually added by user (e.g. using OS counter for webcams)
-* `CameraFrameTime` Fame acquisition time given by the camera API or manually added by the user (e.g. using OS scheduler for webcams)
+* `CameraFrameTime` frame acquisition time given by the camera API
 * `CpuTime`  Software timestamp from the OS, in timezone-aware ISO8061 format. Users should consider these timestamps low-precision and rig-dependent, and should not rely on them for analysis.
 
 ### Application notes
