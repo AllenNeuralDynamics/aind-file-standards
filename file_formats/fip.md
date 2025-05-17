@@ -32,7 +32,8 @@ For example:
 ┣ roi_green_iso.csv
 ┣ roi_red.csv
 ┣ camera_green_iso_metadata.csv
-┗ camera_red_metadata.csv
+┣ camera_red_metadata.csv
+┗ Regions.json
 ```
 
 ### CSV Files
@@ -59,23 +60,119 @@ Each row describes the average signal of pixels within each ROI for a single vid
 * `CameraFrameTime` rame acquisition time given by the camera API or manually added by the user (e.g. using OS scheduler for webcams)
 
 
-#### ROI Coordinate CSV files
+#### ROI metadata files
 
-The ROI CSV files contain the vector representation of the ROIs used to integrate BIN video signal. 
+Three files contain the metadata for each channel:
 
-There is one CSV file per camera, corresponding to G and Iso (time-multiplexing) and the other camera is recording only R. 
+* `roi.meta`: ROI metadata for the green and isosbestic channels
+* `green.meta`: ROI metadata for the red channel
+* `iso.meta`: Metadata
 
-* `roi_green_iso.csv`: ROI metadata for the green and isosbestic channels
-* `roi_red.csv`: ROI metadata for the red channel
+Each file contains a datastructure with the following fields:
 
-Each row of a CSV is a point position in an ROI. The column headers are:
+* `Width`: Imaging width
+* `Height`: Imaging height
+* `Depth`: Bit depth
+* `Channel`: Channel
 
-* `ROIIndex`: 0->N index of which ROI the point lives on
-* `PointIndex`: 0->N index of the point within an ROI
-* `X`: pixel coordinate of the ROI point on the first (horizontal) dimension of the video 
-* `Y`: pixel coordinate of the ROI point on the second (vertical) dimension of the video
+Example structure:
 
-The CSV files can be used to reconstitute images like this:
+```
+{
+    Width=200, 
+    Height=200, 
+    Depth=U16, 
+    Channels=1
+}
+```
+
+
+### JSON files
+
+#### Regions
+
+This json file contains the ROI coordinates. The coordinates are given by the center (x,y) coordinate and the radius of the ROI in pixels (XXX)
+
+```
+{
+    "camera_green_iso_background": {
+        "center": {
+            "x": 10.0,
+            "y": 10.0
+        },
+        "radius": 10.0
+    },
+    "camera_red_background": {
+        "center": {
+            "x": 10.0,
+            "y": 10.0
+        },
+        "radius": 10.0
+    },
+    "camera_green_iso_roi": [
+        {
+            "center": {
+                "x": 50.0,
+                "y": 50.0
+            },
+            "radius": 20.0
+        },
+        {
+            "center": {
+                "x": 50.0,
+                "y": 150.0
+            },
+            "radius": 20.0
+        },
+        {
+            "center": {
+                "x": 150.0,
+                "y": 50.0
+            },
+            "radius": 20.0
+        },
+        {
+            "center": {
+                "x": 150.0,
+                "y": 150.0
+            },
+            "radius": 20.0
+        }
+    ],
+    "camera_red_roi": [
+        {
+            "center": {
+                "x": 50.0,
+                "y": 50.0
+            },
+            "radius": 20.0
+        },
+        {
+            "center": {
+                "x": 50.0,
+                "y": 150.0
+            },
+            "radius": 20.0
+        },
+        {
+            "center": {
+                "x": 150.0,
+                "y": 50.0
+            },
+            "radius": 20.0
+        },
+        {
+            "center": {
+                "x": 150.0,
+                "y": 150.0
+            },
+            "radius": 20.0
+        }
+    ]
+}
+```
+
+An image like the one below can be drawn from these coordinates
 
 ![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
 
@@ -87,13 +184,7 @@ Data files are named by the color of the channel.
 * `red.bin`: data for red channel
 * `iso.bin`: data for isosbestic channel
 
-These are movies that document the fiber implants during the recording. During data acquisition, operators place circular ROIs 
-over the videos. The photometry readouts above are integrated signal inside these ROIs.
-
-* 200x200 pixels
-* 16bit depth
-* 20Hz (effective sampling frequency per channel)
-* column major
+These are movies that document the fiber implants during the recording. During data acquisition, operators place circular ROIs over the videos. The photometry readouts above are integrated signal inside these ROIs.
 
 These files are optional and may be removed once QC is complete. Quality Control consists of verifying that ROIs were placed in the
 correct location, and not, for example, shifted with respect to the visual display on the rig due to e.g. physical bumping of the hardware.
@@ -102,15 +193,11 @@ These files can be read by specifying the structure of the videos as follows:
 
 ```python
 import numpy as np
+import json
 
-frame_width = 200
-frame_height = 200
-bit_depth = 16  # 16-bit
-dtype = np.uint16  # 16-bit
-frame_size = frame_width * frame_height * 2
 
 def load_average_frame(video_file, start_frame, end_frame, frame_size, dtype, frame_width, frame_height):
-    
+    """
     Parameters:
         video_file (str): Path to the video file.
         start_frame (int): Index of the starting frame.
@@ -140,11 +227,28 @@ def load_average_frame(video_file, start_frame, end_frame, frame_size, dtype, fr
             accumulated_frame += frame_data.reshape((frame_height, frame_width))
     
     return (accumulated_frame / num_frames).astype(dtype)
+
+
+if __name__ == '__main__':
+    with open('red.meta', 'r') as j:
+        meta_data = j.read()[0]
+    meta_data = json.load(metadata)
+    video_fp = '/path/to/file.bin'
+    start_frame = 0
+    end_frame = 1000
+    average_frame = load_average_frame(
+        video_fp,
+        start_frame,
+        end_frame,
+        np.dtype(meta['Depth']),
+        meta['Width'],
+        meta['Height']
+    )
 ```
 
 ### Software Events
 
-Software events contain XXX(regions are already stored in csv and are not an event. What is the RepositoryStatus?) 
+The `SoftwareEvents` folder can be ignored. There are no events associated with fiber photometry. 
 
 ### Metadata
 
