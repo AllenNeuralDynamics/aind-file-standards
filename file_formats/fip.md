@@ -20,9 +20,6 @@ For example:
 
 ```plaintext
 📦 fib
-┣📂 SoftwareEvents
-┃ ┣📜RepositoryStatus.json
-┃ ┗📜Region.json
 ┣ green.csv
 ┣ red.csv
 ┣ iso.csv
@@ -33,7 +30,7 @@ For example:
 ┣ roi_red.csv
 ┣ camera_green_iso_metadata.csv
 ┣ camera_red_metadata.csv
-┗ Regions.json
+┗ regions.json
 ```
 
 ### CSV Files
@@ -50,14 +47,13 @@ Data files are named by the color of the channel and contain the photometry read
 
 Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. The headers include:
 
-* `CPUTime` (software timestamp, in milliseconds, total time of the day)
 * `Fiber_0` Average signal values for Fiber_0's selected ROI.
 * `...`  
 * `Fiber_N` Average signal values for Fiber_N's selected ROI.
 * `Background`: CMOS dark count floor signal
 * `ReferenceTime` Time of the trigger given by hardware (Harp)
-* `CameraFrameNumber` Frame counter given by the camera API or manually added by user (e.g. using OS counter for webcams)
-* `CameraFrameTime` rame acquisition time given by the camera API or manually added by the user (e.g. using OS scheduler for webcams)
+* `CameraFrameNumber` Frame counter given by the camera API.
+* `CameraFrameTime` Fame acquisition time given by the camera API or manually added by the user (e.g. using OS scheduler for webcams)
 
 
 #### ROI metadata files
@@ -91,7 +87,7 @@ Example structure:
 
 #### Regions
 
-This json file contains the ROI coordinates. The coordinates are given by the center (x,y) coordinate and the radius of the ROI in pixels (XXX)
+This json file contains the ROI coordinates. The coordinates are given by the center (x,y) coordinate and the radius of the ROI in pixels.
 
 ```
 {
@@ -246,10 +242,6 @@ if __name__ == '__main__':
     )
 ```
 
-### Software Events
-
-The `SoftwareEvents` folder can be ignored. There are no events associated with fiber photometry. 
-
 ### Metadata
 
 The fiber imaging system uses a single camera to capture data from two distinct light sources through temporal multiplexing. Because of that, only two metadata files are dropped; one for each camera. The temporally multiplexed channels are indicated in the file naming format below. These files can be used to QC the cameras.
@@ -259,10 +251,10 @@ The fiber imaging system uses a single camera to capture data from two distinct 
 
 Within the metadata files are the following columns
 
-* `CameraFrameNumber` Camera frame number provided by camera hardware
-* `ReferenceTime` Camera reference time XXX more description here
-* `CameraFrameTime`  XXX
-* `CpuTime`  Software timestamp from the OS, in timezone (XXX)
+* `ReferenceTime` Time of the trigger given by hardware (Harp)
+* `CameraFrameNumber` Frame counter given by the camera API or manually added by user (e.g. using OS counter for webcams)
+* `CameraFrameTime` Fame acquisition time given by the camera API or manually added by the user (e.g. using OS scheduler for webcams)
+* `CpuTime`  Software timestamp from the OS, in timezone-aware ISO8061 format. Users should consider these timestamps low-precision and rig-dependent, and should not rely on them for analysis.
 
 ### Application notes
 
