@@ -35,7 +35,7 @@ For example:
 
 ### CSV Files
 
-The fiber photometry rig outputs CSV files containing metadata and data. All metadata and data files must contain headers. The order of the headers will not be enforced. Documented below for each type of CSV, the file and header names are specified.
+The fiber photometry rig outputs CSV files containing metadata and data. All metadata and data files must contain headers. Order of the headers will not be enforced. Documented below for each type of CSV, the file and header names are specified.
 
 #### Photometry CSV files
 
