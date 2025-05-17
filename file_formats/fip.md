@@ -56,7 +56,7 @@ Each row describes the average signal of pixels within each ROI for a single vid
 * `CameraFrameTime` frame acquisition time given by the camera API
 
 
-#### ROI metadata files
+### ROI metadata files
 
 Three files contain the metadata for each channel:
 
