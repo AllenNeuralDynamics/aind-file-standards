@@ -52,8 +52,8 @@ Each row describes the average signal of pixels within each ROI for a single vid
 * `Fiber_N` Average signal values for Fiber_N's selected ROI.
 * `Background`: CMOS dark count floor signal
 * `ReferenceTime` Time of the trigger given by hardware (Harp)
-* `CameraFrameNumber` Frame counter given by the camera API.
-* `CameraFrameTime` Fame acquisition time given by the camera API or manually added by the user (e.g. using OS scheduler for webcams)
+* `CameraFrameNumber` Frame counter given by the camera API or manually added by user (e.g. using OS counter for webcams)
+* `CameraFrameTime` frame acquisition time given by the camera API.
 
 
 #### ROI metadata files
