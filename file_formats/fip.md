@@ -167,5 +167,15 @@ procedures.json documents the relevant fiber probe implantation metadata (stereo
 
 ### File Quality Assurances
 
-None.
+The following are expected to be true for all FIP data collected under this standard:
 
+* The number of frames in the raw binary files shall match the number of frames in the corresponding `CSV` files (e.g., `green.csv` and `green.bin`).
+* The number of frames across all `CSV` files shall be the same (i.e., `green.csv` = `red.csv` = `iso.csv`) and, by extension, the number of frames in the corresponding binary files.
+* Camera metadata files shall contain no dropped frames. This can be verified by checking the `CameraFrameNumber` column in the metadata files. The difference between consecutive frames must ALWAYS be 1. If a dropped frame is present, data may be corrupted and should be flagged for manual review. 
+    > [!WARNING]
+    > Dropped frames are not normal and should not be taken lightly. If you encounter dropped frames, please contact the data acquisition team for further investigation.
+* The difference between the derivative of `CameraFrameTime` and `ReferenceTime` is expected to be very small (i.e.: abs(max(diff(`CameraFrameTime`) - diff(`ReferenceTime`))) < 0.2ms). If this is not the case, it may indicate a problem with frame exposure.
+* All rows in the `<color>.csv` files will be present in the corresponding camera metadata files. The opposite is not guaranteed to be true.
+* A `<color>.csv` file is not guaranteed to have a `Fiber_N` column. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
+* The naming of `Fiber_<i>` columns in the `<color>.csv` files is guaranteed to be sequential, starting from `Fiber_0` and going up to `Fiber_N`.
+* The `regions.json` in the FIP session are guaranteed to be static within a session. The number and order of the ROIs are expected to be the same across the two cameras.
