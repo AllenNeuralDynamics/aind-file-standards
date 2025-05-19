@@ -4,13 +4,13 @@ A data acquisition repo is a repository containing code that controls acquisitio
 
 Examples include fiber photometry acquisition or various behavioral tasks.  
 
-This is the codebase that an internal or external scientist would clone if they were trying to install software to run a given experiment on a new rig. This is also the repository an engineer would consult when building infrastructure to support the task (e.g. processing pipelines). In either case, it's critical that the readme contain some minimal information that explains what the repo is, how to install it, and how to use it.
+This is the codebase that an internal or external scientist would clone/install if they were trying to install software to run a given experiment on a new rig. This is also the repository an engineer would consult when building infrastructure to support the task (e.g. processing pipelines). In either case, it's critical that the readme contain some minimal information that explains what the repo is, how to install it, and how to use it.
 
 # Minimum README contents
 
 Every AIND repository that controls data acquisition **must** contain the following sections.
 
-## <REPO NAME>
+## REPO NAME
 
 The top level of the README should contain the repo name, followed by a concise description of the experimental modality that the repo controls. This would ideally be a plain text description of the modality similar to what would be written in the methods section of a paper where the modality is used and should also include a schematic. Note that schematics can easily be added to markdown documents by editing the document directly on github and simply pasting an image from the clipboard. Github will automatically embed the image and provide a permanent link.
 
