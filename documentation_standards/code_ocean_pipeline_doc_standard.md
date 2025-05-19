@@ -1,6 +1,6 @@
 # Documentation Standard for Code Ocean Pipelines
 
-A Code Ocean pipeline is a computational workflow that combines multiple capsules to process data in a defined sequence. This standard defines the minimum documentation requirements for Code Ocean pipelines to ensure they are usable and understandable by other researchers.
+A Code Ocean pipeline is a computational workflow that combines multiple capsules to process data in a defined sequence. This standard defines the minimum documentation requirements for Code Ocean pipelines to ensure they are usable and understandable by other users.
 
 # Minimum README Contents
 

@@ -1,6 +1,6 @@
 # Documentation Standard for Code Ocean Capsules
 
-A Code Ocean capsule is a containerized computational environment that can be used for reproducible research, either as a standalone analysis or as part of a pipeline. This standard defines the minimum documentation requirements for Code Ocean capsules to ensure they are usable and understandable by other researchers.
+A Code Ocean capsule is a containerized computational environment that can be used for reproducible code execution, either as a standalone analysis or as part of a pipeline. This standard defines the minimum documentation requirements for Code Ocean capsules to ensure they are usable and understandable by other users.
 
 # Minimum README Contents
 
