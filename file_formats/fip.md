@@ -2,7 +2,7 @@
 
 ## Version
 
-`0.2.2`
+`0.3.0`
 
 ## Introduction
 
@@ -14,176 +14,90 @@ Following SciComp standards, FIP data should be saved in their own folder named 
 
 ### File format 
 
-In most cases, FIP fiber photometry data will be stored in 3 photometry readout CSV files (extracted traces + timestamp; 6 time-series), 3 bin files (raw camera-detector movie file), and 2 ROI coordinate CSVs.
-
-For example:
+In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data is thus expected to contain:
 
 ```plaintext
 📦 fib
-┣ green.csv
-┣ red.csv
-┣ iso.csv
-┣ green.bin
-┣ red.bin
-┣ iso.bin
-┣ roi_green_iso.csv
-┣ roi_red.csv
-┣ camera_green_iso_metadata.csv
-┣ camera_red_metadata.csv
-┗ regions.json
+┣ 📂 <fip-session-foo>
+┃ ┣ green.csv
+┃ ┣ red.csv
+┃ ┣ iso.csv
+┃ ┣ green.bin
+┃ ┣ red.bin
+┃ ┣ iso.bin
+┃ ┣ roi_green_iso.csv
+┃ ┣ roi_red.csv
+┃ ┣ camera_green_iso_metadata.csv
+┃ ┣ camera_red_metadata.csv
+┃ ┗ regions.json
+┗ 📂 <fip-session-bar>
+  ┣ green.csv
+  ┣ <...>
+  ┗ regions.json
 ```
 
-### CSV Files
+Data is generally organized by the emission channel that gave rise to the data (`green`, `red`, and `iso`), respectively. For details on the rig setup, please refer to the [data acquisition repository](https://github.com/AllenNeuralDynamics/FIP_DAQ_Control).
 
-The fiber photometry rig outputs CSV files containing metadata and data. All metadata and data files must contain headers. Order of the headers will not be enforced. Documented below for each type of CSV, the file and header names are specified.
+#### Fluorescence data
 
-#### Photometry CSV files
+Each fiber photometry session will primarily be analyzed by using the average signal from regions of interest (ROIs) placed on top of raw video frames during acquisition. To simplify analysis, we average the signal from all pixels within the ROIs during online acquisition and make it available as time series data in `CSV` files. These are `green.csv`, `red.csv`, and `iso.csv` files, respectively. All files share the same format, where each row corresponds to a single frame of the video and each column can be described as follows:
 
-Data files are named by the color of the channel and contain the photometry readouts.
-
-* `green.csv`: data for green channel
-* `red.csv`: data for red channel
-* `iso.csv`: data for isosbestic channel
-
-Each row describes the average signal of pixels within each ROI for a single video frame. The values are computed online during data acquisition. Column headers defined below:
-
-* `Fiber_0` Average signal values for Fiber_0's selected ROI
-* `...`  
-* `Fiber_N` Average signal values for Fiber_N's selected ROI.
-* `Background`: CMOS dark count floor signal
 * `ReferenceTime` Time of the trigger given by hardware (Harp)
-* `CameraFrameNumber` Frame counter given by the camera API or manually added by user (e.g. using OS counter for webcams)
-* `CameraFrameTime` frame acquisition time given by the camera API
+* `CameraFrameNumber` Frame counter given by the camera API
+* `CameraFrameTime` Frame acquisition time given by the camera API
+* `Background` CMOS dark count floor signal
+* `Fiber_0` Average signal values for Fiber_0's selected ROI
+* `<...>` (Variable number of columns)
+* `Fiber_N` Average signal values for Fiber_N's selected ROI.
 
+#### Raw sensor data
 
-### ROI metadata files
+Raw sensor data (i.e., camera frames) that generated the fluorescence data is saved in raw binary files. These files share the same naming convention as the fluorescence data files, but with a `.bin` extension. During acquisition, operators place circular ROIs over the images, and photometry readouts are obtained by averaging the signal inside these regions.
 
-Three files contain the metadata for each channel:
+To open these files, users need additional information to parse the binary data. Data is stored in a `ColumnMajor` layout format, where each frame can be parsed with the information available in the corresponding `.meta` file. Each `.meta` file contains a single `JSON` object with the following fields:
 
-* `roi.meta`: ROI metadata for the green and isosbestic channels
-* `green.meta`: ROI metadata for the red channel
-* `iso.meta`: Metadata
+* `Width`: Imaging width (200 px by default)
+* `Height`: Imaging height (200 px by default)
+* `Depth`: Bit depth (U16 by default)
+* `Channel`: Channel (1 channel by default)
 
-Each file contains a datastructure with the following fields:
+See the Application Notes section for an example of how to parse the binary files.
 
-* `Width`: Imaging width
-* `Height`: Imaging height
-* `Depth`: Bit depth
-* `Channel`: Channel
+#### Recovering the regions of interest
 
-Example structure:
+The regions of interest (ROIs) used during the experiment are saved as a single `JSON` file named `regions.json`. Each ROI is defined as a `Circle` with a center coordinate (`[x,y]`) and a radius (`r`) in pixels. The units (pixels) are the same as in the parsed `.bin` file. This file contains the following fields:
 
-```
-{
-    Width=200, 
-    Height=200, 
-    Depth=U16, 
-    Channels=1
-}
-```
-
-
-### JSON files
-
-#### Regions
-
-This json file contains the ROI coordinates. The coordinates are given by the center (x,y) coordinate and the radius of the ROI in pixels.
-
-```
-{
-    "camera_green_iso_background": {
-        "center": {
-            "x": 10.0,
-            "y": 10.0
-        },
-        "radius": 10.0
-    },
-    "camera_red_background": {
-        "center": {
-            "x": 10.0,
-            "y": 10.0
-        },
-        "radius": 10.0
-    },
-    "camera_green_iso_roi": [
-        {
-            "center": {
-                "x": 50.0,
-                "y": 50.0
-            },
-            "radius": 20.0
-        },
-        {
-            "center": {
-                "x": 50.0,
-                "y": 150.0
-            },
-            "radius": 20.0
-        },
-        {
-            "center": {
-                "x": 150.0,
-                "y": 50.0
-            },
-            "radius": 20.0
-        },
-        {
-            "center": {
-                "x": 150.0,
-                "y": 150.0
-            },
-            "radius": 20.0
-        }
-    ],
-    "camera_red_roi": [
-        {
-            "center": {
-                "x": 50.0,
-                "y": 50.0
-            },
-            "radius": 20.0
-        },
-        {
-            "center": {
-                "x": 50.0,
-                "y": 150.0
-            },
-            "radius": 20.0
-        },
-        {
-            "center": {
-                "x": 150.0,
-                "y": 50.0
-            },
-            "radius": 20.0
-        },
-        {
-            "center": {
-                "x": 150.0,
-                "y": 150.0
-            },
-            "radius": 20.0
-        }
-    ]
-}
+```plaintext
+regions.json
+├── camera_green_iso_background: Circle[[x, y], r]
+├── camera_red_background:       Circle[[x, y], r]
+├── camera_green_iso_roi:        list of Circle[[x, y], r]
+├── camera_red_roi:              list of Circle[[x, y], r]
 ```
 
-An image like the one below can be drawn from these coordinates.
+An image like the one below can be generated by combining the previous two files.
 
 ![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
 
-### BIN files
+#### Camera metadata
 
-Data files are named by the color of the channel.
+The fiber imaging system uses a single camera to capture data from two distinct light sources (`iso` and `green` channels) through temporal multiplexing. As a result, only two metadata files are generated - one for each camera. These files can be used to ensure data integrity during post-processing. The metadata files are named as follows:
 
-* `green.bin`: data for green channel
-* `red.bin`: data for red channel
-* `iso.bin`: data for isosbestic channel
+* `camera_green_iso_metadata.csv`: metadata from the camera recording both green and iso channels
+* `camera_red_metadata.csv`: metadata from the camera recording the red channel
 
-These are movies that document the fiber implants during the recording. During data acquisition, operators place circular ROIs over the videos. The photometry readouts above are integrated signal inside these ROIs.
+Within the metadata files are the following columns:
 
-These files are optional and may be removed once QC is complete. Quality Control consists of verifying that ROIs were placed in the
-correct location, and not, for example, shifted with respect to the visual display on the rig due to e.g. physical bumping of the hardware.
+* `ReferenceTime` Time of the trigger given by hardware (Harp)
+* `CameraFrameNumber` Frame counter given by the camera API
+* `CameraFrameTime` Frame acquisition time given by the camera API
+* `CpuTime` Software timestamp from the OS, in timezone-aware ISO8061 format. Users should consider these timestamps low-precision and rig-dependent, and should not rely on them for analysis.
+
+The columns sharing the same name with the `<color>.csv` files will, under normal circumstances, provide the same metadata information.
+
+### Application notes
+
+#### Parsing raw binary files
 
 These files can be read by specifying the structure of the videos as follows:
 
@@ -227,8 +141,8 @@ def load_average_frame(video_file, start_frame, end_frame, frame_size, dtype, fr
 
 if __name__ == '__main__':
     with open('red.meta', 'r') as j:
-        meta_data = j.read()[0]
-    meta_data = json.load(metadata)
+        metadata = j.read()[0]
+    metadata = json.load(metadata)
     video_fp = '/path/to/file.bin'
     start_frame = 0
     end_frame = 1000
@@ -236,31 +150,16 @@ if __name__ == '__main__':
         video_fp,
         start_frame,
         end_frame,
-        np.dtype(meta['Depth']),
-        meta['Width'],
-        meta['Height']
+        frame_width * frame_height * np.dtype(metadata['Depth']).itemsize,
+        np.dtype(metadata['Depth']),
+        metadata['Width'],
+        metadata['Height']
     )
 ```
 
-### Metadata
+#### Acquiring data under this format
 
-The fiber imaging system uses a single camera to capture data from two distinct light sources through temporal multiplexing. Because of that, only two metadata files are dropped; one for each camera. The temporally multiplexed channels are indicated in the file naming format below. These files can be used to QC the cameras.
-
-* `camera_green_iso_metadata.csv`: metadata from the camera recording from both green and iso channels
-* `camera_red_metadata.csv`: metadata from the camera recording from the red channel
-
-Within the metadata files are the following columns
-
-* `ReferenceTime` Time of the trigger given by hardware (Harp)
-* `CameraFrameNumber` Frame counter given by the camera API or manually added by user (e.g. using OS counter for webcams)
-* `CameraFrameTime` frame acquisition time given by the camera API
-* `CpuTime`  Software timestamp from the OS, in timezone-aware ISO8061 format. Users should consider these timestamps low-precision and rig-dependent, and should not rely on them for analysis.
-
-### Application notes
-
-The .bin binary files are raw CMOS movie data recorded with `MatrixWriter` Bonsai node (https://bonsai-rx.org/docs/api/Bonsai.Dsp.MatrixWriter.html).
-
-When plotting ROI points on a video in matplotlib, the Y coordinate must be flipped vertically relative to the video frame. 
+Data acquisition code that generates data in this format is available from the [data acquisition repository](https://github.com/AllenNeuralDynamics/FIP_DAQ_Control).
 
 ### Relationship to aind-data-schema
 
@@ -268,5 +167,15 @@ procedures.json documents the relevant fiber probe implantation metadata (stereo
 
 ### File Quality Assurances
 
-None.
+The following are expected to be true for all FIP data collected under this standard:
 
+* The number of frames in the raw binary files shall match the number of frames in the corresponding `CSV` files (e.g., `green.csv` and `green.bin`).
+* The number of frames across all `CSV` files shall be the same (i.e., `green.csv` = `red.csv` = `iso.csv`) and, by extension, the number of frames in the corresponding binary files.
+* Camera metadata files shall contain no dropped frames. This can be verified by checking the `CameraFrameNumber` column in the metadata files. The difference between consecutive frames must ALWAYS be 1. If a dropped frame is present, data may be corrupted and should be flagged for manual review. 
+    > [!WARNING]
+    > Dropped frames are not normal and should not be taken lightly. If you encounter dropped frames, please contact the data acquisition team for further investigation.
+* The difference between the derivative of `CameraFrameTime` and `ReferenceTime` is expected to be very small (i.e.: abs(max(diff(`CameraFrameTime`) - diff(`ReferenceTime`))) < 0.2ms). If this is not the case, it may indicate a problem with frame exposure.
+* All rows in the `<color>.csv` files will be present in the corresponding camera metadata files. The opposite is not guaranteed to be true.
+* A `<color>.csv` file is not guaranteed to have a `Fiber_N` column. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
+* The naming of `Fiber_<i>` columns in the `<color>.csv` files is guaranteed to be sequential, starting from `Fiber_0` and going up to `Fiber_N`.
+* The `regions.json` in the FIP session are guaranteed to be static within a session. The number and order of the ROIs are expected to be the same across the two cameras.
