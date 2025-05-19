@@ -20,11 +20,11 @@ For example, for a behavioral task, this description should be 1-2 paragraphs lo
 
 If you use tools for automated documentation generation (e.g. Sphinx, ReadTheDocs, etc) that build docs in a webpage, you should link that here. Github also provides a location for a link to external documentation on the right sidebar, which should be used also, though that does not replace the need to link external documentation here.
 
-# Hardware Instructions
+## Hardware Instructions
 
 All data acquisition systems require hardware, which should be fully documented. It is important to include that hardware documentation here or, ideally, link to another resource that contains sufficient descriptions of the hardware to allow a new user to build a new system.
 
-# Installation
+## Installation
 
 Include full instructions for installing the package. Ideally these should be simple (if they're not simple, it probably means that the repository isn't structured appropriately). 
 
@@ -42,7 +42,7 @@ pip install -e .
 
 It is important that packages contain requirements specifications files (`pyproject.toml` or `requirements.txt`) so that all necessary dependencies are installed when the package is built. It should be possible to build and use the package in a fresh environment (i.e. no dependencies should be assumed to have been installed in advance).
 
-# Example Use
+## Example Use
 
 Provide examples of use of the package. This is helpful both to verify correct installation of the package and to provide users with a starting place for learning more. At bare minimum, the software commands for initiating data collection after successful installation should be provided. 
 
@@ -52,13 +52,13 @@ For example, you could provide instructions for initiating the data collection s
 python <run_script.py> <required args like subject_id, etc>
 ```
 
-# Data Format
+## Data Format
 
 Users must specify the data formats produced by the data acquisition system. This is critical for engineers who are interacting with your data acquisition software to know what is produced by it. For example, engineers working on data processing pipelines need to know what the inputs to that pipleline are, so good documentation of your data format is critical.
 
 You should specify both the files being produced, including the folder heirarchy, as well as the format of each file. For example, you're producing tabular data in a CSV file, you should list all headers. If you're producing binary data, you should specify it's properties. Overall, the goal is to provide enough information for a downstream user to interact with the output data without having to explore the data themselves.
 
-# Additional optional sections
+## Additional optional sections
 
 More documentation is [almost] always helpful. Additional sections you might consider including are:
 
