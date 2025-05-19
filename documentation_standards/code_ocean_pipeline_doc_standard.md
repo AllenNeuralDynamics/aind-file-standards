@@ -25,6 +25,10 @@ The README must contain links to both:
 
 This ensures users can find the pipeline and associated repo regardless of where they encounter it first.
 
+## Primary developers/maintainers
+
+There should be a list of people and email addresses to contact with questions about the pipeline. This doesn't need to be a full list of contributors. Only a list of primary contacts.
+
 ## Pipeline Overview
 
 The README must provide a high-level overview of the pipeline, including:

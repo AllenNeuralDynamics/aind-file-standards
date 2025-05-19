@@ -20,6 +20,10 @@ For example, for a behavioral task, this description should be 1-2 paragraphs lo
 
 If you use tools for automated documentation generation (e.g. Sphinx, ReadTheDocs, etc) that build docs in a webpage, you should link that here. Github also provides a location for a link to external documentation on the right sidebar, which should be used also, though that does not replace the need to link external documentation here.
 
+## Primary developers/maintainers
+
+There should be a list of people and email addresses to contact with questions about the repository. This doesn't need to be a full list of contributors. Only a list of primary contacts.
+
 ## Hardware Instructions
 
 All data acquisition systems require hardware, which should be fully documented. It is important to include that hardware documentation here or, ideally, link to another resource that contains sufficient descriptions of the hardware to allow a new user to build a new system.

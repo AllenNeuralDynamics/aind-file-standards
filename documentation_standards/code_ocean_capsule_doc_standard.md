@@ -25,6 +25,10 @@ The README must contain links to both:
 
 This ensures users can find the capsule and associated repo regardless of where they encounter it first.
 
+## Primary developers/maintainers
+
+There should be a list of people and email addresses to contact with questions about the capsule. This doesn't need to be a full list of contributors. Only a list of primary contacts.
+
 ## Input Data Structure
 
 The README must specify the expected input data structure. This is critical for pipeline usage, where the capsule will be processing new datasets. The documentation should include:
