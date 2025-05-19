@@ -26,7 +26,11 @@ There should be a list of people and email addresses to contact with questions a
 
 ## Hardware Instructions
 
-All data acquisition systems require hardware, which should be fully documented. It is important to include that hardware documentation here or, ideally, link to another resource that contains sufficient descriptions of the hardware to allow a new user to build a new system.
+All data acquisition systems require hardware, which should ideally be fully described in publicly available visible documents that would allow an external researcher to build a comparable system. This might include white papers, bills of material, CAD files, methods papers, protocols, etc. 
+
+A great example for the Frame Independent Photometry (FIP) system is here: https://www.protocols.io/view/modified-frame-projected-independent-fiber-photome-261ge39edl47/v2
+
+Hardware documentation will likely grow slowly as a platform matures and this section should be updated periodically (which will likely be a fully manual process).
 
 ## Installation
 
