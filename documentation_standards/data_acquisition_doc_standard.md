@@ -42,7 +42,7 @@ For example, if your package is on the Python Package Index (PyPI), which is enc
 pip install <package_name>
 ```
 
-If your package is not on PyPI, you can encourage a local build with:
+If your package is not on PyPI, or if you want to provide development installation instructions, you can encourage a local build with:
 
 ```
 pip install -e .
