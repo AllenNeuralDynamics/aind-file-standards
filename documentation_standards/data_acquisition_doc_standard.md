@@ -26,7 +26,7 @@ There should be a list of people and email addresses to contact with questions a
 
 ## Hardware Instructions
 
-All data acquisition systems require hardware, which should ideally be fully described in publicly available visible documents that would allow an external researcher to build a comparable system. This might include white papers, bills of material, CAD files, methods papers, protocols, etc. 
+All data acquisition systems require hardware, which should ideally be fully described in publicly available visible documents that would allow an external researcher to build a comparable system. This might include white papers, bills of material, CAD files, methods papers, protocols, etc. The repository should contain links to these docuements.
 
 A great example for the Frame Independent Photometry (FIP) system is here: https://www.protocols.io/view/modified-frame-projected-independent-fiber-photome-261ge39edl47/v2
 
@@ -50,6 +50,8 @@ pip install -e .
 
 It is important that packages contain requirements specifications files (`pyproject.toml` or `requirements.txt`) so that all necessary dependencies are installed when the package is built. It should be possible to build and use the package in a fresh environment (i.e. no dependencies should be assumed to have been installed in advance).
 
+For more complicated installations, developers should include a shell script that will perform local setup and instructions for running that shell script should be in the readme. 
+
 ## Example Use
 
 Provide examples of use of the package. This is helpful both to verify correct installation of the package and to provide users with a starting place for learning more. At bare minimum, the software commands for initiating data collection after successful installation should be provided. 
@@ -62,7 +64,7 @@ python <run_script.py> <required args like subject_id, etc>
 
 ## Data Format
 
-Users must specify the data formats produced by the data acquisition system. This is critical for engineers who are interacting with your data acquisition software to know what is produced by it. For example, engineers working on data processing pipelines need to know what the inputs to that pipleline are, so good documentation of your data format is critical.
+Users should specify the data formats produced by the data acquisition system. This is critical for engineers who are interacting with your data acquisition software to know what is produced by it. For example, engineers working on data processing pipelines need to know what the inputs to that pipleline are, so good documentation of your data format is critical.
 
 You should specify both the files being produced, including the folder heirarchy, as well as the format of each file. For example, you're producing tabular data in a CSV file, you should list all headers. If you're producing binary data, you should specify it's properties. Overall, the goal is to provide enough information for a downstream user to interact with the output data without having to explore the data themselves.
 

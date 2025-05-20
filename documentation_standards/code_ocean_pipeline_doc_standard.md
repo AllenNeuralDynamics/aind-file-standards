@@ -51,7 +51,7 @@ The pipeline expects raw .nwb files and produces processed datasets suitable for
 
 ## Pipeline Structure
 
-The README must document the structure of the pipeline, including:
+The README should document the structure of the pipeline, including:
 
 1. A list of all capsules used in the pipeline
 2. The purpose of each capsule
@@ -82,7 +82,7 @@ This pipeline uses the following capsules in sequence:
 
 ## Input Data Structure
 
-The README must specify the expected input data structure for the pipeline as a whole, including:
+The README should specify the expected input data structure for the pipeline as a whole, including:
 
 1. The expected file format(s)
 2. The required file structure (e.g., directory hierarchy)
@@ -102,7 +102,7 @@ The pipeline expects:
 
 ## Output Data Structure
 
-The README must specify what the pipeline produces as a whole, including:
+The README should specify what the pipeline produces as a whole, including:
 
 1. The output file format(s)
 2. The output directory structure
@@ -124,7 +124,7 @@ The pipeline produces:
 
 ## Usage Instructions
 
-The README must provide basic instructions for using the pipeline, including:
+The README should provide basic instructions for using the pipeline, including:
 
 1. How to run the pipeline
 2. Any required parameters or configuration options

@@ -19,7 +19,7 @@ This capsule performs automated quality checks on electrophysiology data, includ
 
 ## Cross-References
 
-The README must contain links to both:
+The README should contain links to both:
 1. The GitHub repository where the code is maintained
 2. The Code Ocean location where the capsule is hosted
 
@@ -31,7 +31,7 @@ There should be a list of people and email addresses to contact with questions a
 
 ## Input Data Structure
 
-The README must specify the expected input data structure. This is critical for pipeline usage, where the capsule will be processing new datasets. The documentation should include:
+The README should specify the expected input data structure. This is critical for pipeline usage, where the capsule will be processing new datasets. The documentation should include:
 
 1. The expected file format(s)
 2. The required file structure (e.g., directory hierarchy)
@@ -51,7 +51,7 @@ This capsule expects electrophysiology data in the following format:
 
 ## Output Data Structure
 
-The README must specify what the capsule produces, including:
+The README should specify what the capsule produces, including:
 
 1. The output file format(s)
 2. The output directory structure
@@ -73,7 +73,7 @@ The capsule produces:
 
 ## Usage Instructions
 
-The README must provide basic instructions for using the capsule, including:
+The README should provide basic instructions for using the capsule, including:
 
 1. How to run the capsule as part of a pipeline
 2. Any required parameters or configuration options
