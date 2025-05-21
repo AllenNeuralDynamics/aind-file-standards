@@ -19,7 +19,7 @@ This pipeline processes raw electrophysiology data through a series of quality c
 
 ## Cross-References
 
-The README must contain links to both:
+The README should contain links to both:
 1. The GitHub repository where the pipeline is maintained
 2. The Code Ocean location where the pipeline is hosted
 
@@ -31,7 +31,7 @@ There should be a list of people and email addresses to contact with questions a
 
 ## Pipeline Overview
 
-The README must provide a high-level overview of the pipeline, including:
+The README should provide a high-level overview of the pipeline, including:
 1. A description of the overall workflow
 2. The purpose of each processing stage
 3. Any assumptions about the input data
