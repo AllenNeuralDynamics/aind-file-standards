@@ -14,21 +14,21 @@ Following SciComp standards, FIP data should be saved in their own folder named 
 
 ### File format 
 
-In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data should be organized under a the `fib` directory. An acquisition for a single session should be nested under a subdirectory named as a datetime stamp, `YYYYHHMM`. Mostly, this is for cases where the recording gets interrupted. When the system restarts under the same session, it can be added to a new folder. A sessions folder structure should look like the following:
+In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data should be organized under a the `fib` directory. An acquisition for a single session should be nested under a subdirectory named as a datetime stamp, `YYYYMMDD`. Mostly, this is for cases where the recording gets interrupted. When the system restarts under the same session, it can be added to a new folder. A sessions folder structure should look like the following:
 
 ```plaintext
 📦 fib
-┣ 📂 <YYYYHHMM>
+┣ 📂 <YYYYMMDD>
 ┃ ┣ green.csv
 ┃ ┣ red.csv
 ┃ ┣ iso.csv
 ┃ ┣ green.bin
 ┃ ┣ red.bin
 ┃ ┣ iso.bin
-┃ ┣ camera_green_iso_metadata.csv
-┃ ┣ camera_red_metadata.csv
+┃ ┣ camera_green_iso_metadata.json
+┃ ┣ camera_red_metadata.json
 ┃ ┗ regions.json
-┗ 📂 <YYYYHHMM>
+┗ 📂 <YYYYMMDD>
   ┣ green.csv
   ┣ <...>
   ┗ regions.json
@@ -52,12 +52,13 @@ Each fiber photometry session will primarily be analyzed by using the average si
 
 Raw sensor data (i.e., camera frames) that generated the fluorescence data is saved in raw binary files. These files share the same naming convention as the fluorescence data files, but with a `.bin` extension. During acquisition, operators place circular ROIs over the images, and photometry readouts are obtained by averaging the signal inside these regions.
 
-To open these files, users need additional information to parse the binary data. Data is stored in a `ColumnMajor` layout format, where each frame can be parsed with the information available in the corresponding `.meta` file. Each `.meta` file contains a single `JSON` object with the following fields:
+To open these files, users need additional information to parse the binary data. Data is stored in a `ColumnMajor` layout format, where each frame can be parsed with the information available in the corresponding `.json` file. Each `.json` file contains the following fields:
 
 * `Width`: Imaging width (200 px by default)
 * `Height`: Imaging height (200 px by default)
 * `Depth`: Bit depth (U16 by default)
 * `Channel`: Channel (1 channel by default)
+
 
 See the Application Notes section for an example of how to parse the binary files.
 
