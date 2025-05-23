@@ -14,11 +14,11 @@ Following SciComp standards, FIP data should be saved in their own folder named 
 
 ### File format 
 
-In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data should be organized under a the `fib` directory. An acquisition for a single session should be nested under a subdirectory named as a datetime stamp, `YYYYMMDD`. Mostly, this is for cases where the recording gets interrupted. When the system restarts under the same session, it can be added to a new folder. A sessions folder structure should look like the following:
+In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data should be organized under a the `fib` directory. An acquisition for a single session should be nested under a sub directory named following the core standards for file naming convention found [here](https://github.com/AllenNeuralDynamics/aind-file-standards/blob/main/core/core-standards.md#filename-conventions).  Mostly, this is for cases where the recording gets interrupted. When the system restarts under the same session, it can be added to a new folder. A sessions folder structure should look like the following:
 
 ```plaintext
 📦 fib
-┣ 📂 <YYYYMMDD>
+┣ 📂 <data_stream_YYYY-MM-DDTHHMMSS>
 ┃ ┣ green.csv
 ┃ ┣ red.csv
 ┃ ┣ iso.csv
@@ -28,7 +28,7 @@ In most cases, FIP data will be saved in `CSV` files, where each file correspond
 ┃ ┣ camera_green_iso_metadata.json
 ┃ ┣ camera_red_metadata.json
 ┃ ┗ regions.json
-┗ 📂 <YYYYMMDD>
+┗ 📂 <data_stream_YYYY-MM-DDTHHMMSS>
   ┣ green.csv
   ┣ <...>
   ┗ regions.json
