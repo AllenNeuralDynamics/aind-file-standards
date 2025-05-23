@@ -14,23 +14,21 @@ Following SciComp standards, FIP data should be saved in their own folder named 
 
 ### File format 
 
-In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data is thus expected to contain:
+In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data should be organized under a the fib directory. There must be sub-directories prepended with `fip_` for a session recording. There may be multiple `fip_` directories to handle cases where a FIP session crashes and needs to re-start recording. Therefore, a FIP session directory should look like this:
 
 ```plaintext
 📦 fib
-┣ 📂 <fip-session-foo>
+┣ 📂 fip_<foo>
 ┃ ┣ green.csv
 ┃ ┣ red.csv
 ┃ ┣ iso.csv
 ┃ ┣ green.bin
 ┃ ┣ red.bin
 ┃ ┣ iso.bin
-┃ ┣ roi_green_iso.csv
-┃ ┣ roi_red.csv
 ┃ ┣ camera_green_iso_metadata.csv
 ┃ ┣ camera_red_metadata.csv
 ┃ ┗ regions.json
-┗ 📂 <fip-session-bar>
+┗ 📂 fip_<bar>
   ┣ green.csv
   ┣ <...>
   ┗ regions.json
