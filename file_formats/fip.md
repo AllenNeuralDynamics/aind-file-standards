@@ -28,7 +28,7 @@ In most cases, FIP data will be saved in `CSV` files, where each file correspond
 ┃ ┣ green_metadata.json
 ┃ ┣ red_metadata.json
 ┃ ┣ iso_metadata.json
-┃ ┣ camera_green_metadata.csv
+┃ ┣ camera_green_iso_metadata.csv
 ┃ ┣ camera_red_metadata.csv
 ┃ ┗ regions.json
 ┗ 📂 <fip_YYYY-MM-DDTHHMMSS>
