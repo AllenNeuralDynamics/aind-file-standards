@@ -66,7 +66,7 @@ python <run_script.py> <required args like subject_id, etc>
 
 Users should specify the data formats produced by the data acquisition system. This is critical for engineers who are interacting with your data acquisition software to know what is produced by it. For example, engineers working on data processing pipelines need to know what the inputs to that pipleline are, so good documentation of your data format is critical.
 
-You should specify both the files being produced, including the folder heirarchy, as well as the format of each file. For example, you're producing tabular data in a CSV file, you should list all headers. If you're producing binary data, you should specify it's properties. Overall, the goal is to provide enough information for a downstream user to interact with the output data without having to explore the data themselves.
+You should specify both the files being produced, including the folder heirarchy, as well as the format of each file. For example, if you're producing tabular data in a CSV file, you should list all headers. If you're producing binary data, you should specify it's properties. Overall, the goal is to provide enough information for a downstream user to interact with the output data without having to explore the data themselves.
 
 ## Additional optional sections
 
