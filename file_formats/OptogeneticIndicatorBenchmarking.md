@@ -2,54 +2,64 @@
 
 ## Version
 
-`0.3.0`
+`0.1.0`
 
 ## Introduction
-
-This document describes the standards for the acquisition of frame-projected independent-fiber photometry (FIP) data in the Allen Institute for Neural Dynamics.
+This document describes the standards for the acquisition of frame-projected independent-fiber photometry (FIP) data acquired with "StimIntegratedRigs", dedicated FIP rigs for Ophys_IndicatorBenchmarking project in the Allen Institute for Neural Dynamics. StimIntegratedRigs are using HARP behavior board to trigger behavaior cameras but are not using HARP system for aligning FIP data and Optogenetic stimulations. Instead, Optogenetic Stimulation is directly controled by the same microcontroller, Teensy as the one used for FIP control (both 2 excitation LEDs and a CMOS), and thus, they are already time aligned. Data acquisition codes can be found in this [repo](https://github.com/AllenNeuralDynamics/Ophys_SensorScreening_ExperimetalControl) (to be better organized)
 
 ## Raw Data Format
-
 Following SciComp standards, FIP data should be saved in their own folder named "fib" (short for "fiber photometry"). Data from other modalities go in separate folders.
+In older dataset, individual files are all stored directly under each session folder.
 
 ### File format 
+In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data should be organized under the `fib` directory. An acquisition for a single session should be nested under a sub directory named following the core standards for file naming convention found [here](https://github.com/AllenNeuralDynamics/aind-file-standards/blob/main/core/core-standards.md#filename-conventions).  Mostly, this is for cases where the recording gets interrupted. When the system restarts under the same session, it can be added to a new folder. A sessions folder structure should look like the following:
 
-In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data should be organized under a the `fib` directory. An acquisition for a single session should be nested under a sub directory named following the core standards for file naming convention found [here](https://github.com/AllenNeuralDynamics/aind-file-standards/blob/main/core/core-standards.md#filename-conventions).  Mostly, this is for cases where the recording gets interrupted. When the system restarts under the same session, it can be added to a new folder. A sessions folder structure should look like the following:
-
+### Old 
 ```plaintext
-📦 fib
-┣ 📂 <fip_YYYY-MM-DDTHHMMSS>
-┃ ┣ green.csv
-┃ ┣ red.csv
-┃ ┣ iso.csv
-┃ ┣ green.bin
-┃ ┣ red.bin
-┃ ┣ iso.bin
-┃ ┣ green_metadata.json
-┃ ┣ red_metadata.json
-┃ ┣ iso_metadata.json
-┃ ┣ camera_green_iso_metadata.csv
-┃ ┣ camera_red_metadata.csv
-┃ ┗ regions.json
-┗ 📂 <fip_YYYY-MM-DDTHHMMSS>
-  ┣ green.csv
-  ┣ <...>
-  ┗ regions.json
+📦 Session Folder
+┣ Signal_YYYY-MM-DDTHH_MM_SS.csv
+┣ Iso_YYYY-MM-DDTHH_MM_SS.csv
+┣ Stim_YYYY-MM-DDTHH_MM_SS.csv
+┣ Raw_Signal_YYYY-MM-DDTHH_MM_SS.bin
+┣ Raw_Iso_YYYY-MM-DDTHH_MM_SS.bin
+┣ Raw_Stim_YYYY-MM-DDTHH_MM_SS.bin
+┣ TS_FLIR_YYYY-MM-DDTHH_MM_SS.csv
+┗ FIP_ROI_YYYY-MM-DDTHH_MM_SS.csv
 ```
 
-Data is generally organized by the emission channel that gave rise to the data (`green`, `red`, and `iso`), respectively. For details on the rig setup, please refer to the [data acquisition repository](https://github.com/AllenNeuralDynamics/FIP_DAQ_Control).
+### New 
+```plaintext
+📦 Session Folder
+┣ 📂 <fib>
+┃ ┣ Signal_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ Iso_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ Stim_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ Raw_Signal_YYYY-MM-DDTHH_MM_SS.bin
+┃ ┣ Raw_Iso_YYYY-MM-DDTHH_MM_SS.bin
+┃ ┣ Raw_Stim_YYYY-MM-DDTHH_MM_SS.bin
+┃ ┣ TS_FLIR_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┗ FIP_ROI_YYYY-MM-DDTHH_MM_SS.csv
+┃
+┣ 📂 <behavior>
+```
+
 
 #### Fluorescence data
+Data is generally organized by the emission channel that gave rise to the data (`Signal`, `Iso`, and `Stim`), respectively, in this order. 
 
-Each fiber photometry session will primarily be analyzed by using the average signal from regions of interest (ROIs) placed on top of raw video frames during acquisition. To simplify analysis, we average the signal from all pixels within the ROIs during online acquisition and make it available as time series data in `CSV` files. These are `green.csv`, `red.csv`, and `iso.csv` files, respectively. All files share the same format, where each row corresponds to a single frame of the video and each column can be described as follows:
+```
+             --->|   |<--- period = 16.67 ms
+Blue/Yellow LED  ████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░
 
-* `ReferenceTime` Time of the trigger given by hardware (Harp)
-* `CameraFrameNumber` Frame counter given by the camera API
-* `CameraFrameTime` Frame acquisition time given by the camera API
-* `Background` CMOS dark count floor signal
-* `Fiber_0` Average signal values for Fiber_0's selected ROI
-* `<...>` (Variable number of columns)
-* `Fiber_N` Average signal values for Fiber_N's selected ROI.
+Iso LED (415)    ░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░
+
+Stim Laser       ░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░
+
+Single CMOS      ████░████░████░████░████░████░████░████░████░████░████░████░████░████░████░  
+
+                ───────────────────────────────────────────────────────────────────────────►
+                                    Time
+```
 
 #### Raw sensor data
 
@@ -57,45 +67,13 @@ Raw sensor data (i.e., camera frames) that generated the fluorescence data is sa
 
 To open these files, users need additional information to parse the binary data. Data is stored in a `ColumnMajor` layout format, where each frame can be parsed with the information available in the corresponding `.json` file. Each `.json` file contains the following fields:
 
-* `Width`: Imaging width (200 px by default)
-* `Height`: Imaging height (200 px by default)
+* `Width`: Imaging width (100 px by default) Note, not 200 px
+* `Height`: Imaging height (100 px by default) Note, not 200 px 
 * `Depth`: Bit depth (U16 by default)
 * `Channel`: Channel (1 channel by default)
 
+See the Application notes below for an example of how to parse the binary files.
 
-See the Application Notes section for an example of how to parse the binary files.
-
-#### Recovering the regions of interest
-
-The regions of interest (ROIs) used during the experiment are saved as a single `JSON` file named `regions.json`. Each ROI is defined as a `Circle` with a center coordinate (`[x,y]`) and a radius (`r`) in pixels. The units (pixels) are the same as in the parsed `.bin` file. This file contains the following fields:
-
-```plaintext
-regions.json
-├── camera_green_iso_background: Circle[[x, y], r]
-├── camera_red_background:       Circle[[x, y], r]
-├── camera_green_iso_roi:        list of Circle[[x, y], r]
-├── camera_red_roi:              list of Circle[[x, y], r]
-```
-
-An image like the one below can be generated by combining the previous two files.
-
-![image](https://github.com/user-attachments/assets/30900798-5d51-43ba-99fc-41b07d4a75dd)
-
-#### Camera Metadata
-
-The fiber imaging system uses a single camera to capture data from two distinct light sources (`iso` and `green` channels) through temporal multiplexing. As a result, only two metadata files are generated - one for each camera. These files can be used to ensure data integrity during post-processing. The metadata files are named as follows:
-
-* `camera_green_iso_metadata.csv`: metadata from the camera recording both green and iso channels
-* `camera_red_metadata.csv`: metadata from the camera recording the red channel
-
-Within the metadata files are the following columns:
-
-* `ReferenceTime` Time of the trigger given by hardware (Harp)
-* `CameraFrameNumber` Frame counter given by the camera API
-* `CameraFrameTime` Frame acquisition time given by the camera API
-* `CpuTime` Software timestamp from the OS, in timezone-aware ISO8061 format. Users should consider these timestamps low-precision and rig-dependent, and should not rely on them for analysis.
-
-The columns sharing the same name with the `<color>.csv` files will, under normal circumstances, provide the same metadata information.
 
 ### Application notes
 
@@ -167,17 +145,3 @@ Data acquisition code that generates data in this format is available from the [
 
 procedures.json documents the relevant fiber probe implantation metadata (stereotactic coordinates) and viral injection metadata (stereotactic coordinates, materials). session.json documents the intended measurement (e.g. norepinephrine, dopamine, etc) for each channel of each probe. 
 
-### File Quality Assurances
-
-The following are expected to be true for all FIP data collected under this standard:
-
-* The number of frames in the raw binary files shall match the number of frames in the corresponding `CSV` files (e.g., `green.csv` and `green.bin`).
-* The number of frames across all `CSV` files shall be the same (i.e., `green.csv` = `red.csv` = `iso.csv`) and, by extension, the number of frames in the corresponding binary files.
-* Camera metadata files shall contain no dropped frames. This can be verified by checking the `CameraFrameNumber` column in the metadata files. The difference between consecutive frames must ALWAYS be 1. If a dropped frame is present, data may be corrupted and should be flagged for manual review. 
-    > [!WARNING]
-    > Dropped frames are not normal and should not be taken lightly. If you encounter dropped frames, please contact the data acquisition team for further investigation.
-* The difference between the derivative of `CameraFrameTime` and `ReferenceTime` is expected to be very small (i.e.: abs(max(diff(`CameraFrameTime`) - diff(`ReferenceTime`))) < 0.2ms). If this is not the case, it may indicate a problem with frame exposure.
-* All rows in the `<color>.csv` files will be present in the corresponding camera metadata files. The opposite is not guaranteed to be true.
-* A `<color>.csv` file is not guaranteed to have a `Fiber_N` column. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
-* The naming of `Fiber_<i>` columns in the `<color>.csv` files is guaranteed to be sequential, starting from `Fiber_0` and going up to `Fiber_N`.
-* The `regions.json` in the FIP session are guaranteed to be static within a session. The number and order of the ROIs are expected to be the same across the two cameras.
