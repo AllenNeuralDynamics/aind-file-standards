@@ -1,4 +1,4 @@
-# Standards on FIP fiber photometry acquisition
+# Standards on Ophys_IndicatorBenchmarking data
 
 ## Version
 
