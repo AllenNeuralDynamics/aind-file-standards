@@ -95,21 +95,13 @@ You can use the following flowchart to help determine whether your contribution 
 ```mermaid
 flowchart TD
     A["Is it about file formats?"] -- No --> B["Documentation"]
-    A -- Yes --> C["Will the format be reused in the future or by others?"]
+    A -- Yes --> C["Will the format be reused<br/>in the future or by others?"]
     C -- No --> B
-    C -- Yes --> D["Does it define file structure, schema, or organization?"]
+    C -- Yes --> D["Does it define file structure,<br/>schema, or organization?"]
     D -- No --> B
-    F["Could an existing standard be used instead?"] -- Yes --> G["Documentation — possibly redundant"]
-    F -- No --> H["Does it align with or extend existing standards?"]
-    H -- Yes --> I["Standard — extension or profile"]
-    H -- No --> J["Standard — new or original"]
+    F["Could an existing standard<br/>be used instead?"] -- Yes --> G["Documentation —<br/>possibly redundant"]
+    F -- No --> H["Does it align with or extend<br/>existing standards?"]
+    H -- Yes --> I["Refactor existing standard"]
+    H -- No --> J["New Standard"]
     D -- Yes --> F
-
-    %% Styles
-    classDef Pine stroke-width:1px, stroke-dasharray:none, stroke:#254336, fill:#27654A, color:#FFFFFF
-    classDef Ash stroke-width:1px, stroke-dasharray:none, stroke:#999999, fill:#EEEEEE, color:#000000
-    style B fill:#f9f,stroke:#333,stroke-width:1px
-    style G fill:#fdd,stroke:#933,stroke-width:1px
-    style I fill:#dfd,stroke:#393,stroke-width:1px
-    style J fill:#dfd,stroke:#393,stroke-width:1px
 ```
