@@ -70,3 +70,46 @@ To ensure that standards are updated in a timely manner and release notes are ea
 1- A pull-request should be opened as described in the previous section. The PR should identify potential stakeholders and reviewers.
 2- Once reviewers and stakeholders approve the PR, dissemination of the planned changes should be made to the community to allow further feedback / contestation of the proposed changes.
 3- After a period of time, we suggest two weeks, if no major changes are needed, the PR is merged to the main branch and the new standard is approved.
+
+### Is it a new standard or just documentation?
+
+This repository is meant to track *standards* NOT project-specific documentation. This may appear a subtle distinction but it is critical to create an self-consistent ecosystem that can be easily referenced and reused across projects. If you are looking to document a project-specific implementation, please consider documenting it in a separate repository or within the project's own documentation.
+
+The distinction between project-specific documentation and standards can be summarized as follows:
+
+| Aspect | Documentation of File Specifications | Standards for File Specifications |
+|--------|---------------------------------------|------------------------------------|
+| **Purpose** | Describe how things are currently done, not how they should be done. | Define a set of guidelines, best practices, and formal specifications to be adopted widely. |
+| **Audience** | A small, specific group (e.g., project contributors, maintainers, or immediate collaborators). | A larger community of users, developers, and organizations beyond the original project. |
+| **Scope** | Project-specific; tailored to current implementation details. | Broadly applicable; independent of a single project’s current setup. |
+| **Nature** | Descriptive — explains the “as is” state. | Prescriptive — defines the “should be” state. |
+| **Flexibility** | Can change frequently to reflect updates in the project’s processes. | Changes less often; revisions go through a formal review and adoption process. |
+| **Adoption** | (Hopefully) Limited to people directly involved with the project. | Encourages adoption by multiple groups, ideally across organizations. |
+| **Value Proposition** | Helps contributors understand and follow the current system. | Offers clear benefits that justify alignment (e.g., interoperability, efficiency, consistency). |
+| **Dependencies** | May reference project-specific tools, code, or infrastructure. | Self-contained, minimizing dependency on a single project’s tools or infrastructure. |
+| **Longevity** | Tied to the project’s lifecycle. | Aims for long-term relevance, even if the originating project changes or ends. |
+| **Relationship** | Should ideally follow established standards where possible. | In the long term, should be informed by shared community practices and evolving needs. |
+
+You can use the following flowchart to help determine whether your contribution should be a standard or just documentation:
+
+```mermaid
+flowchart TD
+    A["Is it about file formats?"] -- No --> B["Documentation"]
+    A -- Yes --> C["Will the format be reused in the future or by others?"]
+    C -- No --> B
+    C -- Yes --> D["Does it define file structure, schema, or organization?"]
+    D -- No --> B
+    F["Could an existing standard be used instead?"] -- Yes --> G["Documentation — possibly redundant"]
+    F -- No --> H["Does it align with or extend existing standards?"]
+    H -- Yes --> I["Standard — extension or profile"]
+    H -- No --> J["Standard — new or original"]
+    D -- Yes --> F
+
+    %% Styles
+    classDef Pine stroke-width:1px, stroke-dasharray:none, stroke:#254336, fill:#27654A, color:#FFFFFF
+    classDef Ash stroke-width:1px, stroke-dasharray:none, stroke:#999999, fill:#EEEEEE, color:#000000
+    style B fill:#f9f,stroke:#333,stroke-width:1px
+    style G fill:#fdd,stroke:#933,stroke-width:1px
+    style I fill:#dfd,stroke:#393,stroke-width:1px
+    style J fill:#dfd,stroke:#393,stroke-width:1px
+```
