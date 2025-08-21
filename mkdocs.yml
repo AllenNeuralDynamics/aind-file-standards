@@ -1,0 +1,74 @@
+site_name: AIND File Standards
+site_description: Documentation for the Allen Institute for Neural Dynamics File Standards
+site_author: Allen Institute for Neural Dynamics and Contributors
+copyright: 2025, Allen Institute for Neural Dynamics
+repo_url: https://github.com/AllenNeuralDynamics/aind-file-standards
+repo_name: aind-file-standards
+theme:
+  name: material
+  logo: logo.svg
+  favicon: icon.ico
+  features:
+  - content.tabs.link
+  - announce.dismiss
+  - navigation.tabs
+  - navigation.instant
+  - navigation.instant.prefetch
+  - navigation.instant.preview
+  - navigation.instant.progress
+  - navigation.path
+  - navigation.sections
+  - navigation.top
+  - navigation.tracking
+  - search.suggest
+  - toc.follow
+  palette:
+  - media: '(prefers-color-scheme: light)'
+    scheme: default
+    primary: white
+    accent: black
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+  - media: '(prefers-color-scheme: dark)'
+    scheme: slate
+    primary: black
+    accent: white
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+hooks:
+- docs/_build.py
+plugins:
+- search
+- git-revision-date-localized:
+    fallback_to_build_date: true
+- minify:
+    minify_html: true
+markdown_extensions:
+- admonition
+- codehilite
+- footnotes
+- pymdownx.highlight
+- pymdownx.superfences
+- pymdownx.tabbed
+- pymdownx.details
+- tables
+- toc:
+    permalink: true
+    title: Page contents
+- pymdownx.snippets:
+    base_path: .
+nav:
+- Index: index.md
+- Core:
+  - Contributing: core/contributing.md
+  - Core Standards: core/core-standards.md
+  - Template: core/template.md
+- File Formats:
+  - Behavior Videos: file_formats/behavior_videos.md
+  - Ecephys: file_formats/ecephys.md
+  - Fip: file_formats/fip.md
+  - Harp: file_formats/harp.md
+  - Nwb: file_formats/nwb.md
+  - Planar Ophys: file_formats/planar_ophys.md
