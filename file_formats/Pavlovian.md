@@ -1,86 +1,82 @@
-# Standards on `Pavlovian conditioning (behavior)` acquisition
+# Standards on Pavlovian Conditioning data
 
 ## Version
 
 `0.1.0`
-See Contributing.md for more information on versioning.
 
 ## Introduction
-
-This section should briefly introduce the data format and its purpose.
+This document describes the standards for the acquisition of Pavlovian conditioning behavior in the Allen Institute for Neural Dynamics. So far, this behavior has been combined with fiber photometry. Experimental control and data acquisition codes can be found in this [repo](https://github.com/AllenNeuralDynamics/PavlovianCond_Bonsai).
 
 ## Raw Data Format
+Following SciComp standards, behavior related files are all saved in the subfolder named "behavior". Other modalities such as FIP data should be saved in their own subfolder named "fib" (short for "fiber photometry"). 
 
-### File format
+A single session of behavior data should be organized under the `behavior` directory. An acquisition for a single session should be nested under a sub directory named following the core standards for file naming convention found [here](https://github.com/AllenNeuralDynamics/aind-file-standards/blob/main/core/core-standards.md#filename-conventions).  Mostly, this is for cases where the recording gets interrupted. When the system restarts under the same session, it can be added to a new folder. A session folder structure should look like the following:
 
-This section describes the raw data format of the asset. Data is considered in its Raw format when it is directly acquired from the hardware and logged without any lossy / compression transformation. The resulting data asset will be considered immutable.
-
-The section should also include a brief description of the folder directory that results from the generation of the data asset. We recommend using the [`file-tree-generator`](https://marketplace.visualstudio.com/items?itemName=Shinotatwu-DS.file-tree-generator) vscode extension or the `tree` command in the terminal to generate a tree structure of the data asset.
-
-e.g.:
 
 ```plaintext
-
-📦behavior
-┣ 📂foo
-┃  ┗ 📂bar_datetime
-┃     ┣ 📜baz.dat
-┃     ┗ 📜baz_metadata.txt
-...
+📦 Session Folder
+┣ 📂 <behavior>
+┃ ┣ HarpMessages_34YYYY-MM-DDTHH_MM_SS.bin
+┃ ┣ HarpMessages_49YYYY-MM-DDTHH_MM_SS.bin
+┃ ┣ HarpMessages_51YYYY-MM-DDTHH_MM_SS.bin
+┃ ┣ HarpMessages_78YYYY-MM-DDTHH_MM_SS.bin
+┃ ┣ HarpMessages_95YYYY-MM-DDTHH_MM_SS.bin
+┃ ┣ SoundCardMessages_YYYY-MM-DDTHH_MM_SS.bin
+┃ ┣ PavParams_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TrialN_TrialType_ITI_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_Airpuff_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_CS1_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_CS2_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_CS3_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_CS4_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_FIP_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_Lick_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_Reward_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_RewardB_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_ManualAirpuff_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_ManualCS1_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_ManualCS2_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_ManualCS3_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_ManualCS4_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_ManualReward_YYYY-MM-DDTHH_MM_SS.csv
+┃ ┣ TS_ManualRewardB_YYYY-MM-DDTHH_MM_SS.csv
+┃ 
+┣ 📂 <behavior_videos>
+┣ 📂 <fib>
 ```
 
-### Application notes
+### Old (~2025.April)
+HarpMessages_: Raw harp messages from the HarpBehaviorBoard, see Neurogear description
 
-This section is reserved to provide additional information on how to acquire the data in the data format described above. It can include information relative to the hardware (e.g. supported models), software interface (e.g. SoftwareFoo with version >= 1.0.0), ideally, some easy to deploy or follow examples that can get anyone to reproduce the data format.
+SoundCardMessages_: Raw harp messages from the HarpSoundBoard, see Neurogear description
 
-### Relationship to aind-data-schema
+PavParams_: Parameters used to run the experiments.
 
-This section is reserved to describe how the data format relates and/or is represented by the aind-data-schema library. Examples include how the hardware and software metadata information should be encoded in the schemas, how data acquired should exist as `Epochs` and other critical conventions. It is important to note that this section should create a one-way dependency, where data formats should NOT depend on the schema and instead stand on their own. `aind-data-schema` should instead be used to provide extra information, context and validation to the data asset.
+TrialN_TrialType_ITI_: Trial data
+- TrialNumber: int 0,1,2,3,4,...
+- TrialType: 1-10:CS1; 11-20:CS2; 21-30:CS3; 31-40:CS4
+- Reward: True or False
+- TotalRewards: number of acquired reward# so far
+- ITI_s: time from the current outcome to the next CS onset
+- Punishment: True or False
 
-### File Quality Assurances
+TS_: Time stamps of behavior-related events. Software(Windows_OS) timestamps.
 
-This section is reserved to describe what features of the data format should be true if the data asset is to be considered valid. Conceptually, this section should describe features that can be easily tested and validated by unit tests. Examples include:
-- "There will always be two files: `data.dat` and `metadata.txt`"
-- "For each frame in `video.avi`, there will be a corresponding row in `metadata.csv`"
-- "Field `Bar` will always be a positive integer"
-- "The first timestamp value in `metadata_camera.csv` will always be greater than the first one in `metadata_behavior.csv`
-- The `Time` column in `file.bin` is assumed to be aligned (sharing the same time domain) with `Time` column of `another_file.csv`
-
-## Primary Data Format
-
-### File format
-
-This section describes the primary data format of the asset, which is the format of the data as it is uploaded. Primary data can have minimal processing applied, usually a compression or file format transformation. This section describes that transformation (if any), and the format of the resulting data.
-Similarly to the raw data format, it is considered immutable.
-
-### Application notes
-
-Identical to the `Application notes` section in the `Acquisition/Raw Data Format` section. It should ideally contain information on how to generate the primary data format from the raw data format.
-
-### Relationship to aind-data-schema
-
-Identical to the `Relationship to aind-data-schema Session` section in the `Acquisition/Raw Data Format` section.
-
-### File Quality Assurances
-
-Identical to the `File Quality Assurances` section in the `Acquisition/Raw Data Format` section.
+*rewardB: Big, not used in the behavior so far
 
 
-## Derived Data Format
+### New (2025.April~)
+Now all the csv files have header and for `TS_` files
 
-### File format
+The first column is Software(Windows_OS) timestamps and the second column Harp timestamps.
 
-This section is reserved to describe any derived data format from the primary data format. Derived data formats are considered to be post-processed data assets (potentially lossy) that are generated from the raw or primary data format. These are generally generated after the data has been acquired and uploaded.
-While immutable after created, derived data can be regenerated from primary data assets.
 
-### Application notes
 
-Identical to the `Application notes` section in the `Acquisition/Raw Data Format` section. It should ideally contain information on how to generate the derived data format from the raw and/or primary data format.
 
-### Relationship to aind-data-schema
 
-Identical to the `Relationship to aind-data-schema Session` section in the `Acquisition/Raw Data Format` section.
+## Acquiring data under this format
 
-### File Quality Assurances
+Data acquisition code that generates data in this format is available from the [data acquisition repository](https://github.com/AllenNeuralDynamics/PavlovianCond_Bonsai).
 
-Identical to the `File Quality Assurances` section in the `Acquisition/Raw Data Format` section.
+## Relationship to aind-data-schema
+rig.json and session.json define the experimental conditions.
