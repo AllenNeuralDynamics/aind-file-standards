@@ -38,7 +38,8 @@ theme:
       icon: material/brightness-4
       name: Switch to light mode
 hooks:
-- docs/_build.py
+- docs/_mkdocs_hooks/_build.py
+- docs/_mkdocs_hooks/_translate_admonition.py
 plugins:
 - search
 - git-revision-date-localized:

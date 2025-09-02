@@ -8,7 +8,7 @@ import re
 logging.basicConfig(format="%(levelname)-8s - %(message)s", level=logging.INFO)
 logger = logging.getLogger("mkdocs.navbuilder")
 
-ROOT_DIR = Path(__file__).parent.parent
+ROOT_DIR = Path(__file__).parent.parent.parent
 DOCS_DIR = ROOT_DIR / "docs"
 MKDOCS_YML = ROOT_DIR / "mkdocs.yml"
 
@@ -53,6 +53,7 @@ def build_nav(path: Path):
             title = format_title(full_path.stem)
             nav.append({title: rel_path})
     return nav
+
 
 
 if __name__ == "__main__":
