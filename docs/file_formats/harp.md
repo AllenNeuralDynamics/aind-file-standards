@@ -33,7 +33,7 @@ Thus, for each device, the container of all data will be a single directory with
  ┣ 📜<DeviceName>_<Reg>.bin
  ┗ 📜device.yml
 
- ```
+```
 
 where:
 
