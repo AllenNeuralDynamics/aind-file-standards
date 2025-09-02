@@ -51,9 +51,9 @@ markdown_extensions:
 - codehilite
 - footnotes
 - pymdownx.highlight
+- pymdownx.details
 - pymdownx.superfences
 - pymdownx.tabbed
-- pymdownx.details
 - tables
 - toc:
     permalink: true
