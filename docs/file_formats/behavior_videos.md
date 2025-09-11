@@ -131,8 +131,8 @@ The following features should be true if the data asset is to be considered vali
 
   - The difference between adjacent Seconds and adjacent FrameTime should be very close (I would suggest a threshold of 0.5ms for now);
 
-  > [!NOTE]
-  > While dropped frames are not ideal, they do not necessarily invalidate the data. However, the user should be aware of the potential consequences and/or ways to correct the data asset.
+> [!NOTE]
+> While dropped frames are not ideal, they do not necessarily invalidate the data. However, the user should be aware of the potential consequences and/or ways to correct the data asset.
 
 - If using a stable frame rate (this should be inferred from a rig configuration file), the average frame rate should match the theoretical frame rate;
 
