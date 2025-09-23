@@ -14,7 +14,7 @@ In older dataset, individual files are all stored directly under each session fo
 ### File format 
 In most cases, FIP data will be saved in `CSV` files, where each file corresponds to a different channel in the photometry rig. In addition to the timeseries fluorescence data, files containing metadata and raw image data are also available. A single session of FIP data should be organized under the `fib` directory. An acquisition for a single session should be nested under a sub directory named following the core standards for file naming convention found [here](https://github.com/AllenNeuralDynamics/aind-file-standards/blob/main/core/core-standards.md#filename-conventions).  Mostly, this is for cases where the recording gets interrupted. When the system restarts under the same session, it can be added to a new folder. A sessions folder structure should look like the following:
 
-### Old 
+## Old 
 ```plaintext
 📦 Session Folder
 ┣ Signal_YYYY-MM-DDTHH_MM_SS.csv
@@ -27,7 +27,7 @@ In most cases, FIP data will be saved in `CSV` files, where each file correspond
 ┗ FIP_ROI_YYYY-MM-DDTHH_MM_SS.csv
 ```
 
-### New 
+## New 
 ```plaintext
 📦 Session Folder
 ┣ 📂 <fib>
@@ -43,9 +43,26 @@ In most cases, FIP data will be saved in `CSV` files, where each file correspond
 ┣ 📂 <behavior>
 ```
 
+A HARP Device (behavior board) is only used to trigger behavior cameras. Given the fip acquision and optogenetic stimulations are temporally precisely controlled together by the Teeny microcontroller, we will use software(OS) timestamps for the Opto-FIP data analysis. For nwb packaging, the `Software_TS` column should be eaxtracted from each csv and used.
 
-#### Fluorescence data
-Data is generally organized by the emission channel that gave rise to the data (`Signal`, `Iso`, and `Stim`), respectively, in this order. 
+## Stimulation pulse train description
+OptoStimulation is defined by the following five parameters and `modes` `o` (10Hz), `p` (20Hz), `q` (5Hz).
+
+```
+OptoTrialN = 10; //Trial number
+PulseW = 10000; //in microsec, default: 10 msec = 10000
+OptoDuration = 2; // in sec, duration of 10Hz pulse
+OptoBase = 120; //in sec, length of baseline before stimulation
+OptoInterval = 28; // in sec, baseline after each stim train
+```
+
+<img width="500" height="225" alt="Screenshot 2025-09-23 at 12 32 12" src="https://github.com/user-attachments/assets/34de59f4-4518-489c-92cc-dffb7dea6f64" />
+
+For extraction of the time onset of individual pulses, calculata the corresponding indices and slice the timestamp column in the `Stim_.csv`.
+
+
+## Fluorescence data
+Data is generally organized by the emission channel that gave rise to the data (`Signal`, `Iso`, and `Stim`), respectively, in this order. The below is an example for 10Hz stimulation (a Stim per 2 acquisition cycles) 
 
 ```
              --->|   |<--- period = 16.67 ms
@@ -53,7 +70,7 @@ Blue/Yellow LED  ████░░░░░░░░░░░████░░
 
 Iso LED (415)    ░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░
 
-Stim Laser       ░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░░░░░░░░░░░████░
+Stim Laser       ░░░░░░░░░░░░░░░░░░░░░░░░░████░░░░░░░░░░░░░░░░░░░░░░░░░░████░░░░░░░░░░░░░░░░
 
 Single CMOS      ████░████░████░████░████░████░████░████░████░████░████░████░████░████░████░  
 
@@ -61,7 +78,7 @@ Single CMOS      ████░████░████░████░█
                                     Time
 ```
 
-#### Raw sensor data
+## Raw sensor data
 
 Raw sensor data (i.e., camera frames) that generated the fluorescence data is saved in raw binary files. These files share the same naming convention as the fluorescence data files, but with a `.bin` extension. During acquisition, operators place circular ROIs over the images, and photometry readouts are obtained by averaging the signal inside these regions.
 
