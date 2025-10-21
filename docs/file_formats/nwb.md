@@ -40,8 +40,7 @@ We also take this opportunity to remind readers about some general NWB basics:
 
 ## Metadata
 
-- At AIND, we document metadata from [aind-data-schema](https://aind-data-schema.readthedocs.io/en/latest/) into the `Metadata` container using a metadata extension XXX - link reference to metadata extension
-
+- At AIND, we document metadata from [aind-data-schema](https://aind-data-schema.readthedocs.io/en/latest/) into the `Metadata` container using [ndx-aind-metadata](https://github.com/AllenNeuralDynamics/ndx-aind-metadata)
 
 ### Application Notes 
 
