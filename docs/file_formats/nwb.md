@@ -30,10 +30,6 @@ We also take this opportunity to remind readers about some general NWB basics:
 - Events in the events table have a `timestamp` property.
 - All event property values must be described with multiple or layered [HED tags](https://www.hedtags.org/) or part of AIND's HED extension.
 
-## Trials
-
-- Trials are derived from events and stored in the `Trials` container.
-
 ## Timeseries
 
 - *Continuous* data (e.g. running wheel velocity) are stored in `TimeSeries` arrays, not event tables.
@@ -41,6 +37,11 @@ We also take this opportunity to remind readers about some general NWB basics:
 ## Metadata
 
 - At AIND, we document metadata from [aind-data-schema](https://aind-data-schema.readthedocs.io/en/latest/) into the `Metadata` container using [ndx-aind-metadata](https://github.com/AllenNeuralDynamics/ndx-aind-metadata)
+
+## Trials
+
+- Trials are derived from events and/or timeseries data and stored in the `Trials` container.
+- Trials tables formatting can be dynamic.
 
 ### Application Notes 
 
