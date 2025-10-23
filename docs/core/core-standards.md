@@ -11,24 +11,25 @@ In general, filename conventions will be defined by the specific data format sta
 - Filenames must not contain spaces or special characters. [Use this as a reference for special characters](https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words).
 - "Underscore" `_` should be used instead of "-" or any other special character to separate words.
 - Filenames must always contain a file extension.
-- **Any** file name can be suffixed with a `datetime`. This suffix will ALWAYS be the last suffix in the filename, in case multiple suffixes are used, and will follow the ISO 8601 format. Following Scientific Computing guidelines, if a `datetime` field is added we will adopt the [format `YYYY-MM-DDTHHMMSS` e.g. `2023-12-25T133015`]. The `datetime` will always be read as local-time zone. Should universal time (i.e. UTC) or time-zone information be necessary, users should look into the metadata asset potentially generated with the data.
+- **Any** file name can be suffixed with a `datetime`. This suffix will ALWAYS be the last suffix in the filename, in case multiple suffixes are used, and will follow the ISO 8601 format. Following Scientific Computing guidelines, if a `datetime` field is added we will adopt the [format `YYYY-MM-DDTHHMMSS` e.g. `2023-12-25T133015Z`, `2023-12-25T123015-1`]. For backwards compatibility, the `datetime` is allowed to be time-zone unaware (i.e. no `Z` or offset suffix), however this practice is discouraged.
+
 
   - As an example, if two files (`data_stream.bin`) are generated as part of two different acquisition [streams](https://aind-data-schema.readthedocs.io/en/latest/session.html):
 
     ```plaintext
        📂Modality
-        ┣ 📜data_stream_2023-12-25T133015.bin
-        ┗ 📜data_stream_2023-12-25T145235.bin
+        ┣ 📜data_stream_2023-12-25T133015Z.bin
+        ┗ 📜data_stream_2023-12-25T145235Z.bin
     ```
 
   - This rule can be generalized to container-like file formats by adding the suffix to the container:
 
     ```plaintext
         📂Modality
-        ┣ 📂FileContainer_2023-12-25T133015
+        ┣ 📂FileContainer_2023-12-25T133015+10
         ┃ ┣ 📜file1.bin
         ┃ ┗ 📜file2.csv
-        ┣ 📂FileContainer_2023-12-25T145235
+        ┣ 📂FileContainer_2023-12-25T145235+10
         ┃ ┣ 📜file1.bin
         ┗ ┗ 📜file2.csv
     ```
