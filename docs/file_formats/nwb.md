@@ -36,11 +36,11 @@ We also take this opportunity to remind readers about some general NWB basics:
 
 ## Metadata
 
-- At AIND, we document metadata from [aind-data-schema](https://aind-data-schema.readthedocs.io/en/latest/) into the `Metadata` container using [ndx-aind-metadata](https://github.com/AllenNeuralDynamics/ndx-aind-metadata)
+- When we document metadata from [aind-data-schema](https://aind-data-schema.readthedocs.io/en/latest/) we store it in the  `Metadata` container using [ndx-aind-metadata](https://github.com/AllenNeuralDynamics/ndx-aind-metadata) which populates the NWB properties based on what is in the `AIND` metadata.
 
-## Trials
+## Intervals
 
-- Trials are derived from events and/or timeseries data and stored in the `Trials` container.
+- Trials are derived from events and/or timeseries data stored `Trials` in this container.
 - Trials tables formatting can be dynamic.
 
 ### Application Notes 
