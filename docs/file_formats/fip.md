@@ -2,7 +2,7 @@
 
 ## Version
 
-`0.3.0`
+`0.4.0`
 
 ## Introduction
 
@@ -25,6 +25,12 @@ In most cases, FIP data will be saved in `CSV` files, where each file correspond
 ┃ ┣ green.bin
 ┃ ┣ red.bin
 ┃ ┣ iso.bin
+┃ ┣ [Optional]background_green.bin
+┃ ┣ [Optional]background_red.bin
+┃ ┣ [Optional]background_iso.bin
+┃ ┣ [Optional]background_green.csv
+┃ ┣ [Optional]background_red.csv
+┃ ┣ [Optional]background_iso.csv
 ┃ ┣ green_metadata.json
 ┃ ┣ red_metadata.json
 ┃ ┣ iso_metadata.json
@@ -62,8 +68,17 @@ To open these files, users need additional information to parse the binary data.
 * `Depth`: Bit depth (U16 by default)
 * `Channel`: Channel (1 channel by default)
 
-
 See the Application Notes section for an example of how to parse the binary files.
+
+#### Sensor background data (optional)
+
+In some experiments, operators may choose to record background frames without any illumination. These frames can be used to estimate the camera's dark count floor and subtract it from the raw data during post-processing. If background frames are recorded, they will mirror the naming convention of the raw sensor data files and append `background_` to the beginning of the filename. While optional, these files are expected to still honor the `<color>_metadata.json` and `regions.json` specifications.
+
+If the background files are not present, users can assume that no background frames were recorded during the session.
+
+If the background files are present they must contain at least one frame (i.e. row) in the corresponding `<color>_background.csv` file.
+
+If one background file is present, all background files must be present.
 
 #### Recovering the regions of interest
 
@@ -95,7 +110,7 @@ Within the metadata files are the following columns:
 * `CameraFrameTime` Frame acquisition time given by the camera API
 * `CpuTime` Software timestamp from the OS, in timezone-aware ISO8061 format. Users should consider these timestamps low-precision and rig-dependent, and should not rely on them for analysis.
 
-The columns sharing the same name with the `<color>.csv` files will, under normal circumstances, provide the same metadata information.
+Under expected operating conditions, these files will contain all the rows present in the `<color>.csv` and `background_<color>.csv` files.
 
 ### Application notes
 
@@ -165,7 +180,7 @@ Data acquisition code that generates data in this format is available from the [
 
 ### Relationship to aind-data-schema
 
-procedures.json documents the relevant fiber probe implantation metadata (stereotactic coordinates) and viral injection metadata (stereotactic coordinates, materials). session.json documents the intended measurement (e.g. norepinephrine, dopamine, etc) for each channel of each probe. 
+procedures.json documents the relevant fiber probe implantation metadata (stereotaxic coordinates) and viral injection metadata (stereotaxic coordinates, materials). session.json documents the intended measurement (e.g. norepinephrine, dopamine, etc) for each channel of each probe. 
 
 ### File Quality Assurances
 
