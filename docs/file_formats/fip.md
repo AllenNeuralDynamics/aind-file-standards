@@ -76,7 +76,7 @@ In some experiments, operators may choose to record background frames without an
 
 If the background files are not present, users can assume that no background frames were recorded during the session.
 
-If the background files are present the must contain at least one frame (i.e. row) in the corresponding `<color>_background.csv` file.
+If the background files are present they must contain at least one frame (i.e. row) in the corresponding `<color>_background.csv` file.
 
 If one background file is present, all background files must be present.
 
