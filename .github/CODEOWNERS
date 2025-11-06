@@ -7,5 +7,5 @@ docs/file_formats/harp.md @bruno-f-cruz @arjunsridhar12345 @jsiegle
 docs/file_formats/nwb.md @arielleleon @dyf @saskiad
 docs/file_formats/planar_ophys.md @arielleleon
 
-# Default owners for any files not specifically covered above
-* @bruno-f-cruz @alejoe91 @arielleleon
+# Core documentation
+docs/core/* @bruno-f-cruz @dyf @arielleleon
