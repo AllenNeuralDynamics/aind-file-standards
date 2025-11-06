@@ -40,8 +40,7 @@ We also take this opportunity to remind readers about some general NWB basics:
 
 ## Intervals
 
-- Trials are derived from events and/or timeseries data stored `Trials` in this container.
-- Trials tables formatting can be dynamic.
+- Trials are derived from events and/or timeseries data and can be stored as `Trials` in this container.
 
 ### Application Notes 
 
