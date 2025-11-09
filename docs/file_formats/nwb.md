@@ -27,11 +27,20 @@ We also take this opportunity to remind readers about some general NWB basics:
 
 - Any events should be packaged using the [ndx-events](https://github.com/rly/ndx-events) NWB extension.
 - We represent all *discrete* events in a single a `EventTable` named `events`.
-- Events in the events table have a `timestamp` property, along with arbitrary property names (columns) and values.
-- All event property values and their descriptions are stored in single a `MeaningsTable` table named `event_descriptions` (e.g. property name "lick" with value "0" means "the mouse licked the left water port").
-- All event property values must be described by [HED tags](https://www.hedtags.org/) or part of AIND's HED extension.
-- Trials are represented as events, but also fill in the event `duration` property.
+- Events in the events table have a `timestamp` property.
+- All event property values must be described with multiple or layered [HED tags](https://www.hedtags.org/) or part of AIND's HED extension.
+
+## Timeseries
+
 - *Continuous* data (e.g. running wheel velocity) are stored in `TimeSeries` arrays, not event tables.
+
+## Metadata
+
+- When we document metadata from [aind-data-schema](https://aind-data-schema.readthedocs.io/en/latest/) we store it in the  `Metadata` container using [ndx-aind-metadata](https://github.com/AllenNeuralDynamics/ndx-aind-metadata) which populates the NWB properties based on what is in the `AIND` metadata.
+
+## Intervals
+
+- Trials are derived from events and/or timeseries data and can be stored as `Trials` in this container.
 
 ### Application Notes 
 
