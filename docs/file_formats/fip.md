@@ -22,7 +22,12 @@ This document uses specific terminology to distinguish between different compone
 
 Numbering on fibers, patch cords and ROIs is always 0-indexed (i.e. 0, 1, 2, 3 for objects 1-4, respectively)
 
-The mapping between ROIs and patch cords is implicitly defined by the software (ROI_N is drawn over patch_cord_N). However, the mapping between patch cords and implanted fibers is determined by the experimenter at the time of the experiment and should be documented in metadata. **Note**: This mapping is not currently captured in metadata directly. There is currently an assumption that experimentalists always attach patch_cord_N to fiber_N, and any patch cords without corresponding fibers are left unused. The metadata mapper uses this assumption by checking procedures metadata to obtain a list of implanted fibers, then mapping patch cords to implanted fibers assuming that the above described convention has been followed. See [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40).
+**Notation**: Throughout this document, we use:
+- **N** to represent the total number of implanted fibers in a given mouse (N can be 1, 2, 3, or 4)
+- **n** to represent a specific index (n ∈ {0, 1, 2, 3})
+- There are always exactly 4 patch cords (indices 0, 1, 2, 3) and 4 ROIs (indices 0, 1, 2, 3)
+
+The mapping between ROIs and patch cords is implicitly defined by the software (ROI_n is drawn over patch_cord_n). However, the mapping between patch cords and implanted fibers is determined by the experimenter at the time of the experiment and should be documented in metadata. **Note**: This mapping is not currently captured in metadata directly. There is currently an assumption that experimentalists always attach patch cords 0 through N-1 to fibers 0 through N-1, and patch cords N through 3 are left unused. The metadata mapper uses this assumption by checking procedures metadata to obtain a list of implanted fibers, then mapping patch cords to implanted fibers assuming that the above described convention has been followed. See [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40).
 
 ## Raw Data Format
 
@@ -70,10 +75,13 @@ Each fiber photometry session will primarily be analyzed by using the average si
 * `CameraFrameTime` Frame acquisition time given by the camera API
 * `Background` CMOS dark count floor signal
 * `Fiber_0` Average signal values from patch_cord_0's ROI
-* `<...>` (Variable number of columns)
-* `Fiber_N` Average signal values from patch_cord_N's ROI
+* `Fiber_1` Average signal values from patch_cord_1's ROI
+* `Fiber_2` Average signal values from patch_cord_2's ROI
+* `Fiber_3` Average signal values from patch_cord_3's ROI
 
-**Note on naming convention**: The column names `Fiber_0`, `Fiber_1`, etc. are somewhat misleading - these columns actually represent data from patch_cord_0, patch_cord_1, etc. The naming persists for backward compatibility. The relationship between patch cords and implanted fibers in the mouse is not captured in this file format and should be documented separately in metadata (see Relationship to aind-data-schema section below).
+Note: There are always exactly 4 `Fiber_n` columns (n = 0, 1, 2, 3) corresponding to the 4 patch cords and 4 ROIs. However, if N < 4 (where N is the number of implanted fibers), then patch cords N through 3 are unused and their corresponding columns contain data from unconnected patch cords.
+
+**Note on naming convention**: The column names `Fiber_0`, `Fiber_1`, `Fiber_2`, `Fiber_3` are somewhat misleading - these columns actually represent data from patch_cord_0, patch_cord_1, patch_cord_2, patch_cord_3, respectively. The naming persists for backward compatibility. The relationship between patch cords and implanted fibers in the mouse is not captured in this file format and should be documented separately in metadata (see Relationship to aind-data-schema section below). If N < 4 (where N is the number of implanted fibers), then patch cords N through 3 are unused and their corresponding columns contain data from unconnected patch cords.
 
 #### Raw sensor data
 
@@ -202,9 +210,9 @@ The FIP file format documents ROI-based measurements from patch cords. To fully 
 
 * **procedures.json**: Documents implanted fiber locations (stereotaxic coordinates) and viral injection metadata (stereotaxic coordinates, materials, viral constructs)
 
-* **acquisition.json**: Documents which patch cords were connected to which implanted fibers during the experiment. This mapping is critical for correctly interpreting the data, as the `Fiber_N` columns in the CSV files represent patch_cord_N data, and experimenters may not always connect patch_cord_N to fiber_N (e.g., if a particular implanted fiber is damaged or if a different configuration is needed for the experiment). Also documents the intended measurement for each fiber (e.g., norepinephrine, dopamine, calcium) and other session-specific details.
+* **acquisition.json**: Documents which patch cords were connected to which implanted fibers during the experiment. This mapping is critical for correctly interpreting the data, as the `Fiber_n` columns in the CSV files represent patch_cord_n data, and experimenters may not always connect patch_cord_n to fiber_n (e.g., if a particular implanted fiber is damaged or if a different configuration is needed for the experiment). Also documents the intended measurement for each fiber (e.g., norepinephrine, dopamine, calcium) and other session-specific details.
 
-A standard convention is for patch_cord_0 to connect to fiber_0, patch_cord_1 to fiber_1, etc., but this convention is not enforced by the acquisition software. There is currently no method for capturing intentional or inadvertent variances from this convention (again, see [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40).)
+A standard convention is for patch cords 0 through N-1 to connect to fibers 0 through N-1, with patch cords N through 3 left unused, but this convention is not enforced by the acquisition software. There is currently no method for capturing intentional or inadvertent variances from this convention (again, see [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40).)
 
 ### File Quality Assurances
 
@@ -217,6 +225,6 @@ The following are expected to be true for all FIP data collected under this stan
     > Dropped frames are not normal and should not be taken lightly. If you encounter dropped frames, please contact the data acquisition team for further investigation.
 * The difference between the derivative of `CameraFrameTime` and `ReferenceTime` is expected to be very small (i.e.: abs(max(diff(`CameraFrameTime`) - diff(`ReferenceTime`))) < 0.2ms). If this is not the case, it may indicate a problem with frame exposure.
 * All rows in the `<color>.csv` files will be present in the corresponding camera metadata files. The opposite is not guaranteed to be true.
-* A `<color>.csv` file is not guaranteed to have a `Fiber_N` column. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
-* The naming of `Fiber_<i>` columns in the `<color>.csv` files is guaranteed to be sequential, starting from `Fiber_0` and going up to `Fiber_N`. **Important**: These column names reflect patch cord indices, not necessarily the indices of implanted fibers. Consult acquisition.json metadata to determine the patch_cord-to-fiber mapping for each session.
+* A `<color>.csv` file always contains exactly 4 `Fiber_n` columns (`Fiber_0`, `Fiber_1`, `Fiber_2`, `Fiber_3`) corresponding to the 4 patch cords. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
+* The naming of `Fiber_n` columns in the `<color>.csv` files is guaranteed to be sequential, starting from `Fiber_0` and going up to `Fiber_3`. **Important**: These column names reflect patch cord indices (always 0, 1, 2, 3), not necessarily the indices of implanted fibers. If N < 4 (where N is the number of implanted fibers), then patch cords N through 3 are unused. Consult acquisition.json metadata to determine the patch_cord-to-fiber mapping for each session.
 * The `regions.json` in the FIP session are guaranteed to be static within a session. The number and order of the ROIs are expected to be the same across the two cameras.
