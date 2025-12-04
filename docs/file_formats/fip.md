@@ -8,6 +8,22 @@
 
 This document describes the standards for the acquisition of frame-projected independent-fiber photometry (FIP) data in the Allen Institute for Neural Dynamics.
 
+## Terminology
+
+This document uses specific terminology to distinguish between different components of the FIP system:
+
+* **Fibers**: Optical fibers surgically implanted in the mouse's brain. A mouse may have 1-4 implanted fibers. Fiber implantation details (locations, stereotaxic coordinates) are documented in the procedures.json metadata file.
+
+* **Patch cords**: Fiber optic cables that are permanently part of the FIP hardware system. The current FIP system has exactly 4 patch cords. At experiment time, experimenters physically connect patch cords to implanted fibers. Not all patch cords are necessarily connected during every experiment.
+
+* **Fiber bundle**: The assembly of all patch cords whose termini are visible to the imaging cameras. The fiber bundle remains stationary during experiments.
+
+* **ROIs (Regions of Interest)**: Circular regions drawn on the camera image over the visible ends of the patch cords in the fiber bundle. There are always 4 ROIs corresponding to the 4 patch cord positions. ROIs remain fixed unless the fiber bundle is physically repositioned.
+
+Numbering on fibers, patch cords and ROIs is always 0-indexed (i.e. 0, 1, 2, 3 for objects 1-4, respectively)
+
+The mapping between ROIs and patch cords is implicitly defined by the software (ROI_N is drawn over patch_cord_N). However, the mapping between patch cords and implanted fibers is determined by the experimenter at the time of the experiment and should be documented in metadata. **Note**: This mapping is not currently captured in metadata directly. There is currently an assumption that experimentalists always attach patch_cord_N to fiber_N, and any patch cords without corresponding fibers are left unused. The metadata mapper uses this assumption by checking procedures metadata to obtain a list of implanted fibers, then mapping patch cords to implanted fibers assuming that the above described convention has been followed. See [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40).
+
 ## Raw Data Format
 
 Following SciComp standards, FIP data should be saved in their own folder named "fib" (short for "fiber photometry"). Data from other modalities go in separate folders.
@@ -53,9 +69,11 @@ Each fiber photometry session will primarily be analyzed by using the average si
 * `CameraFrameNumber` Frame counter given by the camera API
 * `CameraFrameTime` Frame acquisition time given by the camera API
 * `Background` CMOS dark count floor signal
-* `Fiber_0` Average signal values for Fiber_0's selected ROI
+* `Fiber_0` Average signal values from patch_cord_0's ROI
 * `<...>` (Variable number of columns)
-* `Fiber_N` Average signal values for Fiber_N's selected ROI.
+* `Fiber_N` Average signal values from patch_cord_N's ROI
+
+**Note on naming convention**: The column names `Fiber_0`, `Fiber_1`, etc. are somewhat misleading - these columns actually represent data from patch_cord_0, patch_cord_1, etc. The naming persists for backward compatibility. The relationship between patch cords and implanted fibers in the mouse is not captured in this file format and should be documented separately in metadata (see Relationship to aind-data-schema section below).
 
 #### Raw sensor data
 
@@ -180,7 +198,13 @@ Data acquisition code that generates data in this format is available from the [
 
 ### Relationship to aind-data-schema
 
-procedures.json documents the relevant fiber probe implantation metadata (stereotaxic coordinates) and viral injection metadata (stereotaxic coordinates, materials). session.json documents the intended measurement (e.g. norepinephrine, dopamine, etc) for each channel of each probe. 
+The FIP file format documents ROI-based measurements from patch cords. To fully interpret this data, additional metadata from aind-data-schema files is required:
+
+* **procedures.json**: Documents implanted fiber locations (stereotaxic coordinates) and viral injection metadata (stereotaxic coordinates, materials, viral constructs)
+
+* **acquisition.json**: Documents which patch cords were connected to which implanted fibers during the experiment. This mapping is critical for correctly interpreting the data, as the `Fiber_N` columns in the CSV files represent patch_cord_N data, and experimenters may not always connect patch_cord_N to fiber_N (e.g., if a particular implanted fiber is damaged or if a different configuration is needed for the experiment). Also documents the intended measurement for each fiber (e.g., norepinephrine, dopamine, calcium) and other session-specific details.
+
+A standard convention is for patch_cord_0 to connect to fiber_0, patch_cord_1 to fiber_1, etc., but this convention is not enforced by the acquisition software. There is currently no method for capturing intentional or inadvertent variances from this convention (again, see [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40).)
 
 ### File Quality Assurances
 
@@ -194,5 +218,5 @@ The following are expected to be true for all FIP data collected under this stan
 * The difference between the derivative of `CameraFrameTime` and `ReferenceTime` is expected to be very small (i.e.: abs(max(diff(`CameraFrameTime`) - diff(`ReferenceTime`))) < 0.2ms). If this is not the case, it may indicate a problem with frame exposure.
 * All rows in the `<color>.csv` files will be present in the corresponding camera metadata files. The opposite is not guaranteed to be true.
 * A `<color>.csv` file is not guaranteed to have a `Fiber_N` column. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
-* The naming of `Fiber_<i>` columns in the `<color>.csv` files is guaranteed to be sequential, starting from `Fiber_0` and going up to `Fiber_N`.
+* The naming of `Fiber_<i>` columns in the `<color>.csv` files is guaranteed to be sequential, starting from `Fiber_0` and going up to `Fiber_N`. **Important**: These column names reflect patch cord indices, not necessarily the indices of implanted fibers. Consult acquisition.json metadata to determine the patch_cord-to-fiber mapping for each session.
 * The `regions.json` in the FIP session are guaranteed to be static within a session. The number and order of the ROIs are expected to be the same across the two cameras.
