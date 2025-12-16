@@ -12,7 +12,7 @@ This document describes the standards for the acquisition of frame-projected ind
 
 This document uses specific terminology to distinguish between different components of the FIP system:
 
-* **Fibers**: Optical fibers surgically implanted in the mouse's brain. A mouse may have 1-4 implanted fibers. Fiber implantation details (locations, stereotaxic coordinates) are documented in the procedures.json metadata file.
+* **Fibers**: Optical fibers surgically implanted in the mouse's brain. A mouse may have 1-4 implanted fibers. Fiber implantation details (locations, stereotactic coordinates) are documented in the procedures.json metadata file.
 
 * **Patch cords**: Fiber optic cables that are permanently part of the FIP hardware system. The current FIP system has exactly 4 patch cords. At experiment time, experimenters physically connect patch cords to implanted fibers. Not all patch cords are necessarily connected during every experiment.
 
@@ -205,7 +205,7 @@ Data acquisition code that generates data in this format is available from the [
 
 The FIP file format documents ROI-based measurements from patch cords. To fully interpret this data, additional metadata from aind-data-schema files is required:
 
-* **procedures.json**: Documents implanted fiber locations (stereotaxic coordinates) and viral injection metadata (stereotaxic coordinates, materials, viral constructs)
+* **procedures.json**: Documents implanted fiber locations (stereotactic coordinates) and viral injection metadata (stereotactic coordinates, materials, viral constructs)
 
 * **acquisition.json**: Documents which patch cords were connected to which implanted fibers during the experiment. This mapping is critical for correctly interpreting the data, as the `Fiber_n` columns in the CSV files represent patch_cord_n data, and experimenters may not always connect patch_cord_n to fiber_n (e.g., if a particular implanted fiber is damaged or if a different configuration is needed for the experiment). Also documents the intended measurement for each fiber (e.g., norepinephrine, dopamine, calcium) and other session-specific details.
 
