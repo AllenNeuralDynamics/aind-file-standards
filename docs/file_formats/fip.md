@@ -18,7 +18,7 @@ This document uses specific terminology to distinguish between different compone
 
 * **Fiber bundle**: The assembly of all patch cords whose termini are visible to the imaging cameras.
 
-* **ROIs (Regions of Interest)**: Circular regions drawn on the camera image over the visible ends of the patch cords in the fiber bundle. There are always 4 ROIs corresponding to the 4 patch cord positions. ROIs remain fixed unless the fiber bundle is physically repositioned.
+* **ROIs (Regions of Interest)**: Circular regions drawn on the camera image over the visible ends of the patch cords in the fiber bundle. Each ROI defines the camera area used to extract a timeseries.
 
 Numbering on fibers, patch cords and ROIs is always 0-indexed.
 
