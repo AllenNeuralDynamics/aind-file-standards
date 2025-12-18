@@ -14,7 +14,7 @@ This document uses specific terminology to distinguish between different compone
 
 * **Fibers**: Optical fibers surgically implanted in the mouse's brain. Mice have variable numbers of implanted fibers depending on scientific requirements. Fiber implantation details (locations, stereotactic coordinates) should be documented in metadata. See the 'Relationship to aind-data-schema' section below for details on how this is documented in the aind-data-schema.
 
-* **Patch cords**: Fiber optic cables that are permanently part of the FIP hardware system. The current FIP system has exactly 4 patch cords. At experiment time, experimenters physically connect patch cords to implanted fibers. Not all patch cords are necessarily connected during every experiment.
+* **Patch cords**: Fiber optic cables that are permanently part of the FIP hardware system. The current FIP system has exactly 4 patch cords, but the file standard is agnostic to this number. At experiment time, experimenters physically connect patch cords to implanted fibers. Not all patch cords are necessarily connected during every experiment.
 
 * **Fiber bundle**: The assembly of all patch cords whose termini are visible to the imaging cameras. The fiber bundle remains stationary during experiments.
 
