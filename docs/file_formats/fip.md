@@ -12,7 +12,7 @@ This document describes the standards for the acquisition of frame-projected ind
 
 This document uses specific terminology to distinguish between different components of the FIP system:
 
-* **Fibers**: Optical fibers surgically implanted in the mouse's brain. A mouse may have 1-4 implanted fibers. Fiber implantation details (locations, stereotactic coordinates) are documented in the procedures.json metadata file.
+* **Fibers**: Optical fibers surgically implanted in the mouse's brain. Mice have variable numbers of implanted fibers depending on scientific requirements. Fiber implantation details (locations, stereotactic coordinates) should be documented in metadata. See the 'Relationship to aind-data-schema' section below for details on how this is documented in the aind-data-schema.
 
 * **Patch cords**: Fiber optic cables that are permanently part of the FIP hardware system. The current FIP system has exactly 4 patch cords. At experiment time, experimenters physically connect patch cords to implanted fibers. Not all patch cords are necessarily connected during every experiment.
 
