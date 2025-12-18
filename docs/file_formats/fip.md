@@ -16,7 +16,7 @@ This document uses specific terminology to distinguish between different compone
 
 * **Patch cords**: Fiber optic cables that are permanently part of the FIP hardware system. The current FIP system has exactly 4 patch cords, but the file standard is agnostic to this number. At experiment time, experimenters physically connect patch cords to implanted fibers. Not all patch cords are necessarily connected during every experiment.
 
-* **Fiber bundle**: The assembly of all patch cords whose termini are visible to the imaging cameras. The fiber bundle remains stationary during experiments.
+* **Fiber bundle**: The assembly of all patch cords whose termini are visible to the imaging cameras.
 
 * **ROIs (Regions of Interest)**: Circular regions drawn on the camera image over the visible ends of the patch cords in the fiber bundle. There are always 4 ROIs corresponding to the 4 patch cord positions. ROIs remain fixed unless the fiber bundle is physically repositioned.
 
