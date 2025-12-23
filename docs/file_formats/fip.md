@@ -28,7 +28,7 @@ Numbering on fibers, patch cords and ROIs is always 0-indexed.
 - **n** to represent a fiber index (0-based, n ∈ {0, …, N-1})
 - **k** to represent a patch cord/ROI index (0-based, k ∈ {0, …, K-1})
 
-The mapping between ROIs and patch cords is implicitly defined by the software (ROI_k is drawn over patch_cord_k). However, the mapping between patch cords and implanted fibers is determined by the experimenter at the time of the experiment and should be documented in metadata. **Note**: This mapping is not currently captured in metadata directly. There is currently an assumption that experimentalists always attach patch cords 0 through N-1 to fibers 0 through N-1, and patch cords N through K-1 are left unused. The metadata mapper uses this assumption by checking procedures metadata to obtain a list of implanted fibers, then mapping patch cords to implanted fibers assuming that the above described convention has been followed. See [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40).
+The mapping between ROIs and patch cords is implicitly defined by the software (ROI_k is drawn over patch_cord_k). However, the mapping between patch cords and implanted fibers is determined by the experimenter at the time of the experiment and should be documented in metadata (see the "Relationship to aind-data-schema" section below for more detail).
 
 ## Raw Data Format
 
