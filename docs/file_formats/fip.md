@@ -204,13 +204,13 @@ Data acquisition code that generates data in this format is available from the [
 
 ### Relationship to aind-data-schema
 
-The FIP file format documents ROI-based measurements from patch cords. To fully interpret this data, additional metadata from aind-data-schema files is required:
+The FIP file format documents ROI-based measurements from patch cords. To fully interpret this data, additional metadata is required. For details on how this metadata is formatted under the AIND data schema, see the [AIND Data Schema ReadTheDocs](https://aind-data-schema.readthedocs.io/en/latest/). But briefly:
 
 * **procedures.json**: Documents implanted fiber locations (stereotactic coordinates) and viral injection metadata (stereotactic coordinates, materials, viral constructs)
 
 * **acquisition.json**: Documents which patch cords were connected to which implanted fibers during the experiment. This is contained in the [connections](https://aind-data-schema.readthedocs.io/en/latest/components/connections.html#connection) list in the [DataStream object](https://aind-data-schema.readthedocs.io/en/latest/acquisition.html#datastream). This mapping is critical for correctly interpreting the data, as the `Fiber_n` columns in the CSV files represent patch_cord_n data, and experimenters may not always connect patch_cord_n to fiber_n (e.g., if a particular implanted fiber is damaged or if a different configuration is needed for the experiment). Also documents the intended measurement for each fiber (e.g., norepinephrine, dopamine, calcium) which is stored in the [channel](https://aind-data-schema.readthedocs.io/en/latest/components/configs.html#channel) config of each [PatchCordConfig](https://aind-data-schema.readthedocs.io/en/latest/components/configs.html#patchcordconfig), assuming that this information was provided by the scientist in the surgical request.
 
-A standard convention is for patch cords 0 through N-1 to connect to fibers 0 through N-1, with patch cords N through 3 left unused, but this convention is not enforced by the acquisition software. There is currently no method for capturing intentional or inadvertent variances from this convention (again, see [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40).)
+A standard convention is for patch cords 0 through N-1 to connect to fibers 0 through N-1, with patch cords N through K left unused, but this convention is not enforced by the acquisition software. There is currently no method for capturing intentional or inadvertent variances from this convention (again, see [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40).)
 
 ### File Quality Assurances
 
