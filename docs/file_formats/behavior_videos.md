@@ -91,19 +91,19 @@ Additional cameras could be supported but the user should provide the necessary 
 
 > [!CAUTION]
 > It is the user's responsibility to ensure that:
-> 
+>
 > - The camera is correctly calibrated and that the settings are appropriate for the experiment.
-> 
+>
 > - Unless there is a reason not to, the default logging pattern should always follow the following logic: (Stop trigger if needed) -> Start logging -> Start Camera -> Start Trigger -> Acquire data -> Stop Trigger -> Stop Logging. This guarantees that all relevant events are recorded.
-> 
+>
 > - Trigger generation only starts AFTER the camera hardware has been initialized. This is to ensure that the camera is ready to receive the first trigger signal.
-> 
+>
 > - For each trigger of the trigger source (e.g. Harp Behavior board) a corresponding camera exposure should occur. One example where this can be violated is if the set exposure is greater than the trigger frequency.
-> 
+>
 > - In absence of dropped frames (defined as skips in the FrameNumber > 1) the metadata.csv file is expected to be aligned with the video file.
-> 
+>
 > - (Optional) Start trigger and Stop trigger events should be available for QC.
-> 
+>
 > - (Optional) The logs of all triggers (regardless of whether they are logged in the metadata.csv) should be saved for redundancy.
 
 #### Acquisition and Logging
