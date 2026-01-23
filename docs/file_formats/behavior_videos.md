@@ -51,22 +51,30 @@ The metadata file is expected to contain the following columns:
 
 As for the video, since the format will depend on the scientific question and software/hardware constrains, we will not enforce a specification. However, we strongly discourage the use of RAW, uncompressed data, and should the user not have a preference, we suggest the follow default:
 
-Since this format will depend on the scientific question and software/hardware constrains, we will not enforce a specific format. However, if the user does not have a preference we suggest the follow specification:
+1) Use a separate online encoder and offline encoder for use during acquisition, and long-term storage, respectively
 
-- Use mp4 container
+For the online encoder:
 - Acquire without any gamma correction
+- Acquire with the mkv format so that files are not corrupted if acquisition is
+  abnormally terminated, i.e. the video files should be named like `video.mkv`
 - Use `ffmpeg` with the following encoding codec string for online encoding (optimized for compression quality and speed):
 
   Note: this has been tested with monochrome videos with the raw pixel format
   `gray`. For color videos, the input arguments might need to be altered to
   match the color space of the input.
 
-  - output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full,format=bgr24,scale=out_range=full" -c:v h264_nvenc -pix_fmt yuv420p -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M`
+  - output arguments: `-vf
+ "scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear"
+ -c:v h264_nvenc -pix_fmt yuv420p -color_range full -colorspace bt709 -color_trc
+ linear -tune hq -preset p3 -rc vbr -cq 18 -b:v 0M
+ -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M
+ -bufsize 350M -f matroska -write_crc32 0`
   - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
 
 
-and the following encoding codec string for offline re-encoding (optimized for quality and size):
+For offline re-encoding (optimized for quality and size):
 
+- Use mp4 container for the final video, i.e. the video should be named like `video.mp4`.
 - output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:sws_dither=none,format=yuv420p10le,colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p" -c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
 
 For higher bitdepth (more than eight) recordings, change the output arguments of the online encoding to be as follows:
