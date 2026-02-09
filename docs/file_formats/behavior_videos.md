@@ -83,19 +83,23 @@ For higher bit depth (more than eight) recordings, change the output arguments o
     -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear
     -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M
     -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M
+    -f matroska -write_crc32 0
     ```
 
 The HEVC encoder must be used to support 10 bit depth, and the pixel format has
 been changed to `p010le` which is a yuv420-like 10 bit pixel format that is
-accepted by NVENC. There is an intermediate pixel format, yuv420p10le, which is
-necessary at the time of writing for gray pixel format inputs due to incorrect
-chroma initialization for p010le. Depending on your pixel format, and recent
-changes to ffmpeg, this may not be necessary.
+accepted by NVENC. We also recommend using `.mkv` videos at the rig, to reduce
+the risk of data loss.
 
 Note that this saves the pixel data at 10 bit depth, even if the camera is
 acquiring 12 or higher. NVENC does not support saving more than 10 bit pixel
 depths. However, saving 10 bit pixel depth before gamma encoding will result in
 more accurate gamma encoding for the second stage encoding.
+
+There is an intermediate pixel format, yuv420p10le, which is
+necessary at the time of writing for gray pixel format inputs due to incorrect
+chroma initialization for p010le. Depending on your pixel format, and recent
+changes to ffmpeg, this may not be necessary.
 
 For the video should retain 10
 bit depth after gamma encoding (not always necessary), The offline encoder will also need
