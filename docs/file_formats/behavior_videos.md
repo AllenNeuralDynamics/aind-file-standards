@@ -77,14 +77,7 @@ For offline re-encoding (optimized for quality and size):
 Note: this hasn't been tested as thoroughly.
 
 For higher bit depth (more than eight) recordings, change the output arguments of the online encoding to be as follows:
-  - output arguments:
-    ```
-    -vf "format=yuv420p10le,scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear"
-    -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear
-    -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M
-    -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M
-    -f matroska -write_crc32 0
-    ```
+  - output arguments: `-vf "format=yuv420p10le,scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
 
 The HEVC encoder must be used to support 10 bit depth, and the pixel format has
 been changed to `p010le` which is a yuv420-like 10 bit pixel format that is
