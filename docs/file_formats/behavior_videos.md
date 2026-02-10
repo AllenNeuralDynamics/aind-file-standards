@@ -2,7 +2,7 @@
 
 ## Version
 
-0.1.0-draft
+0.2.0
 
 ## Introduction
 
