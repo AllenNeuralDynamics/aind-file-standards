@@ -54,6 +54,7 @@ As for the video, since the format will depend on the scientific question and so
 Use a separate online encoder and offline encoder for use during acquisition, and long-term storage, respectively
 
 For the online encoder:
+
 - Acquire without any gamma correction
 - Acquire with the mkv format so that files are not corrupted if acquisition is
   abnormally terminated, i.e. the video files should be named like `video.mkv`
