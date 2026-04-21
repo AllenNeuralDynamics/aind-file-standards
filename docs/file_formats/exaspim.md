@@ -61,9 +61,7 @@ ccf_alignment
 
 #### soma_detection
 
-*NOT CURRENTLY PRESENT*
-
-Output is a single table in `csv` format containing soma locations in CCF and specimen space (*document columns*)
+Results are saved to `merged_soma_locations.csv`, containing soma locations in CCF and specimen space (*document columns*)
 
 #### Other processes
 Other processes including `flatfield_correction` and `denoising` only contribute processing metadata to the final asset
