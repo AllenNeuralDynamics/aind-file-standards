@@ -2,7 +2,7 @@
 
 ## Version
 
-0.1.0
+0.1.1
 
 ## Introduction
 
@@ -25,7 +25,7 @@ This standard prescribes a location, naming convention, and format for persistin
 
 ## Acquisition/Raw/Primary Data Format
 
-A file named `trainer_state.json` SHALL be stored inside the `behavior/` modality folder of the data asset. This file contains the serialized `TrainerState` at the time of session acquisition.
+A file named `trainer_state.json` SHALL be stored inside the `behavior/` modality folder of the data asset. This file MUST contain the serialized `TrainerState` at the time of session acquisition.
 
 ```plaintext
 📦<session_data_asset>
@@ -35,7 +35,7 @@ A file named `trainer_state.json` SHALL be stored inside the `behavior/` modalit
 ┗ ...
 ```
 
-It should be noted that this file, following the standard naming convention, can be appended with a `datetime` suffix if multiple curriculum states need to be stored for the same session (e.g. multiple behavior streams):
+It should be noted that this file, following the standard naming convention, MAY be appended with a `datetime` suffix if multiple curriculum states need to be stored for the same session (e.g. multiple behavior streams):
 
 ```plaintext
 📦<session_data_asset>
@@ -84,6 +84,6 @@ The information in the trainer state MUST NOT be serialized into any of the meta
 
 ### File Quality Assurances
 
-- If it exists, it must be able to be found using "trainer_state*.json" glob pattern in the `behavior/` modality folder.
+- If it exists, it MUST be able to be found using "trainer_state*.json" glob pattern in the `behavior/` modality folder.
 - The file MUST be valid JSON and parseable by `aind-behavior-curriculum`'s `TrainerState` model.
 - The file MUST be encoded in UTF-8.
