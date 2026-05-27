@@ -67,6 +67,7 @@ nav:
   - Core Standards: core/core-standards.md
   - Template: core/template.md
 - File Formats:
+  - Behavior Curriculum: file_formats/behavior_curriculum.md
   - Behavior Videos: file_formats/behavior_videos.md
   - Ecephys: file_formats/ecephys.md
   - Fip: file_formats/fip.md

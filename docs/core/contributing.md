@@ -6,18 +6,18 @@
 
 ## Pillars
 
-1) Rely on open-source tools and standards
-   1) Prioritize the use of open-source standard formats over proprietary ones.
-   2) In cases where a standard already exists, implement it or derive from it (e.g. datetime as ISO 8601).
+1. Rely on open-source tools and standards
+    1. Prioritize the use of open-source standard formats over proprietary ones.
+    2. In cases where a standard already exists, implement it or derive from it (e.g. datetime as ISO 8601).
 
-2) Well-separated and independent
-   1) A standard for a file format should be self-contained and introduce as few dependencies as possible. (e.g. a behavior-video data format should not depend on metadata from a fiber photometry data format). However, we acknowledge that information necessary for the interpretability of the data (but ideally not for its processing) should be included as metadata elsewhere (e.g. camera settings used to acquire the video).
+2. Well-separated and independent
+    1. A standard for a file format should be self-contained and introduce as few dependencies as possible. (e.g. a behavior-video data format should not depend on metadata from a fiber photometry data format). However, we acknowledge that information necessary for the interpretability of the data (but ideally not for its processing) should be included as metadata elsewhere (e.g. camera settings used to acquire the video).
 
-3) Versioning
-   1) We shall follow [Semantic Versioning 2.0.0](https://semver.org/)
-   2) Major version: breaking changes to standard (e.g. a file changed format from text to an image, or a column in a tabular file was deleted).
-   3) Minor version: backward-compatible changes to standard (e.g. a new column added to a tabular format).
-   4) Patch version: backward-compatible bug fixes (e.g. a typo in the documentation).
+3. Versioning
+    1. We shall follow [Semantic Versioning 2.0.0](https://semver.org/)
+    2. Major version: breaking changes to standard (e.g. a file changed format from text to an image, or a column in a tabular file was deleted).
+    3. Minor version: backward-compatible changes to standard (e.g. a new column added to a tabular format).
+    4. Patch version: backward-compatible bug fixes (e.g. a typo in the documentation).
 
 ---
 
@@ -67,9 +67,9 @@ The content of the pull request should reflect the issue that motivated the chan
 
 To ensure that standards are updated in a timely manner and release notes are easy to follow we propose the following structure for updating standards:
 
-1- A pull-request should be opened as described in the previous section. The PR should identify potential stakeholders and reviewers.
-2- Once reviewers and stakeholders approve the PR, dissemination of the planned changes should be made to the community to allow further feedback / contestation of the proposed changes.
-3- After a period of time, we suggest two weeks, if no major changes are needed, the PR is merged to the main branch and the new standard is approved.
+1. A pull-request should be opened as described in the previous section. The PR should identify potential stakeholders and reviewers.
+2. Once reviewers and stakeholders approve the PR, dissemination of the planned changes should be made to the community to allow further feedback / contestation of the proposed changes.
+3. After a period of time, we suggest two weeks, if no major changes are needed, the PR is merged to the main branch and the new standard is approved.
 
 ### Is it a new standard or just documentation?
 
