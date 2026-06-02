@@ -77,7 +77,7 @@ Each fiber photometry session will primarily be analyzed by using the average si
 
 Note: There are always exactly K columns named `Fiber_0` through `Fiber_{K-1}` corresponding to the configured patch cords and ROIs for the rig. If N < K (where N is the number of implanted fibers), then patch cords N through K-1 are unused and their corresponding columns contain data from unconnected patch cords.
 
-**Note on naming convention**: The column names `Fiber_0`, `Fiber_1`, …, `Fiber_{K-1}` are somewhat misleading - these columns actually represent data from patch_cord_0, patch_cord_1, …, patch_cord_{K-1}, respectively. The naming persists for backward compatibility. The relationship between patch cords and implanted fibers in the mouse is not captured in this file format and should be documented separately in metadata (see Relationship to aind-data-schema section below). If N < K (where N is the number of implanted fibers), then patch cords N through K-1 are unused and their corresponding columns contain data from unconnected patch cords.
+**Note on naming convention**: The column names `Fiber_0`, `Fiber_1`, …, `Fiber_{K-1}` are somewhat misleading - these columns actually represent data from patch_cord_0, patch_cord_1, …, patch_cord_{K-1}, respectively. The naming persists for backward compatibility. The relationship between patch cords and implanted fibers in the mouse is not captured in this file format and should be documented separately in metadata (see Relationship to aind-data-schema section below).
 
 #### Raw sensor data
 
