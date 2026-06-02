@@ -4,6 +4,7 @@ from typing import Dict, Any
 from pathlib import Path
 import logging
 import re
+from pymdownx.superfences import fence_code_format
 
 logging.basicConfig(format="%(levelname)-8s - %(message)s", level=logging.INFO)
 logger = logging.getLogger("mkdocs.navbuilder")
@@ -18,17 +19,28 @@ def format_title(text: str) -> str:
     return " ".join(word.capitalize() for word in words)
 
 
+def on_config(config: Dict[str, Any]) -> Dict[str, Any]:
+    sfences = config.setdefault("mdx_configs", {}).setdefault("pymdownx.superfences", {})
+    fences = sfences.setdefault("custom_fences", [])
+    if not any(f.get("name") == "mermaid" for f in fences):
+        fences.append({"name": "mermaid", "class": "mermaid", "format": fence_code_format})
+    return config
+
+
 def on_pre_build(config: Dict[str, Any]) -> None:
     if MKDOCS_YML.exists():
         with open(MKDOCS_YML, "r", encoding="utf-8") as f:
-            config = yaml.safe_load(f)
+            raw = yaml.safe_load(f)
     else:
-        config = {}
-    config["nav"] = build_nav(DOCS_DIR)
-
+        raw = {}
+    new_nav = build_nav(DOCS_DIR)
+    if raw.get("nav") == new_nav:
+        logger.info(f"✅ Nav unchanged, skipping {MKDOCS_YML} rewrite.")
+        return
+    raw["nav"] = new_nav
     with open(MKDOCS_YML, "w", encoding="utf-8") as f:
-        yaml.dump(config, f, sort_keys=False)
-    logger.info(f"✅ Updated {MKDOCS_YML} with {len(config['nav'])} nav entries.")
+        yaml.dump(raw, f, sort_keys=False)
+    logger.info(f"✅ Updated {MKDOCS_YML} with {len(new_nav)} nav entries.")
 
 
 def build_nav(path: Path):
