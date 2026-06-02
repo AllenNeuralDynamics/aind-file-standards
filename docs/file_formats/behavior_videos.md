@@ -2,7 +2,7 @@
 
 ## Version
 
-0.1.0-draft
+0.2.1
 
 ## Introduction
 
@@ -10,11 +10,11 @@ This document describes the standards for acquiring video data from behavior exp
 
 ## Acquisition/Raw/Primary Data Format
 
-Following SciComp standards, video data from behavior experiments should be saved to the `behavior-videos` modality folder.
+Following SciComp standards, video data from behavior experiments MUST be saved to the `behavior-videos` modality folder.
 
-Inside this folder, each camera should have its own directory, named `<CameraName>`. Inside each camera folder, there should be two files: `video.<extension>` and `metadata.csv`. The `video.<extension>` file should contain the video data, and the `metadata.csv` file should contain the metadata for the video.
+Inside this folder, each camera MUST have its own directory, named `<CameraName>`. Inside each camera folder, there MUST be two files: `video.<extension>` and `metadata.csv`. The `video.<extension>` file MUST contain the video data, and the `metadata.csv` file MUST contain the metadata for the video.
 
-`<CameraName>` is expected to match the name defined in the rig metadata file (`rig.json`)
+`<CameraName>` SHOULD match the name defined in the rig metadata file (`rig.json`)
 
 The folder structure will thus be:
 
@@ -28,7 +28,7 @@ The folder structure will thus be:
 ┃ ┗ 📜video.mp4
 ```
 
-If multiple streams from the same camera are acquired in the same session, an optional `datetime` suffix can be added to the container's name:
+If multiple streams from the same camera are acquired in the same session, an optional `datetime` suffix MAY be added to the container's name:
 
 ```plaintext
 📦behavior-videos
@@ -49,37 +49,60 @@ The metadata file is expected to contain the following columns:
 - `CameraFrameTime` – Frame acquisition time given by the camera API or manually added by the user (e.g. using OS scheduler for webcams).
 
 
-As for the video, since the format will depend on the scientific question and software/hardware constrains, we will not enforce a specification. However, we strongly discourage the use of RAW, uncompressed data, and should the user not have a preference, we suggest the follow default:
+As for the video, since the format will depend on the scientific question and software/hardware constrains, we will not enforce a specification. However, we strongly discourage the use of RAW, uncompressed data, and should the user not have a preference, the following default SHOULD be used:
 
-Since this format will depend on the scientific question and software/hardware constrains, we will not enforce a specific format. However, if the user does not have a preference we suggest the follow specification:
+Use a separate online encoder and offline encoder for use during acquisition, and long-term storage, respectively
 
-- Use mp4 container
-- Acquire without any gamma correction
+For the online encoder:
+
+- MUST acquire without any gamma correction
+- SHOULD acquire with the mkv format so that files are not corrupted if acquisition is
+  abnormally terminated, i.e. the video files should be named like `video.mkv`
 - Use `ffmpeg` with the following encoding codec string for online encoding (optimized for compression quality and speed):
 
   Note: this has been tested with monochrome videos with the raw pixel format
   `gray`. For color videos, the input arguments might need to be altered to
   match the color space of the input.
 
-  - output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full,format=bgr24,scale=out_range=full" -c:v h264_nvenc -pix_fmt yuv420p -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M`
+  - output arguments: `-vf "scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v h264_nvenc -pix_fmt yuv420p -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p3 -rc vbr -cq 18 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
   - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
 
 
-and the following encoding codec string for offline re-encoding (optimized for quality and size):
+For offline re-encoding (optimized for quality and size):
 
+- Use mp4 container for the final video, i.e. the video should be named like `video.mp4`.
 - output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:sws_dither=none,format=yuv420p10le,colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p" -c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
 
-For higher bitdepth (more than eight) recordings, change the output arguments of the online encoding to be as follows:
-  - output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full,format=rgb48le,scale=out_range=full" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M`
+#### Higher bit-depth recordings
 
-This is almost the same, except the intermediate color representation is 48 bits
-per pixel instead of 24, the HEVC encoder must be used to support 10 bit depth,
-and the pixel format has been changed to `p010le` which is a yuv420-like 10 bit
-pixel format that is accepted by NVENC. Note that this saves the pixel data at
-10 bit depth, even if the camera is acquiring 12 or higher. NVENC does not
-support saving more than 10 bit pixel depths. However, saving 10 bit pixel depth
-before gamma encoding will result in more accurate gamma encoding for the second
-stage encoding.
+Note: this hasn't been tested as thoroughly.
+
+For higher bit depth (more than eight) recordings, change the output arguments of the online encoding to be as follows:
+  - output arguments: `-vf "format=yuv420p10le,scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
+
+The HEVC encoder may need to be used to support 10 bit depth, and the pixel format has
+been changed to `p010le` which is a yuv420-like 10 bit pixel format that is
+accepted by NVENC. We also recommend using `.mkv` videos at the rig, to reduce
+the risk of data loss.
+
+Note that this saves the pixel data at 10 bit depth, even if the camera is
+acquiring 12 or higher. NVENC does not support saving more than 10 bit pixel
+depths. However, saving 10 bit pixel depth before gamma encoding will result in
+more accurate gamma encoding for the second stage encoding.
+
+There is an intermediate pixel format, yuv420p10le, which is
+necessary at the time of writing for gray pixel format inputs due to incorrect
+chroma initialization for p010le. Depending on your pixel format, and recent
+changes to ffmpeg, this may not be necessary.
+
+For the video to retain 10 bit depth for long-term storage, the offline encoder MUST also be changed. For example, set the output arguments to:
+```
+-vf "colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p10le"
+-c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p10le
+-metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
+```
+
+However, acquiring at 10 bits, gamma encoding, and saving 8 bit-depth videos for long-term storage is sufficient for many applications.
 
 ### Application notes
 
@@ -117,23 +140,23 @@ While we suggest using the aforementioned recipes, the user is free to use any s
 
 ### Relationship to aind-data-schema
 
-`<CameraName>` is expected to match the name defined in the rig metadata file (`rig.json`). Several fields in the metadata can be automatically extracted from this file format (e.g. start and stop of the stream, resolution of the video). However, the user should ensure that any data pertaining to the hardware configuration (e.g. camera model, exposure time, gain, camera position, etc...) is logged indepedently from this file format herein described.
+`<CameraName>` SHOULD match the name defined in the rig metadata file (`rig.json`). Several fields in the metadata can be automatically extracted from this file format (e.g. start and stop of the stream, resolution of the video). However, the user SHOULD ensure that any data pertaining to the hardware configuration (e.g. camera model, exposure time, gain, camera position, etc...) is logged independently from this file format herein described.
 
 ### File Quality Assurances
 
 The following features should be true if the data asset is to be considered valid:
 
-- The number of frames in the encoded video should match the number of recorded frames and the number of frames in the metadata.
+- The number of frames in the encoded video MUST match the number of recorded frames and the number of frames in the metadata.
 
 - Check if dropped frames occurred. This should be done in two ways:
 
-  - The difference between adjacent FrameNumber is always 1;
+  - The difference between adjacent FrameNumber is ALWAYS 1;
 
-  - The difference between adjacent Seconds and adjacent FrameTime should be very close (I would suggest a threshold of 0.5ms for now);
+  - The difference between adjacent Seconds and adjacent FrameTime SHOULD be very close (<0.5ms);
 
 > [!NOTE]
 > While dropped frames are not ideal, they do not necessarily invalidate the data. However, the user should be aware of the potential consequences and/or ways to correct the data asset.
 
-- If using a stable frame rate (this should be inferred from a rig configuration file), the average frame rate should match the theoretical frame rate;
+- If using a stable frame rate (this should be inferred from a rig configuration file), the average frame rate SHOULD match the theoretical frame rate;
 
-(optional) If the optional start and stop events are provided, the following temporal order should be asserted: `All(StartTrigger < Frames  < StopTrigger>)`
+(optional) If the optional start and stop events are provided, the following temporal order SHOULD be asserted: `All(StartTrigger < Frames  < StopTrigger>)`

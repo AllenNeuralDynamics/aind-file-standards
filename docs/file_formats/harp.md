@@ -2,7 +2,7 @@
 
 ## Version
 
-0.2.0
+0.2.1
 
 ## Introduction
 
@@ -23,7 +23,7 @@ Furthermore, each address, as per harp protocol spec, has potentially different 
 
 This analysis could be entirely eliminated if we knew that all messages in the binary file had the same format. For any Harp device, the payload stored in a specific register will have a fixed type and length. This means that to ensure our simplifying assumption it is enough to save each message from a specific register into a different file (aka de-multiplexing strategy).
 
-Thus, for each device, the container of all data will be a single directory with the extension `<>.harp`. This directory will contain the following files:
+Thus, for each device, the container of all data MUST be a single directory with the extension `<>.harp`. This directory SHALL contain the following files:
 
 ```plaintext
 📦<Device>.harp
@@ -37,13 +37,13 @@ Thus, for each device, the container of all data will be a single directory with
 
 where:
 
-- `<DeviceName>` will be derived from the `device.yml` metadata file that fully defines the device and can be found in the repository of each device ([e.g.](https://raw.githubusercontent.com/harp-tech/device.behavior/main/device.yml)). This file can be seen as the "ground truth" specification of the device. It is used to automatically generate documentation, interfaces and data ingestion tools.
-- `<Device>` should match the name of the device in the `rig.json` schema file;
+- `<DeviceName>` SHOULD be derived from the `device.yml` metadata file that fully defines the device and can be found in the repository of each device ([e.g.](https://raw.githubusercontent.com/harp-tech/device.behavior/main/device.yml)). This file can be seen as the "ground truth" specification of the device. It is used to automatically generate documentation, interfaces and data ingestion tools.
+- `<Device>` SHOULD match the name of the device in the `rig.json` schema file;
 - `<Reg>` is the register number that is logged in the binary file.
 
 #### On the `device.yml` file
 
-Including the `device.yml` file that corresponds to the device interface used to log the device's data is required. This file affords the use of diverse tooling offered by the ecosystem, in particular [device-type-aware data ingestion tools](https://github.com/harp-tech/harp-python). Note that while the `device.yml` file specifies the targeted hardware, firmware, and core versions, it does not guarantee that the device from which data was acquired is running those versions. This metadata should instead be queried directly from the corresponding device's registers([see protocol core registers](https://harp-tech.org/protocol/Device.html#table---list-of-available-common-registers))
+Including the `device.yml` file that corresponds to the device interface used to log the device's data is REQUIRED. This file affords the use of diverse tooling offered by the ecosystem, in particular [device-type-aware data ingestion tools](https://github.com/harp-tech/harp-python). Note that while the `device.yml` file specifies the targeted hardware, firmware, and core versions, it does not guarantee that the device from which data was acquired is running those versions. This metadata MAY instead be queried directly from the corresponding device's registers([see protocol core registers](https://harp-tech.org/protocol/Device.html#table---list-of-available-common-registers))
 
 - An example of an yml file can be found here: [device.yml](https://raw.githubusercontent.com/harp-tech/device.behavior/main/device.yml)
 - And the schema for the yml file can be found here: [device.yml schema](https://raw.githubusercontent.com/harp-tech/protocol/refs/heads/main/schema/device.json)
@@ -52,7 +52,7 @@ Including the `device.yml` file that corresponds to the device interface used to
 
 A critical aspect of using the Harp protocol is that for each `Write` message received by the device from the PC host, the client will echo back a Write message timestamped by the embedded device. This assumes that all messages issued by the host are received by the device and not lost in transmission. However, this is not guaranteed. In case of a lost message, the host will not receive the echo back and cannot confirm that the message was received by the device.
 
-To perform post-hoc quality control, we recommend also logging `Commands`. Since `Commands` are also HarpMessage types, they can be logged in the same format as data from devices. We also recommend appending a software timestamp to each `Command` message to facilitate pairing requests with responses post-hoc.
+To perform post-hoc quality control, we RECOMMEND also logging `Commands`. Since `Commands` are also HarpMessage types, they can be logged in the same format as data from devices. We also RECOMMEND appending a software timestamp to each `Command` message to facilitate pairing requests with responses post-hoc.
 
 
 ### Application notes
@@ -75,13 +75,13 @@ Instructions on how to log data from a Harp device using Bonsai can be found in 
 A "syntactic sugar" operator for logging device data with a corresponding device.yml file is also available in via the [AllenNeuralDynamics.HarpUtils](https://allenneuraldynamics.github.io/Bonsai.AllenNeuralDynamics/articles/core-logging.html#with-metadata) package.
 
 > [!IMPORTANT]
-> In your experiments, always validate that your logging routine has fully initialized before requesting a reading dump from the device. Failure to do so may result in missing data.
+> In your experiments, ALWAYS validate that your logging routine has fully initialized before requesting a reading dump from the device. Failure to do so may result in missing data.
 
 > [!NOTE]
 > In the future we will update these recipes to also provide AIND specific examples.
 
 
-It is critical that the messages logged from the device are sufficient to reconstruct its state history. For that to be true, we need to know the initial state of all registers. This can be asked via a special register in the protocol core: [`OperationControl`](https://harp-tech.org/protocol/Device.html#r_operation_ctrl-u16--operation-mode-configuration). This register has a single bit that, when set, will trigger the device to send a dump all the values of all its registers.
+It is critical that the messages logged from the device are sufficient to reconstruct its state history. For that to be true, we SHOULD know the initial state of all registers. This can be asked via a special register in the protocol core: [`OperationControl`](https://harp-tech.org/protocol/Device.html#r_operation_ctrl-u16--operation-mode-configuration). This register has a single bit that, when set, will trigger the device to send a dump all the values of all its registers.
 
 - To the previous [logging example](https://harp-tech.org/articles/logging.html#groupbyregister), in a different branch:
 - Add a `Timer` operator with its `DueTime` property set to 2 seconds. This will mimic the delayed start of an experiment.
@@ -148,8 +148,8 @@ Most fields tracked in `rig.json` can be easily extracted from the device's read
 
 By virtue of implementing the Harp communication and synchronization protocol the following should be true:
 
-1) Each data set should, at most, have a device as a source of the synchronized clock.
-2) All messages from the device to the computer host should be logged. Once a message is successfully parsed, no more processing and/or filtering of the data stream will be done prior to logging.
-3) All data from a single device will include the initial state of all registers. This can be achieved by setting the `DumpRegisters` bit in the `OperationControl` register. Given that this is true, inside the container folder, one file per register of the device is expected to be found with a minimum of one message in each file.
-4) If Commands are logged, for each message sent to the device, a corresponding message should exist in the logged data from the harp device. The type of the message in the Command will match the type of the reply from the device.
+1) Each data set SHOULD, at most, have a device as a source of the synchronized clock.
+2) All messages from the device to the computer host SHOULD be logged. Once a message is successfully parsed, no more processing and/or filtering of the data stream will be done prior to logging.
+3) All data from a single device SHOULD include the initial state of all registers. This can be achieved by setting the `DumpRegisters` bit in the `OperationControl` register. Given that this is true, inside the container folder, one file per register of the device is expected to be found with a minimum of one message in each file.
+4) If Commands are logged, for each message sent to the device, a corresponding message SHOULD exist in the logged data from the harp device. The type of the message in the Command will match the type of the reply from the device.
 5) If multiple devices are used, all data is assumed to be synchronized at acquisition time.
