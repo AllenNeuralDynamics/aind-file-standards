@@ -2,11 +2,31 @@
 
 ## Version
 
-`0.4.0`
+`0.5.0`
 
 ## Introduction
 
 This document describes the standards for the acquisition of frame-projected independent-fiber photometry (FIP) data in the Allen Institute for Neural Dynamics.
+
+## Terminology
+
+This document uses specific terminology to distinguish between different components of the FIP system:
+
+* **Fibers**: Optical fibers surgically implanted in the mouse's brain. Mice have variable numbers of implanted fibers depending on scientific requirements. Fiber implantation details (locations, stereotactic coordinates) should be documented in metadata. See the 'Relationship to aind-data-schema' section below for details on how this is documented in the aind-data-schema.
+
+* **Patch cords**: Fiber optic cables that are permanently part of the FIP hardware system. The current FIP system has exactly 4 patch cords, but the file standard is agnostic to this number. At experiment time, experimenters physically connect patch cords to implanted fibers. Not all patch cords are necessarily connected during every experiment.
+
+* **Fiber bundle**: The assembly of all patch cords whose termini are visible to the imaging cameras.
+
+* **ROIs (Regions of Interest)**: Circular regions drawn on the camera image over the visible ends of the patch cords in the fiber bundle. Each ROI defines the camera area used to extract a timeseries.
+
+Numbering on fibers, patch cords and ROIs is always 0-indexed.
+
+**Notation**: Throughout this document, we use:
+- **N** to represent the total number of implanted fibers in a given mouse (1 ≤ N ≤ K)
+- **K** to represent the total number of patch cords/ROIs defined by the hardware (current rigs use K = 4, but this document is written to allow other values)
+
+The mapping between ROIs and patch cords is implicitly defined by the software (each ROI is drawn over the visible end of its corresponding patch cord). However, the mapping between patch cords and implanted fibers is determined by the experimenter at the time of the experiment and should be documented in metadata (see the "Relationship to aind-data-schema" section below for more detail).
 
 ## Raw Data Format
 
@@ -53,9 +73,11 @@ Each fiber photometry session will primarily be analyzed by using the average si
 * `CameraFrameNumber` Frame counter given by the camera API
 * `CameraFrameTime` Frame acquisition time given by the camera API
 * `Background` CMOS dark count floor signal
-* `Fiber_0` Average signal values for Fiber_0's selected ROI
-* `<...>` (Variable number of columns)
-* `Fiber_N` Average signal values for Fiber_N's selected ROI.
+* `Fiber_0`, `Fiber_1`, …, `Fiber_{K-1}` Average signal values from the corresponding patch cord's ROI (one column per patch cord/ROI)
+
+Note: There are always exactly K columns named `Fiber_0` through `Fiber_{K-1}` corresponding to the configured patch cords and ROIs for the rig. If N < K (where N is the number of implanted fibers), then patch cords N through K-1 are unused and their corresponding columns contain data from unconnected patch cords.
+
+**Note on naming convention**: The column names `Fiber_0`, `Fiber_1`, …, `Fiber_{K-1}` are somewhat misleading - these columns actually represent data from patch_cord_0, patch_cord_1, …, patch_cord_{K-1}, respectively. The naming persists for backward compatibility. The relationship between patch cords and implanted fibers in the mouse is not captured in this file format and should be documented separately in metadata (see Relationship to aind-data-schema section below).
 
 #### Raw sensor data
 
@@ -180,7 +202,13 @@ Data acquisition code that generates data in this format is available from the [
 
 ### Relationship to aind-data-schema
 
-procedures.json documents the relevant fiber probe implantation metadata (stereotaxic coordinates) and viral injection metadata (stereotaxic coordinates, materials). session.json documents the intended measurement (e.g. norepinephrine, dopamine, etc) for each channel of each probe. 
+The FIP file format documents ROI-based measurements from patch cords. To fully interpret this data, additional metadata is required. For details on how this metadata is formatted under the AIND data schema, see the [AIND Data Schema ReadTheDocs](https://aind-data-schema.readthedocs.io/en/latest/). But briefly:
+
+* **procedures.json**: Documents implanted fiber locations (stereotactic coordinates) and viral injection metadata (stereotactic coordinates, materials, viral constructs)
+
+* **acquisition.json**: Documents which patch cords were connected to which implanted fibers during the experiment. This is contained in the [connections](https://aind-data-schema.readthedocs.io/en/latest/components/connections.html#connection) list in the [DataStream object](https://aind-data-schema.readthedocs.io/en/latest/acquisition.html#datastream). This mapping is critical for correctly interpreting the data, as the Fiber columns in the CSV files contain patch cord data, and experimenters may not always connect a given patch cord to the implanted fiber with the same number (e.g., if a particular implanted fiber is damaged or if a different configuration is needed for the experiment). This also documents the intended measurement for each fiber (e.g., norepinephrine, dopamine, calcium) which is stored in the [channel config](https://aind-data-schema.readthedocs.io/en/latest/components/configs.html#channel) of each [PatchCordConfig](https://aind-data-schema.readthedocs.io/en/latest/components/configs.html#patchcordconfig), as provided by the scientist in the surgical request.
+
+A standard convention is for patch cords 0 through N-1 to connect to fibers 0 through N-1, with patch cords N through K-1 left unused. This convention is not enforced by the acquisition software, and the metadata generated automatically assumes the convention has been followed. If the experimenter deviates from the convention, they MUST manually edit the [connections](https://aind-data-schema.readthedocs.io/en/latest/components/connections.html#connection) in acquisition.json to record the actual patch-cord-to-fiber mapping for the session. See [this issue](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip/issues/40) for ongoing work to capture this mapping automatically.
 
 ### File Quality Assurances
 
@@ -193,6 +221,6 @@ The following are expected to be true for all FIP data collected under this stan
     > Dropped frames are not normal and should not be taken lightly. If you encounter dropped frames, please contact the data acquisition team for further investigation.
 * The difference between the derivative of `CameraFrameTime` and `ReferenceTime` is expected to be very small (i.e.: abs(max(diff(`CameraFrameTime`) - diff(`ReferenceTime`))) < 0.2ms). If this is not the case, it may indicate a problem with frame exposure.
 * All rows in the `<color>.csv` files will be present in the corresponding camera metadata files. The opposite is not guaranteed to be true.
-* A `<color>.csv` file is not guaranteed to have a `Fiber_N` column. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
-* The naming of `Fiber_<i>` columns in the `<color>.csv` files is guaranteed to be sequential, starting from `Fiber_0` and going up to `Fiber_N`.
+* A `<color>.csv` file always contains exactly K columns named `Fiber_0` through `Fiber_{K-1}` corresponding to the patch cords for the rig. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
+* The naming of the Fiber columns in the `<color>.csv` files is guaranteed to be sequential, starting from `Fiber_0` and going up to `Fiber_{K-1}`. **Important**: These column names reflect patch cord position, not necessarily the implanted fiber that each patch cord connects to. If N < K (where N is the number of implanted fibers), then patch cords N through K-1 are unused. Consult acquisition.json metadata to determine the patch_cord-to-fiber mapping for each session.
 * The `regions.json` in the FIP session are guaranteed to be static within a session. The number and order of the ROIs are expected to be the same across the two cameras.
