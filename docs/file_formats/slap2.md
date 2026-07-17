@@ -8,7 +8,7 @@
 
 This document describes the standards for SLAP2 optical physiology data assets. The standard covers both static SLAP2 structure acquisitions and dynamic SLAP2 experiment acquisitions.
 
-## Acquisition Data Format
+## Acquisition/Raw/Primary Data Format
 
 Following SciComp standards, SLAP2 data MUST be saved in the `slap2` modality folder. The timestamped session directory is the data asset root and contains the AIND metadata files for the acquisition. Other modality folders, such as `behavior` and `behavior-videos`, MAY exist alongside `slap2` and SHOULD follow their own standards.
 
@@ -55,7 +55,11 @@ Dynamic SLAP2 experiment assets MUST store their modality-specific files in `sla
 
 The filename stems encode the acquisition time and the DMD index used for the acquisition.
 
-The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are the preferred short-form conventions for new assets. Alternative filename stems are also accepted. In every case, companion files MUST still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
+The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are the preferred short-form conventions for new assets. Alternative filename stems are also accepted.
+
+Beyond that leading stem, the punctuation, datetime format, and suffix ordering shown above are determined by the MBF Bioscience SLAP2 microscope software and are documented here as generated rather than redefined by AIND.
+
+In every case, companion files MUST still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
 
 Dynamic acquisitions MAY omit the per-trial TIFF files when the SLAP2 acquisition mode does not generate them, but the `.dat` payloads and their metadata are still required.
 
