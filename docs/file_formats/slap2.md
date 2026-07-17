@@ -20,13 +20,17 @@ SLAP2 experiment-acquisition files stored under `slap2/dynamic_data`. These file
 
 **Reference stack**
 
-The `reference_stack` subdirectory within `slap2/dynamic_data`. It contains the required reference image for the dynamic acquisition and MAY also include companion stack files when those files are not already captured in a separate static SLAP2 asset.
+The `reference_stack` subdirectory within `slap2/dynamic_data`.
+It contains the required reference image for the dynamic acquisition.
+It MAY also include companion stack files when those files are not already captured in a separate static SLAP2 asset.
 
 ## Acquisition/Raw/Primary Data Format
 
 Following SciComp standards, SLAP2 data MUST be saved in the `slap2` modality folder. The timestamped session directory is the data asset root and contains the AIND metadata files for the acquisition. Other modality folders, such as `behavior` and `behavior-videos`, MAY exist alongside `slap2` and SHOULD follow their own standards.
 
-Within the `slap2` folder, `session_vasculature_1p.tif` SHOULD be included when a session-specific 1p vasculature image was collected. If that image is not available, `acquisition.json` SHOULD document the imaging location coordinates. `vasculature_map_annotated.tif` SHOULD be included when available.
+Within the `slap2` folder, `session_vasculature_1p.tif` SHOULD be included when a session-specific 1p vasculature image was collected.
+If that image is not available, `acquisition.json` SHOULD document the imaging location coordinates.
+`vasculature_map_annotated.tif` SHOULD be included when available.
 
 ### File format
 
@@ -63,7 +67,11 @@ Dynamic SLAP2 experiment assets MUST store their modality-specific files in `sla
 
 ### Application notes
 
-The filename stems encode the acquisition time and the DMD index used for the acquisition. The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are recommended conventions rather than required literals; producers MAY use different leading stems provided that companion files still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics. Dynamic acquisitions MAY omit the per-trial TIFF files when the SLAP2 acquisition mode does not generate them, but the `.dat` payloads and their metadata are still required.
+The filename stems encode the acquisition time and the DMD index used for the acquisition.
+
+The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are recommended conventions rather than required literals. Producers MAY use different leading stems provided that companion files still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
+
+Dynamic acquisitions MAY omit the per-trial TIFF files when the SLAP2 acquisition mode does not generate them, but the `.dat` payloads and their metadata are still required.
 
 The `vasculature_map_annotated.tif` file is preferred and, when present, is expected to be copied from the mouse-level vasculature reference maintained outside the session asset. `session_vasculature_1p.tif` captures the session-specific vasculature image used with the SLAP2 acquisition. If no session-specific 1p vasculature image is available, `acquisition.json` SHOULD document the imaging location coordinates instead.
 
