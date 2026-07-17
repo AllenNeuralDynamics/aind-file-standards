@@ -1,4 +1,4 @@
-# Standards on SLAP2 optical physiology acquisition
+# Standards on SLAP2 (Random Access Projection Microscopy) acquisition
 
 ## Version
 
@@ -7,22 +7,6 @@
 ## Introduction
 
 This document describes the standards for SLAP2 optical physiology data assets. The standard covers both static SLAP2 structure acquisitions and dynamic SLAP2 experiment acquisitions.
-
-## Vocabulary
-
-**Static data**
-
-SLAP2 structure-acquisition files stored under `slap2/static_data`. These files capture structural or reference information associated with a session.
-
-**Dynamic data**
-
-SLAP2 experiment-acquisition files stored under `slap2/dynamic_data`. These files capture the trial-based recordings collected during an experiment session.
-
-**Reference stack**
-
-The `reference_stack` subdirectory within `slap2/dynamic_data`.
-It contains the required reference image for the dynamic acquisition.
-It MAY also include companion stack files when those files are not already captured in a separate static SLAP2 asset.
 
 ## Acquisition Data Format
 
@@ -43,10 +27,10 @@ Static SLAP2 structure assets MUST store their modality-specific files in `slap2
 ┣ 📜vasculature_map_annotated.tif (preferred)
 ┣ 📜session_vasculature_1p.tif (if collected)
 ┗ 📂static_data
-  ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#.meta
-  ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#.dat
-  ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#.tif
-  ┗ 📜structure_YYYYMMDD_HHMMSS_DMD#-REFERENCE.tif
+  ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).meta
+  ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).dat
+  ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).tif
+  ┗ 📜structure_YYYYMMDD_HHMMSS_DMD#(_CONFIG#)-REFERENCE.tif
 ```
 
 Dynamic SLAP2 experiment assets MUST store their modality-specific files in `slap2/dynamic_data`. A common naming convention is:
@@ -59,12 +43,12 @@ Dynamic SLAP2 experiment assets MUST store their modality-specific files in `sla
   ┣ 📜acquisition_YYYYMMDD_HHMMSS_DMD#.meta
   ┣ 📜acquisition_YYYYMMDD_HHMMSS_DMD#-TRIAL######(-CYCLE######).dat
   ┣ 📜acquisition_YYYYMMDD_HHMMSS_DMD#-TRIAL######(-CYCLE######).tif
-  ┣ 📂reference_stack
-  ┃ ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#)-REFERENCE.tif
-  ┃ ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).meta (optional)
-  ┃ ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).dat (optional)
-  ┃ ┗ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).tif (optional)
-  ┗ ...
+  ┣ ...
+  ┗ 📂reference_stack
+    ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#)-REFERENCE.tif
+    ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).meta (optional)
+    ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).dat (optional)
+    ┗ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).tif (optional)
 ```
 
 ### Application notes
@@ -99,3 +83,27 @@ The following features should be true if the data asset is to be considered vali
 - Every `.dat` file MUST have a matching `.meta` file with the same filename stem.
 - Every structure TIFF stack MUST have a matching `-REFERENCE.tif` image with the same filename stem.
 - Every reference-stack `.meta`, `.dat`, or `.tif` file, when present, MUST have a matching `-REFERENCE.tif` image with the same filename stem.
+
+## Vocabulary
+
+**Static data**
+
+SLAP2 structure-acquisition files stored under `slap2/static_data`. These data are meant to be averaged over time and typically capture structural or reference information.
+
+**Dynamic data**
+
+SLAP2 experiment-acquisition files stored under `slap2/dynamic_data`. These data are meant to be analyzed in the full spatial (XYZ) and temporal (T) dimensions and typically correspond to the recordings collected during an experiment session.
+
+**Reference stack**
+
+The `reference_stack` subdirectory within `slap2/dynamic_data`.
+It contains the required reference image (`*-REFERENCE.tif`) that was used for imaging ROI selection and online motion correction during the dynamic acquisition. If the reference image is not already in its own separate static data asset, the `reference_stack` subdirectory SHOULD also include the raw data files (`*.dat`, `*.meta`).
+
+**Imaging regions of interest (ROIs)**
+
+SLAP2 is a random access projection microscope, which enables imaging to be targeted only to specified locations. Imaging ROIs are the raster and/or integration ROIs that are selected for imaging on SLAP2.
+
+**Field of view (FOV)**
+
+For the [`Slap2Plane`](https://aind-data-schema.readthedocs.io/en/stable/components/configs.html#slap2plane) concept in `aind-data-schema`, a FOV is a specific set of imaging ROIs that are imaged simultaneously. If any imaging ROIs in the set are modified, deleted, or added, the FOV becomes a different FOV.
+
