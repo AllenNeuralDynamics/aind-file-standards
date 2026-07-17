@@ -6,7 +6,7 @@
 
 ## Introduction
 
-This document describes the standards for SLAP2 optical physiology data assets. The standard covers both static SLAP2 structure acquisitions and dynamic SLAP2 experiment acquisitions.
+This document describes the standards for SLAP2 optical physiology data assets. The standard covers both static SLAP2 structure acquisitions and dynamic SLAP2 experiment acquisitions. Derived SLAP2 data are not yet specified in this standard and are planned for a later version.
 
 ## Acquisition/Raw/Primary Data Format
 
@@ -69,7 +69,7 @@ Within `reference_stack`, a `-REFERENCE.tif` image matching the reference-stack 
 
 ### Relationship to aind-data-schema
 
-The asset root SHOULD include `instrument.json` and `acquisition.json` created at acquisition time. During upload, `subject.json`, `data_description.json`, `metadata.nd.json`, `procedures.json`, and `processing.json` are added at the asset root. These metadata files describe the acquisition context but are not part of the modality-specific `slap2` payload itself.
+The microscope-generated `*.meta` files contain the microscope and imaging-session metadata recorded by the SLAP2 system itself. The asset root SHOULD include `instrument.json` and `acquisition.json` created at acquisition time, and during upload `subject.json`, `data_description.json`, `metadata.nd.json`, `procedures.json`, and `processing.json` are added at the asset root. These `*.json` metadata files are necessary for compliance with the `aind-data-schema` and are not part of the modality-specific `slap2` payload itself.
 
 ### File Quality Assurances
 
