@@ -71,7 +71,7 @@ Dynamic SLAP2 experiment assets MUST store their modality-specific files in `sla
 
 The filename stems encode the acquisition time and the DMD index used for the acquisition.
 
-The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are the preferred short-form conventions. This standard also accepts the alternative stems `structureScan_`, `trialAcquisition_`, and `referenceStack_`. In every case, companion files MUST still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
+The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are the preferred short-form conventions for new assets. This standard also accepts the alternative stems `structureScan_`, `trialAcquisition_`, and `referenceStack_` for compatibility with existing exports. In every case, companion files MUST still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
 
 Dynamic acquisitions MAY omit the per-trial TIFF files when the SLAP2 acquisition mode does not generate them, but the `.dat` payloads and their metadata are still required.
 
