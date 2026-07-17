@@ -19,48 +19,32 @@ Within the `slap2` folder, both static and dynamic acquisitions MUST include `se
 Static SLAP2 structure assets MUST store their modality-specific files in `slap2/static_data`:
 
 ```plaintext
-📦<mouse-id>_YYYY-MM-DD_HH-MM-SS
-┣ 📜instrument.json
-┣ 📜acquisition.json
-┣ 📜subject.json
-┣ 📜data_description.json
-┣ 📜metadata.nd.json
-┣ 📜procedures.json
-┣ 📜processing.json
-┗ 📂slap2
-  ┣ 📜vasculature_map_annotated.tif (preferred)
-  ┣ 📜session_vasculature_1p.tif
-  ┗ 📂static_data
-    ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#.meta
-    ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#.dat
-    ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#.tif
-    ┗ 📜structure_YYYYMMDD_HHMMSS_DMD#-REFERENCE.tif
+📂slap2
+┣ 📜vasculature_map_annotated.tif (preferred)
+┣ 📜session_vasculature_1p.tif
+┗ 📂static_data
+  ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#.meta
+  ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#.dat
+  ┣ 📜structure_YYYYMMDD_HHMMSS_DMD#.tif
+  ┗ 📜structure_YYYYMMDD_HHMMSS_DMD#-REFERENCE.tif
 ```
 
 Dynamic SLAP2 experiment assets MUST store their modality-specific files in `slap2/dynamic_data`:
 
 ```plaintext
-📦<mouse-id>_YYYY-MM-DD_HH-MM-SS
-┣ 📜instrument.json
-┣ 📜acquisition.json
-┣ 📜subject.json
-┣ 📜data_description.json
-┣ 📜metadata.nd.json
-┣ 📜procedures.json
-┣ 📜processing.json
-┗ 📂slap2
-  ┣ 📜vasculature_map_annotated.tif (preferred)
-  ┣ 📜session_vasculature_1p.tif
-  ┗ 📂dynamic_data
-    ┣ 📜acquisition_YYYYMMDD_HHMMSS_DMD#.meta
-    ┣ 📜acquisition_YYYYMMDD_HHMMSS_DMD#-TRIAL######(-CYCLE######).dat
-    ┣ 📜acquisition_YYYYMMDD_HHMMSS_DMD#-TRIAL######(-CYCLE######).tif
-    ┣ 📂reference_stack
-    ┃ ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#)-REFERENCE.tif
-    ┃ ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).meta (optional)
-    ┃ ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).dat (optional)
-    ┃ ┗ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).tif (optional)
-    ┗ ...
+📂slap2
+┣ 📜vasculature_map_annotated.tif (preferred)
+┣ 📜session_vasculature_1p.tif
+┗ 📂dynamic_data
+  ┣ 📜acquisition_YYYYMMDD_HHMMSS_DMD#.meta
+  ┣ 📜acquisition_YYYYMMDD_HHMMSS_DMD#-TRIAL######(-CYCLE######).dat
+  ┣ 📜acquisition_YYYYMMDD_HHMMSS_DMD#-TRIAL######(-CYCLE######).tif
+  ┣ 📂reference_stack
+  ┃ ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#)-REFERENCE.tif
+  ┃ ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).meta (optional)
+  ┃ ┣ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).dat (optional)
+  ┃ ┗ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).tif (optional)
+  ┗ ...
 ```
 
 ### Application notes
