@@ -34,6 +34,8 @@ If that image is not available, `acquisition.json` SHOULD document the imaging l
 
 ### File format
 
+The following trees show the `slap2` modality subtree only. Session-level metadata files such as `acquisition.json` remain at the asset root, as described below in [Relationship to aind-data-schema](#relationship-to-aind-data-schema).
+
 Static SLAP2 structure assets MUST store their modality-specific files in `slap2/static_data`. A common naming convention is:
 
 ```plaintext
@@ -69,11 +71,11 @@ Dynamic SLAP2 experiment assets MUST store their modality-specific files in `sla
 
 The filename stems encode the acquisition time and the DMD index used for the acquisition.
 
-The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are recommended conventions rather than required literals. Producers MAY use different descriptive leading stems provided that companion files still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
+The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are recommended conventions rather than required literals. Producers MAY use different descriptive leading stems. Validators SHOULD treat any non-empty descriptive prefix as acceptable provided that companion files still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
 
 Dynamic acquisitions MAY omit the per-trial TIFF files when the SLAP2 acquisition mode does not generate them, but the `.dat` payloads and their metadata are still required.
 
-The `vasculature_map_annotated.tif` file is preferred and, when present, is expected to be copied from the mouse-level vasculature reference maintained outside the session asset. `session_vasculature_1p.tif` captures the session-specific vasculature image used with the SLAP2 acquisition. If no session-specific 1p vasculature image is available, `acquisition.json` SHOULD document the imaging location coordinates instead.
+The `vasculature_map_annotated.tif` file is preferred and, when present, is expected to be copied from the mouse-level vasculature reference maintained outside the session asset. `session_vasculature_1p.tif` captures the session-specific vasculature image used with the SLAP2 acquisition. If no session-specific 1p vasculature image is available, `acquisition.json` SHOULD document the imaging location coordinates instead. The `acquisition.json` metadata is also the authoritative source for whether the fallback coordinate-based documentation path applies.
 
 Within `reference_stack`, a `-REFERENCE.tif` image matching the reference-stack filename stem is required. The corresponding `.meta`, `.dat`, and `.tif` files are optional when the same reference-stack content is already available through a separate static SLAP2 asset.
 
@@ -88,7 +90,7 @@ This QA guidance is still in development for version 0.1.0 and may be refined as
 The following features should be true if the data asset is to be considered valid:
 
 - The asset MUST contain exactly one modality directory named `slap2`.
-- If a 1p vasculature image was collected for the session, the `slap2` directory MUST contain `session_vasculature_1p.tif`; otherwise, `acquisition.json` SHOULD record the imaging location coordinates. Assets missing both SHOULD be flagged for manual review.
+- If a 1p vasculature image was collected for the session, the `slap2` directory MUST contain `session_vasculature_1p.tif`; otherwise, `acquisition.json` SHOULD record the imaging location coordinates. `acquisition.json` is the authoritative source for this collection-status context. Assets missing both SHOULD be flagged for manual review.
 - The `slap2` directory SHOULD contain `vasculature_map_annotated.tif`.
 - Static assets MUST contain `static_data`, and dynamic assets MUST contain `dynamic_data`.
 - If a dynamic acquisition TIFF is present, its filename stem MUST match the corresponding acquisition `.dat` payload.
