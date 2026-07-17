@@ -80,9 +80,9 @@ The following features should be true if the data asset is to be considered vali
 - The asset MUST contain exactly one modality directory named `slap2`.
 - The `slap2` directory MUST contain `vasculature_map_annotated.tif` and `session_vasculature_1p.tif`.
 - Static assets MUST contain `static_data`, and dynamic assets MUST contain `dynamic_data`.
+- If a dynamic acquisition TIFF is present, its filename stem MUST match the corresponding acquisition `.dat` payload.
 - Every `.dat` file MUST have a matching `.meta` file with the same filename stem.
 - Every `structure_*` or `refStack_*` TIFF stack MUST have a matching `-REFERENCE.tif` image with the same filename stem.
-- If a dynamic acquisition TIFF is present, its filename stem MUST match the corresponding acquisition `.dat` payload.
 
 ## Derived Data Format
 
