@@ -24,7 +24,7 @@ The `reference_stack` subdirectory within `slap2/dynamic_data`.
 It contains the required reference image for the dynamic acquisition.
 It MAY also include companion stack files when those files are not already captured in a separate static SLAP2 asset.
 
-## Acquisition/Raw/Primary Data Format
+## Acquisition Data Format
 
 Following SciComp standards, SLAP2 data MUST be saved in the `slap2` modality folder. The timestamped session directory is the data asset root and contains the AIND metadata files for the acquisition. Other modality folders, such as `behavior` and `behavior-videos`, MAY exist alongside `slap2` and SHOULD follow their own standards.
 
@@ -71,7 +71,7 @@ Dynamic SLAP2 experiment assets MUST store their modality-specific files in `sla
 
 The filename stems encode the acquisition time and the DMD index used for the acquisition.
 
-The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are recommended conventions rather than required literals. Producers MAY use different descriptive leading stems. Validators SHOULD treat any non-empty descriptive prefix as acceptable provided that companion files still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
+The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are recommended conventions rather than required literals. Producers MAY use different descriptive leading stems, such as spelling out `referenceStack_` instead of `refStack_` or using a more specific `trialAcquisition_` stem in place of `acquisition_`. Validators SHOULD treat these alternative prefixes as acceptable provided that companion files still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
 
 Dynamic acquisitions MAY omit the per-trial TIFF files when the SLAP2 acquisition mode does not generate them, but the `.dat` payloads and their metadata are still required.
 
@@ -90,7 +90,10 @@ This QA guidance is still in development for version 0.1.0 and may be refined as
 The following features should be true if the data asset is to be considered valid:
 
 - The asset MUST contain exactly one modality directory named `slap2`.
-- If a 1p vasculature image was collected for the session, the `slap2` directory MUST contain `session_vasculature_1p.tif`; otherwise, `acquisition.json` SHOULD record the imaging location coordinates. `acquisition.json` is the authoritative source for this collection-status context. Assets missing both SHOULD be flagged for manual review.
+- `acquisition.json` is the authoritative source for whether a session-specific 1p vasculature image was collected.
+- If `acquisition.json` indicates that a 1p vasculature image was collected for the session, the `slap2` directory MUST contain `session_vasculature_1p.tif`.
+- If `acquisition.json` indicates that no session-specific 1p vasculature image is available, `acquisition.json` SHOULD record the imaging location coordinates.
+- Assets missing both a session-specific 1p vasculature image and fallback imaging location coordinates SHOULD be flagged for manual review.
 - The `slap2` directory SHOULD contain `vasculature_map_annotated.tif`.
 - Static assets MUST contain `static_data`, and dynamic assets MUST contain `dynamic_data`.
 - If a dynamic acquisition TIFF is present, its filename stem MUST match the corresponding acquisition `.dat` payload.
