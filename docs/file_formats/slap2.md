@@ -30,7 +30,7 @@ Within the `slap2` folder, `session_vasculature_1p.tif` SHOULD be included when 
 
 ### File format
 
-Static SLAP2 structure assets MUST store their modality-specific files in `slap2/static_data`:
+Static SLAP2 structure assets MUST store their modality-specific files in `slap2/static_data`. A common naming convention is:
 
 ```plaintext
 📂slap2
@@ -43,7 +43,7 @@ Static SLAP2 structure assets MUST store their modality-specific files in `slap2
   ┗ 📜structure_YYYYMMDD_HHMMSS_DMD#-REFERENCE.tif
 ```
 
-Dynamic SLAP2 experiment assets MUST store their modality-specific files in `slap2/dynamic_data`:
+Dynamic SLAP2 experiment assets MUST store their modality-specific files in `slap2/dynamic_data`. A common naming convention is:
 
 ```plaintext
 📂slap2
@@ -67,7 +67,7 @@ The filename stems encode the acquisition time and the DMD index used for the ac
 
 The `vasculature_map_annotated.tif` file is preferred and, when present, is expected to be copied from the mouse-level vasculature reference maintained outside the session asset. `session_vasculature_1p.tif` captures the session-specific vasculature image used with the SLAP2 acquisition. If no session-specific 1p vasculature image is available, `acquisition.json` SHOULD document the imaging location coordinates instead.
 
-Within `reference_stack`, the `refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#)-REFERENCE.tif` image is required. The corresponding `.meta`, `.dat`, and `.tif` files are optional when the same reference-stack content is already available through a separate static SLAP2 asset.
+Within `reference_stack`, a `-REFERENCE.tif` image matching the reference-stack filename stem is required. The corresponding `.meta`, `.dat`, and `.tif` files are optional when the same reference-stack content is already available through a separate static SLAP2 asset.
 
 ### Relationship to aind-data-schema
 
