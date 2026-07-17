@@ -55,7 +55,7 @@ Dynamic SLAP2 experiment assets MUST store their modality-specific files in `sla
 
 The filename stems encode the acquisition time and the DMD index used for the acquisition.
 
-The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are the preferred short-form conventions for new assets. This standard also accepts the alternative stems `structureScan_`, `trialAcquisition_`, and `referenceStack_` for compatibility with existing exports. In every case, companion files MUST still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
+The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are the preferred short-form conventions for new assets. Alternative filename stems are also accepted. In every case, companion files MUST still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
 
 Dynamic acquisitions MAY omit the per-trial TIFF files when the SLAP2 acquisition mode does not generate them, but the `.dat` payloads and their metadata are still required.
 
@@ -75,8 +75,6 @@ The following features should be true if the data asset is to be considered vali
 
 - The asset MUST contain exactly one modality directory named `slap2`.
 - If a session-specific 1p vasculature image is included with the asset, it MUST be stored as `session_vasculature_1p.tif`.
-- If `session_vasculature_1p.tif` is absent, `acquisition.json` SHOULD record the imaging location coordinates.
-- Assets missing both a session-specific 1p vasculature image and fallback imaging location coordinates SHOULD be flagged for manual review.
 - The `slap2` directory SHOULD contain `vasculature_map_annotated.tif`.
 - Static assets MUST contain `static_data`, and dynamic assets MUST contain `dynamic_data`.
 - If a dynamic acquisition TIFF is present, its filename stem MUST match the corresponding acquisition `.dat` payload.
@@ -106,4 +104,3 @@ SLAP2 is a random access projection microscope, which enables imaging to be targ
 **Field of view (FOV)**
 
 For the [`Slap2Plane`](https://aind-data-schema.readthedocs.io/en/stable/components/configs.html#slap2plane) concept in `aind-data-schema`, a FOV is a specific set of imaging ROIs that are imaged simultaneously. If any imaging ROIs in the set are modified, deleted, or added, the FOV becomes a different FOV.
-
