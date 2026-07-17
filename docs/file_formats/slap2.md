@@ -10,7 +10,7 @@ This document describes the standards for SLAP2 optical physiology data assets. 
 
 ## Acquisition/Raw/Primary Data Format
 
-Following SciComp standards, SLAP2 data MUST be saved in the `slap2` modality folder. The timestamped session directory is the data asset root and contains the AIND metadata files for the acquisition. Other modality folders, such as `behavior` and `behavior-videos`, MAY exist alongside `slap2` and SHOULD follow their own standards.
+Following SciComp standards, SLAP2 data MUST be saved in the `slap2` modality folder. The timestamped session directory is the data asset root and contains the Allen Institute / Neural Dynamics metadata files for the acquisition. Other modality folders, such as `behavior` and `behavior-videos`, MAY exist alongside `slap2` and SHOULD follow their own standards.
 
 Within the `slap2` folder, a session-specific 1p vasculature image, when taken and retained with the asset, MUST be stored as `session_vasculature_1p.tif`.
 If that image is not available with the asset, `acquisition.json` SHOULD document the imaging location coordinates.
@@ -57,7 +57,7 @@ The filename stems encode the acquisition time and the DMD index used for the ac
 
 The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are the preferred short-form conventions for new assets. Alternative filename stems are also accepted.
 
-Beyond that leading stem, the punctuation, datetime format, and suffix ordering shown above are determined by the MBF Bioscience SLAP2 microscope software and are documented here as generated rather than redefined by AIND.
+Beyond that leading stem, the punctuation, datetime format, and suffix ordering shown above are determined by the MBF Bioscience SLAP2 microscope software and are documented here as generated rather than redefined by Allen Institute / Neural Dynamics.
 
 In every case, companion files MUST still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
 
