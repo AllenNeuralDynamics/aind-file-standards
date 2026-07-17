@@ -69,7 +69,7 @@ Dynamic SLAP2 experiment assets MUST store their modality-specific files in `sla
 
 The filename stems encode the acquisition time and the DMD index used for the acquisition.
 
-The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are recommended conventions rather than required literals. Producers MAY use different leading stems provided that companion files still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
+The `structure_`, `acquisition_`, and `refStack_` prefixes shown above are recommended conventions rather than required literals. Producers MAY use different descriptive leading stems provided that companion files still share the same filename stem and preserve the timestamp, DMD, trial, cycle, and `-REFERENCE` semantics.
 
 Dynamic acquisitions MAY omit the per-trial TIFF files when the SLAP2 acquisition mode does not generate them, but the `.dat` payloads and their metadata are still required.
 
@@ -83,12 +83,12 @@ The asset root SHOULD include `instrument.json` and `acquisition.json` created a
 
 ### File Quality Assurances
 
-This QA guidance is still in development and may be refined as the SLAP2 workflow matures.
+This QA guidance is still in development for version 0.1.0 and may be refined as the SLAP2 workflow matures.
 
 The following features should be true if the data asset is to be considered valid:
 
 - The asset MUST contain exactly one modality directory named `slap2`.
-- If a 1p vasculature image was collected for the session, the `slap2` directory MUST contain `session_vasculature_1p.tif`; otherwise, `acquisition.json` SHOULD record the imaging location coordinates.
+- If a 1p vasculature image was collected for the session, the `slap2` directory MUST contain `session_vasculature_1p.tif`; otherwise, `acquisition.json` SHOULD record the imaging location coordinates. Assets missing both SHOULD be flagged for manual review.
 - The `slap2` directory SHOULD contain `vasculature_map_annotated.tif`.
 - Static assets MUST contain `static_data`, and dynamic assets MUST contain `dynamic_data`.
 - If a dynamic acquisition TIFF is present, its filename stem MUST match the corresponding acquisition `.dat` payload.
