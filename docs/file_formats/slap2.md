@@ -71,7 +71,6 @@ Within `reference_stack`, a `-REFERENCE.tif` image matching the reference-stack 
 Raw data can be read using one of the following libraries:
 
 #### MATLAB
-Official microscope control and data reader library mantained by MBF Bioscience: reach out to [kaspar.podgorski@alleninstitute.org](mailto:kaspar.podgorski@alleninstitute.org) for access
 Library with only SLAP2 data reader capabilities: [https://github.com/m-xie/Slap2DataReader](https://github.com/m-xie/Slap2DataReader)
 
 #### Python
