@@ -50,7 +50,7 @@ Dynamic SLAP2 experiment assets MUST store their modality-specific files in `sla
     ┗ 📜refStack_YYYYMMDD_HHMMSS_DMD#(_CONFIG#).tif (optional)
 ```
 
-### Application notes
+### Format specifications
 
 The filename stems encode the acquisition time and the DMD index used for the acquisition.
 
@@ -66,24 +66,16 @@ The `vasculature_map_annotated.tif` file is preferred and, when present, is expe
 
 Within `reference_stack`, a `-REFERENCE.tif` image matching the reference-stack filename stem is required. The corresponding `.meta`, `.dat`, and `.tif` files are optional when the same reference-stack content is already available through a separate static SLAP2 asset.
 
-### Relationship to aind-data-schema
+### Application notes
 
-The microscope-generated `*.meta` files contain the microscope, imaging, and ROI geometry metadata recorded by the SLAP2 system itself. The asset root SHOULD include `instrument.json` and `acquisition.json` created at acquisition time, and during upload `subject.json`, `data_description.json`, `metadata.nd.json`, `procedures.json`, and `processing.json` are added at the asset root. These `*.json` metadata files are necessary for compliance with the `aind-data-schema` and do not add additional modality-specific SLAP2 imaging setup information beyond what is already recorded in the `*.meta` files.
+Raw data can be read using one of the following libraries:
 
-### File Quality Assurances
+#### MATLAB
+Official microscope control and data reader library mantained by MBF Bioscience: reach out to [kaspar.podgorski@alleninstitute.org](mailto:kaspar.podgorski@alleninstitute.org) for access
+Library with only SLAP2 data reader capabilities: [https://github.com/m-xie/Slap2DataReader](https://github.com/m-xie/Slap2DataReader)
 
-This QA guidance is still in development for version 0.1.0 and may be refined as the SLAP2 workflow matures.
-
-The following features should be true if the data asset is to be considered valid:
-
-- The asset MUST contain exactly one modality directory named `slap2`.
-- If a session-specific 1p vasculature image is included with the asset, it MUST be stored as `session_vasculature_1p.tif`.
-- The `slap2` directory SHOULD contain `vasculature_map_annotated.tif`.
-- Static assets MUST contain `static_data`, and dynamic assets MUST contain `dynamic_data`.
-- If a dynamic acquisition TIFF is present, its filename stem MUST match the corresponding acquisition `.dat` payload.
-- Every `.dat` file MUST have a matching `.meta` file with the same filename stem.
-- Every structure TIFF stack MUST have a matching `-REFERENCE.tif` image with the same filename stem.
-- Every reference-stack `.meta`, `.dat`, or `.tif` file, when present, MUST have a matching `-REFERENCE.tif` image with the same filename stem.
+#### Python
+slap2-utils: [https://github.com/Peter-Hogg/SLAP2_Utils](https://github.com/Peter-Hogg/SLAP2_Utils)
 
 ## Vocabulary
 
@@ -106,4 +98,4 @@ SLAP2 is a random access projection microscope, which enables imaging to be targ
 
 **Field of view (FOV)**
 
-For the [`Slap2Plane`](https://aind-data-schema.readthedocs.io/en/stable/components/configs.html#slap2plane) concept in `aind-data-schema`, a FOV is a specific set of imaging ROIs that are imaged simultaneously. If any imaging ROIs in the set are modified, deleted, or added, the FOV becomes a different FOV.
+Aligned with the [`Slap2Plane`](https://aind-data-schema.readthedocs.io/en/stable/components/configs.html#slap2plane) concept in `aind-data-schema`, a FOV is a specific set of imaging ROIs that are imaged simultaneously. If any imaging ROIs in the set are modified, deleted, or added, the FOV becomes a different FOV.
