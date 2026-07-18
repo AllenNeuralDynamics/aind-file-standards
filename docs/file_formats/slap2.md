@@ -18,7 +18,6 @@ If that image is not available with the asset, `acquisition.json` SHOULD documen
 
 ### File format
 
-The following trees show the `slap2` modality subtree only. Session-level metadata files such as `acquisition.json` remain at the asset root, as described below in [Relationship to aind-data-schema](#relationship-to-aind-data-schema).
 
 Static SLAP2 structure assets MUST store their modality-specific files in `slap2/static_data`. A common naming convention is:
 
