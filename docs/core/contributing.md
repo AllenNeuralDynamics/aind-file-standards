@@ -29,6 +29,17 @@ Useful standards should be relatively stable and have longevity (see [`How stand
 
 Contributions for existing or new standards should follow the template structure outlined in the `Template.md` file. This will ensure that all standards are consistent and legible. On top of the template structure, each proposed change should also be consistent with the `Core Standards` principles included in this repository.
 
+### Is it a file format or a modality?
+
+Standards in this repository are organized into two directories, and a new contribution should go into the one that matches its scope:
+
+- **File formats** (`docs/file_formats`) — self-contained, reusable specifications for a single format or container. They introduce as few dependencies as possible and are not tied to one acquisition modality, so they can be reused across many (e.g. `harp`, `nwb`). This mirrors the "well-separated and independent" pillar above.
+- **Modalities** (`docs/modalities`) — specifications for a whole acquisition modality that maps to a modality folder in the data asset and typically *composes* several file formats and artifacts (e.g. `ecephys`, `fip`, `slap2`).
+
+This split gives modality-level specifications a home in the repository while keeping reusable formats clearly separated. It does **not** create an exemption: modalities MUST still follow the `Core Standards` as closely as possible, and SHOULD reuse the existing file format standards before introducing anything modality-specific.
+
+The boundary is not always sharp. When in doubt, prefer a file format if the specification is self-contained and reusable, and a modality if it describes how a modality's collection of files is organized. Some lean specifications may stay under `file_formats` even if they are modality-adjacent (e.g. `behavior_videos`, which currently concerns only two files); these can be revisited if they grow.
+
 ### Identify a need to change the standard (Issue)
 
 All changes to current standards or addition of new specifications should start with an issue. This issue should describe the motivation, scope, and potential impact of the change.
