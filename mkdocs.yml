@@ -69,9 +69,10 @@ nav:
 - File Formats:
   - Behavior Curriculum: file_formats/behavior_curriculum.md
   - Behavior Videos: file_formats/behavior_videos.md
-  - Ecephys: file_formats/ecephys.md
-  - Fip: file_formats/fip.md
   - Harp: file_formats/harp.md
   - Nwb: file_formats/nwb.md
-  - Planar Ophys: file_formats/planar_ophys.md
-  - Slap2: file_formats/slap2.md
+- Modalities:
+  - Ecephys: modalities/ecephys.md
+  - Fip: modalities/fip.md
+  - Planar Ophys: modalities/planar_ophys.md
+  - Slap2: modalities/slap2.md
