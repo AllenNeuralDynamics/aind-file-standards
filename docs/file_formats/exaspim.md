@@ -39,7 +39,7 @@ tile_alignment/
 ```
 #### fusion
 
-Fused image is saved to `fused.n5`, with two channels, *signal and CCF*.
+Fused image is saved to `fused.zarr`, with two channels, *signal and CCF*.
 
 #### ccf_alignment
 
@@ -61,7 +61,7 @@ ccf_alignment
 
 #### soma_detection
 
-Results are saved to `merged_soma_locations.csv`, containing soma locations in CCF and specimen space (*document columns*)
+Results are saved to `soma_locations.csv`, containing soma locations in CCF and specimen space (*document columns*)
 
 #### Other processes
 Other processes including `flatfield_correction` and `denoising` only contribute processing metadata to the final asset
