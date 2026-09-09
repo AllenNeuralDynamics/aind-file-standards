@@ -1,4 +1,4 @@
-# Standards on `<data-format/modality>` acquisition
+# Standards on exaSPIM platform data
 
 ## Version
 
@@ -6,11 +6,11 @@
 
 ## Introduction
 
-This section should briefly introduce the data format and its purpose.
+This document describes the standards and file formats used for data acquired on the exaSPIM platform.
 
 ## Raw Data Format
 
-*I don't think we want anything under "raw"?*
+Since raw image data is not preserved or uploaded, we do not define that standard here.
 
 ## Primary Data Format
 
@@ -39,7 +39,7 @@ tile_alignment/
 ```
 #### fusion
 
-Fused image is saved to `fused.n5`, with two channels, *signal and CCF*.
+Fused image is saved to `fused.zarr`, with two channels, *signal and CCF*.
 
 #### ccf_alignment
 
@@ -61,7 +61,7 @@ ccf_alignment
 
 #### soma_detection
 
-Results are saved to `merged_soma_locations.csv`, containing soma locations in CCF and specimen space (*document columns*)
+Results are saved to `soma_locations.csv`, containing soma locations in CCF and specimen space (*document columns*)
 
 #### Other processes
 Other processes including `flatfield_correction` and `denoising` only contribute processing metadata to the final asset
