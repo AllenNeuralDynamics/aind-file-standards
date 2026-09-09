@@ -18,7 +18,7 @@ This section should briefly introduce the data format and its purpose.
 
 Images are uploaded in OME-ZARR format to the path `SPIM.ome.zarr`. These files are removed following processing and replaced by a placeholder `SPIM.ome.zarr.deleted`
 
-## Derived Data Format
+## Derived Data Format - Image Processing
 
 ### File format
 
@@ -86,3 +86,43 @@ The following features should be true if the data asset is to be considered vali
 The following outputs are saved to the QC schema to facilitate additional evaluation
 - tile_alignment produces a Neuroglancer link and series of overlay images to visually assess alignment.
 - ...
+
+## Derived Data Format - Neuron Reconstructions
+
+### File format
+
+Neuron reconstructions are saved in three formats: SWC, parquet, and Neuroglancer precomputed.
+
+###  neuron-reconstruction parquet
+
+A neuron-reconstruction parquet file MUST include an `nr` key in the Parquet metadata (see [FileMetaData::key_value_metadata](https://github.com/apache/parquet-format#metadata)). The value of this key MUST be a JSON-encoded UTF-8 string representing the file metadata that validates against the neuron-reconstruction metadata JSON schema (TO BE ADDED). The metadata fields are described below.
+
+| Field name | Type | Description |
+| --- | --- | --- |
+| `atlas_annotation_set` | string | **REQUIRED.** Identifier and version of the atlas annotation set used for the reconstruction. |
+| `atlas_coordinate_space` | string | **REQUIRED.** Identifier and version of the atlas coordinate space used for the reconstruction. |
+| `subject_id` | string | **REQUIRED.** Unique identifier for the subject from which the cell was obtained. |
+| `cell_id` | string | **REQUIRED.** Unique identifier for the reconstructed cell. |
+| `annotator` | string | **OPTIONAL.** Name of the person who created the reconstruction annotation. |
+| `peer_reviewer` | string | **OPTIONAL.** Name of the peer reviewer who assessed the reconstruction. |
+| `proofreader` | string | **OPTIONAL.** Name of the person who proofread the reconstruction. |
+| `doi` | string | **OPTIONAL.** Digital Object Identifier associated with the reconstruction. |
+| `doi_cell` | string | **OPTIONAL.** Digital Object Identifier associated with the cell (linking all versions of reconstruction). |
+| `date` | string | **OPTIONAL.** Date the reconstruction was created, formatted as ISO 8601. |
+| `version` | string | **OPTIONAL.** Version identifier for the reconstruction. |
+| `genotype` | string | **OPTIONAL.** Genotype of the subject. |
+| `label_fluorophore` | string | **OPTIONAL.** Fluorophore used to label the reconstructed cell. |
+| `label_virus` | string | **OPTIONAL.** Viral construct used to label the reconstructed cell. |
+
+It also MUST include a set of standardized columns (compatible with the SWC format), described below. Additional columns MAY be included as needed for specific use cases.
+
+| Column name | Type | Description |
+| --- | --- | --- |
+| `id` | integer | **REQUIRED.** Unique identifier for the node. |
+| `type` | integer | **REQUIRED.** SWC node type identifier. |
+| `x` | float | **REQUIRED.** Node x-coordinate in the atlas coordinate space. |
+| `y` | float | **REQUIRED.** Node y-coordinate in the atlas coordinate space. |
+| `z` | float | **REQUIRED.** Node z-coordinate in the atlas coordinate space. |
+| `parent` | integer | **REQUIRED.** Identifier of the node's parent; use `-1` for a root node. |
+| `radius` | float | **OPTIONAL.** Radius of the node in the atlas coordinate space. |
+| `atlas_annotation_id` | integer | **OPTIONAL.** Atlas annotation identifier at the node location; MAY be null when no annotation is assigned. |
