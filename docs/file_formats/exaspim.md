@@ -1,4 +1,4 @@
-# Standards on `<data-format/modality>` acquisition
+# Standards on exaSPIM platform data
 
 ## Version
 
@@ -6,11 +6,11 @@
 
 ## Introduction
 
-This section should briefly introduce the data format and its purpose.
+This document describes the standards and file formats used for data acquired on the exaSPIM platform.
 
 ## Raw Data Format
 
-*I don't think we want anything under "raw"?*
+Since raw image data is not preserved or uploaded, we do not define that standard here.
 
 ## Primary Data Format
 
