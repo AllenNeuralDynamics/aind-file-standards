@@ -99,8 +99,8 @@ A neuron-reconstruction parquet file MUST include an `nr` key in the Parquet met
 
 | Field name | Type | Description |
 | --- | --- | --- |
-| `atlas_annotation_set` | string | **REQUIRED.** Identifier and version of the atlas annotation set used for the reconstruction. |
-| `atlas_coordinate_space` | string | **REQUIRED.** Identifier and version of the atlas coordinate space used for the reconstruction. |
+| `atlas_annotation_set` | string | **REQUIRED.** Identifier and version of the atlas annotation set used for the reconstruction. MAY be empty if no annotations are assigned. |
+| `atlas_coordinate_space` | string | **REQUIRED.** Identifier and version of the atlas coordinate space used for the reconstruction. MAY be empty if reconstruction is not registered to an atlas, in which case coordinates MUST be physical coordinates of the sample. |
 | `subject_id` | string | **REQUIRED.** Unique identifier for the subject from which the cell was obtained. |
 | `cell_id` | string | **REQUIRED.** Unique identifier for the reconstructed cell. |
 | `annotator` | string | **OPTIONAL.** Name of the person who created the reconstruction annotation. |
@@ -118,11 +118,11 @@ It also MUST include a set of standardized columns (compatible with the SWC form
 
 | Column name | Type | Description |
 | --- | --- | --- |
-| `id` | integer | **REQUIRED.** Unique identifier for the node. |
+| `id` | positive integer | **REQUIRED.** Unique identifier for the node. |
 | `type` | integer | **REQUIRED.** SWC node type identifier. |
-| `x` | float | **REQUIRED.** Node x-coordinate in the atlas coordinate space. |
-| `y` | float | **REQUIRED.** Node y-coordinate in the atlas coordinate space. |
-| `z` | float | **REQUIRED.** Node z-coordinate in the atlas coordinate space. |
+| `x` | float | **REQUIRED.** Node x-coordinate in the coordinate space, in micrometers. |
+| `y` | float | **REQUIRED.** Node y-coordinate in the coordinate space, in micrometers. |
+| `z` | float | **REQUIRED.** Node z-coordinate in the coordinate space, in micrometers. |
 | `parent` | integer | **REQUIRED.** Identifier of the node's parent; use `-1` for a root node. |
-| `radius` | float | **OPTIONAL.** Radius of the node in the atlas coordinate space. |
+| `radius` | float | **OPTIONAL.** Radius of the node in the coordinate space, in micrometers. |
 | `atlas_annotation_id` | integer | **OPTIONAL.** Atlas annotation identifier at the node location; MAY be null when no annotation is assigned. |
