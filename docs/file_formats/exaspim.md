@@ -99,8 +99,8 @@ A neuron-reconstruction parquet file MUST include an `nr` key in the Parquet met
 
 | Field name | Type | Description |
 | --- | --- | --- |
-| `atlas_annotation_set` | string | **REQUIRED.** Identifier and version of the atlas annotation set used for the reconstruction. MAY be empty if no annotations are assigned. |
-| `atlas_coordinate_space` | string | **REQUIRED.** Identifier and version of the atlas coordinate space used for the reconstruction. MAY be empty if reconstruction is not registered to an atlas, in which case coordinates MUST be physical coordinates of the sample. |
+| `atlas_annotation_set` | string | **REQUIRED.** Identifier and version of the atlas annotation set used for the reconstruction. SHOULD be empty if no annotations are assigned. |
+| `atlas_coordinate_space` | string | **REQUIRED.** Identifier and version of the atlas coordinate space used for the reconstruction. SHOULD be empty if reconstruction is not registered to an atlas, in which case coordinates MUST be physical coordinates of the sample. |
 | `subject_id` | string | **REQUIRED.** Unique identifier for the subject from which the cell was obtained. |
 | `cell_id` | string | **REQUIRED.** Unique identifier for the reconstructed cell. |
 | `annotator` | string | **OPTIONAL.** Name of the person who created the reconstruction annotation. |
@@ -124,5 +124,5 @@ It also MUST include a set of standardized columns (compatible with the SWC form
 | `y` | float | **REQUIRED.** Node y-coordinate in the coordinate space, in micrometers. |
 | `z` | float | **REQUIRED.** Node z-coordinate in the coordinate space, in micrometers. |
 | `parent` | integer | **REQUIRED.** Identifier of the node's parent; use `-1` for a root node. |
-| `radius` | float | **OPTIONAL.** Radius of the node in the coordinate space, in micrometers. |
-| `atlas_annotation_id` | integer | **OPTIONAL.** Atlas annotation identifier at the node location; MAY be null when no annotation is assigned. |
+| `radius` | float | **REQUIRED.** Radius of the node in the coordinate space, in micrometers. SHOULD be null if the radius is not available. |
+| `atlas_annotation_id` | integer | **OPTIONAL.** Atlas annotation identifier at the node location; SHOULD be null for nodes without an annotation, and absent entirely if no atlas annotations are assigned. |
