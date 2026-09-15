@@ -2,7 +2,7 @@
 
 ## Version
 
-0.2.1
+0.3.0
 
 ## Introduction
 
@@ -12,7 +12,7 @@ This document describes the standards for acquiring video data from behavior exp
 
 Following SciComp standards, video data from behavior experiments MUST be saved to the `behavior-videos` modality folder.
 
-Inside this folder, each camera MUST have its own directory, named `<CameraName>`. Inside each camera folder, there MUST be two files: `video.<extension>` and `metadata.csv`. The `video.<extension>` file MUST contain the video data, and the `metadata.csv` file MUST contain the metadata for the video.
+Inside this folder, each camera MUST have its own directory, named `<CameraName>`. Each camera folder MUST contain `video.<extension>` and `metadata.csv`, and SHOULD also contain the preview and poster described below. The `video.<extension>` file MUST contain the video data, and the `metadata.csv` file MUST contain the metadata for the video.
 
 `<CameraName>` SHOULD match the name defined in the rig metadata file (`rig.json`)
 
@@ -71,38 +71,197 @@ For the online encoder:
 For offline re-encoding (optimized for quality and size):
 
 - Use mp4 container for the final video, i.e. the video should be named like `video.mp4`.
-- output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:sws_dither=none,format=yuv420p10le,colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p" -c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
+- output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:flags=accurate_rnd+full_chroma_int+full_chroma_inp:sws_dither=none,format=yuv420p10le,colorspace=all=bt709:dither=none,scale=out_range=tv:flags=accurate_rnd+full_chroma_int:sws_dither=bayer,format=yuv420p" -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
+
+#### Scaler settings
+
+The offline recipes set libswscale's flags and dither options explicitly. With
+ffmpeg 8.1.2 (libswscale 9.5):
+
+- `accurate_rnd` changed no output value from full-range RGB or 4:4:4 input,
+  but changed 39% of luma samples from a synthetic 4:2:0 TV-range source.
+- `full_chroma_int` and `full_chroma_inp` keep chroma at full resolution. Only
+  the first `scale` takes `full_chroma_inp`, since the second reads subsampled
+  chroma. They changed nothing for a source with neutral chroma, but did change
+  an AIND h264 gbrp recording whose R, G and B planes differ by up to 23 codes.
+- The 8-bit recipe's final `scale` is the one step that loses depth, compressing
+  full-range 10-bit to TV-range 8-bit. libswscale dithers that step with a fixed
+  8x8 ordered matrix whatever `sws_dither` says (`ed`, `none` and `bayer` gave
+  identical output on every source tested), so the recipe names `bayer`. No
+  other step loses depth, and each sets dithering off.
+
+> [!NOTE]
+> That dither rounds full-scale 10-bit white to 236 as well as 235, which put
+> 0.1% of luma samples above 235, and none below 16, in one AIND recording.
+> BT.709 permits those values and players clip them to white, so the recipes
+> add no limiter.
+
+#### Non-conforming sources
+
+The offline filters rely on the presentation timestamps and colour tags the
+online recipe writes. A source recorded any other way, such as h264 in AVI, may
+carry neither correctly, and a transcoder MUST repair whichever is wrong ahead
+of the offline filters:
+
+```
+-vf "setpts=N/(FPS)/TB,setparams=color_primaries=bt709:color_trc=linear:colorspace=COLORSPACE:range=RANGE,<offline filters>"
+```
+
+- `setpts` re-stamps each frame from its index `N` at the recorded rate `FPS`.
+  AVI stores no presentation timestamps, so ffmpeg reconstructs them, and a
+  frame stamped ahead of its neighbours makes the frames after it look out of
+  order. ffmpeg drops those: 6 of the first 1000 in one 500 fps AIND
+  recording, behind a single frame stamped 6 frames ahead.
+  Re-stamping leaves a conforming source unchanged and discards nothing this
+  standard relies on, since `metadata.csv` carries the timing.
+- `setparams` needs to set only the tags a source lacks or has wrong. AIND's
+  Bonsai recordings hold linear light, hence `color_trc=linear`, with no
+  primary rotation, hence `color_primaries=bt709`. `COLORSPACE` is `gbr` for
+  RGB pixel formats, and otherwise the matrix that converted to YUV:
+  `smpte170m` if libswscale's default did. `RANGE` is `pc` or `tv` as recorded.
+  A wrong value shifts black and white levels, and some AIND mpeg4 yuv420p
+  recordings are TV range despite carrying no tag.
 
 #### Higher bit-depth recordings
 
-Note: this hasn't been tested as thoroughly.
-
-For higher bit depth (more than eight) recordings, change the output arguments of the online encoding to be as follows:
+For higher bit depth (more than eight) recordings, change the online encoding arguments to:
   - output arguments: `-vf "format=yuv420p10le,scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
+  - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
 
-The HEVC encoder may need to be used to support 10 bit depth, and the pixel format has
-been changed to `p010le` which is a yuv420-like 10 bit pixel format that is
-accepted by NVENC. We also recommend using `.mkv` videos at the rig, to reduce
-the risk of data loss.
+That is the 8-bit online recipe with `format=yuv420p10le` at the head of the
+chain, `-c:v hevc_nvenc`, `-pix_fmt p010le`, `-preset p4` and `-cq 12`. The
+input arguments are the same, and are what keep `scale=out_range=full` from
+reading an untagged rig stream as limited range and stretching it: without them
+99.1% of luma samples came out different, by up to 83 of 1023.
 
-Note that this saves the pixel data at 10 bit depth, even if the camera is
-acquiring 12 or higher. NVENC does not support saving more than 10 bit pixel
-depths. However, saving 10 bit pixel depth before gamma encoding will result in
-more accurate gamma encoding for the second stage encoding.
+NVENC encodes 10 bits only as HEVC, in the `p010le` pixel format, a 10-bit
+yuv420: `h264_nvenc` refused both 10-bit formats with "No capable devices
+found" on a GPU that encodes 8-bit H.264 fine. NVENC stores no more than 10
+bits even from a camera acquiring 12. Keep `.mkv` at the rig, to reduce the
+risk of data loss.
 
-There is an intermediate pixel format, yuv420p10le, which is
-necessary at the time of writing for gray pixel format inputs due to incorrect
-chroma initialization for p010le. Depending on your pixel format, and recent
-changes to ffmpeg, this may not be necessary.
+`format=yuv420p10le` ahead of the `scale` is REQUIRED for gray input: without
+it `hevc_nvenc` writes near-zero chroma and the video plays green, mean RGB
+(4, 197, 0) against (124, 124, 124). The 8-bit recipe is unaffected.
 
-For the video to retain 10 bit depth for long-term storage, the offline encoder MUST also be changed. For example, set the output arguments to:
+For 10-bit storage the offline encoder MUST also change:
+
 ```
--vf "colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p10le"
--c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p10le
+-vf "scale=out_color_matrix=bt709:out_range=full:flags=accurate_rnd+full_chroma_int+full_chroma_inp:sws_dither=none,format=yuv420p10le,colorspace=all=bt709:dither=none,scale=out_range=tv:flags=accurate_rnd+full_chroma_int:sws_dither=none,format=yuv420p10le"
+-c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p10le
 -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
 ```
 
-However, acquiring at 10 bits, gamma encoding, and saving 8 bit-depth videos for long-term storage is sufficient for many applications.
+That is the 8-bit recipe with three changes: `format=yuv420p10le` at the end,
+`sws_dither=none` on the last `scale`, since nothing then loses depth, and
+`-pix_fmt yuv420p10le`. Everything else stays, the leading `scale` included: it
+takes the RGB sources `colorspace` rejects and keeps the transfer conversion
+above 8 bits, without which an 8-bit source came out with 226 distinct luma
+levels instead of 824.
+
+Acquiring 10 bits before gamma encoding makes the offline encode more accurate,
+though 8-bit storage is enough for many applications.
+
+### Preview videos
+
+AIND behavior video runs at 500 fps (62% of 11,202 AVI recordings) or 120 fps
+(28%), so a browser streaming `video.mp4` decodes hundreds of frames per second
+of playback. A preview for QC in a browser or dashboard SHOULD therefore reduce
+the frame rate and keep the source resolution, which is already small enough to
+stream. A preview SHOULD be written beside the archival video as
+`video_preview.mp4`:
+
+```plaintext
+📦behavior-videos
+┗ 📂BodyCamera
+┃ ┣ 📜metadata.csv
+┃ ┣ 📜video.mp4
+┃ ┣ 📜video_preview.mp4
+┃ ┗ 📜video_poster.jpg
+```
+
+A preview MUST drop whole frames rather than resample, so that for a decimation
+factor `N`, preview frame `k` is source frame `k * N` (both counted from 0). A
+resampling filter such as `fps` keeps unevenly spaced frames whenever the rate
+ratio is not an integer, which breaks that mapping.
+
+`N` SHOULD put `source_fps / N` in a 25 to 35 fps band, preferring a
+whole-number rate and otherwise the rate closest to the 30 fps target. The band
+keeps the whole-number preference from degenerating: unbounded, a 499 fps
+source would decimate to
+1 fps, its nearest whole-number rate. If no factor lands in the band,
+`N = round(source_fps / 30)`, so a source slower than the band keeps every
+frame. A 500 fps source gets `N = 20` and a 25 fps preview.
+
+- output arguments, for a decimation factor `N` and preview rate `PREVIEW_FPS`:
+
+  ```
+  -vf "select=not(mod(n\,N))" -fps_mode passthrough
+  -c:v libx264 -preset medium -crf 27 -pix_fmt yuv420p -g <2 * PREVIEW_FPS>
+  -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
+  ```
+
+- `-fps_mode passthrough` is REQUIRED. `select` leaves the advertised frame
+  rate at the source's, so any constant-frame-rate stage duplicates the retained
+  frames back up to it: 999 frames instead of 50 from a 1000-frame, 500 fps
+  source. `passthrough` rules that out whatever ffmpeg's default for the muxer.
+- `-g` caps keyframe spacing at two seconds; x264's 250-frame default is 10 s
+  at 25 fps, which makes scrubbing in a browser sluggish. Scene-change
+  detection still inserts some keyframes sooner.
+- `+write_colr` matches the archival recipe; ffmpeg 8.1.2 writes the mp4 colour
+  atom with or without it.
+- H.264 `yuv420p` in mp4 is the most widely playable combination.
+- Sweeps on one 720x540, 501 fps AIND recording, judged side by side, settled
+  on `-preset medium` and CRF 27. Across presets at CRF 24, the preview's size
+  varied by 8% and the encode took at most 1.3 s longer than the 12.8 s
+  archive alone, but `veryfast` scored 4-6 VMAF below every other preset. At
+  `medium`, each CRF step of 3 shrank the preview by 37-47%, and CRF 27 runs
+  about 1.6 Mbps with VMAF 85.9 against its lossless decimated frames.
+
+Encode the preview as a second output of the archival ffmpeg process, branching
+after the colour chain. A separate pass over the finished `video.mp4` would add
+a generation of loss and a second full decode.
+
+A preview can end up to `N - 1` source frames before `video.mp4` (38 ms at
+500 fps).
+
+> [!IMPORTANT]
+> The File Quality Assurances frame-count requirement applies only to
+> `video.mp4`: a preview drops frames by construction, and a poster holds one.
+
+### Poster images
+
+A poster SHOULD be written beside the archival video as `video_poster.jpg`,
+giving a QC page, dashboard or `<video poster=...>` a frame without decoding
+video.
+
+Browsers display a JPEG that has no ICC profile as sRGB, and ffmpeg embeds none,
+so a poster MUST be encoded as sRGB.
+
+Derive the poster from the source rather than from `video.mp4`. On a synthetic
+16-band luma ramp, sRGB encoded from linear light was within 2 code values of
+exact. Converting the finished BT.709 video to sRGB erred by up to 27, worse
+than the 16 of no conversion, because zimg (behind `zscale`) implements BT.709
+as the BT.1886 display transfer rather than the camera OETF.
+
+- output arguments, sampling source frame `FRAME`:
+
+  ```
+  -vf "select=eq(n\,FRAME),scale=out_color_matrix=bt709:out_range=full:flags=accurate_rnd+full_chroma_int+full_chroma_inp:sws_dither=none,zscale=t=iec61966-2-1:r=full"
+  -c:v mjpeg -pix_fmt yuvj420p -q:v 3 -frames:v 1 -update 1
+  ```
+
+`select` runs first so the conversion processes one frame. `FRAME` SHOULD be
+the frame one second in, `round(FPS)`, since the first frame can be blank or
+dark, and MUST NOT exceed `nb_frames - 1`: a `select` matching no frame writes
+no file and still exits zero.
+
+A grayscale JPEG would suit monochrome sources, but ffmpeg's `mjpeg` encoder
+promotes `-pix_fmt gray` to three-component `yuvj444p`, which is larger than
+`yuvj420p` (68,547 against 66,323 bytes on a 720x540 AIND frame).
+
+The poster omits `-metadata`: ffmpeg writes none of it into a JPEG, whose only
+comment is the encoder version.
 
 ### Application notes
 
