@@ -99,7 +99,7 @@ The following nvidia-accelerated ffmpeg settings encode video on acquiring compu
   - output arguments: `-vf "scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v h264_nvenc -pix_fmt yuv420p -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p3 -rc vbr -cq 18 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
   - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
 
-These settings have been validated and benchmarked to keep up with 3x500fps monochrome cameras with modern computers. They are accessible in python environments through `aind-video-utils`.
+These settings have been validated and benchmarked to keep up with 3x500fps monochrome cameras with modern computers.
 
 #### Higher bit-depth recordings
 
@@ -107,11 +107,17 @@ For higher bit depth (more than eight) recordings, change the online encoding ar
   - output arguments: `-vf "format=yuv420p10le,scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
   - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
 
-The pixel format given to the encoder can differ from the pixel format of the video it writes: NVENC takes `p010le` input to write a 10-bit YUV video.
+The pixel format given to the encoder can differ from the pixel format of the video it writes: NVENC takes `p010le` input to write a 10-bit YUV video. NVENC only supports 10 bit depth recordings: higher-bit-depth recordings will be downsampled to 10 bits with the settings above.
+
+#### Python implementation and availability of online encoding settings
+
+They are accessible in python environments through `aind-video-utils`.
 
 ### Relationship to aind-data-schema
 
 `<CameraName>` SHOULD match the name defined in the rig metadata file (`rig.json`). Several fields in the metadata can be automatically extracted from this file format (e.g. start and stop of the stream, resolution of the video). However, the user SHOULD ensure that any data pertaining to the hardware configuration (e.g. camera model, exposure time, gain, camera position, etc...) is logged independently from this file format herein described.
+
+aind-data-schema gives uploaded assets a `data_level` of `raw`, so primary videos live in the raw data asset rather than a derived one, even though it has been converted during upload.
 
 ### File Quality Assurances
 
@@ -136,11 +142,11 @@ The following features should be true if the data asset is to be considered vali
 
 ### File format
 
-Primary videos are the archival videos an uploaded data asset holds, converted from raw videos by the upload job. aind-data-schema gives that asset a `data_level` of `raw`, so primary videos live in the raw data asset rather than a derived one. A primary video keeps the folder structure and `metadata.csv` of the [Raw Data Format](#raw-data-format), and MUST be named `video.mp4`.
+Primary videos are the archival videos an uploaded data asset holds, converted from raw videos by the upload job. A primary video keeps the folder structure and `metadata.csv` of the [Raw Data Format](#raw-data-format), and MUST be named `video.<extension>` and SHOULD be named `video.mp4`.
 
 Archival videos SHOULD accurately represent the captured scene across platforms:
 
-- The container MUST be mp4. It SHOULD have fast start, with the `moov` atom at the beginning of the file, and SHOULD contain a `colr` atom.
+- The container SHOULD be mp4. It SHOULD have fast start, with the `moov` atom at the beginning of the file, and SHOULD contain a `colr` atom.
 - The codec MUST be h264 (AVC) or h265 (HEVC), and SHOULD be h264.
 - The pixel format MUST be either yuv420p or yuv420p10le. Implementations SHOULD use yuv420p unless 10-bit precision is required.
 - The range MUST be standard (limited), not full (pc).
@@ -187,4 +193,4 @@ For 10-bit storage the offline encoder must also change:
 ### File Quality Assurances
 
 - `ffprobe` MUST report the video stream's pixel format, range, and color space correctly.
-- The archival video MUST contain every frame of the raw video, and writers MUST check that the frame counts agree.
+- The primary data format MUST honor the quality assurance of the raw data format.
