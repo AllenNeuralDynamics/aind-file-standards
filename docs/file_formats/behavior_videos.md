@@ -142,7 +142,7 @@ Archival videos SHOULD accurately represent the captured scene across platforms:
 
 - The container MUST be mp4. It SHOULD have fast start, with the `moov` atom at the beginning of the file, and SHOULD contain a `colr` atom.
 - The codec MUST be h264 (AVC) or h265 (HEVC), and SHOULD be h264.
-- The pixel format MUST be yuv420p or yuv420p10le, and SHOULD be yuv420p.
+- The pixel format MUST be either yuv420p or yuv420p10le. Implementations SHOULD use yuv420p unless 10-bit precision is required.
 - The range MUST be standard (limited), not full (pc).
 - The color space SHOULD be bt.709, and MAY be bt.2020 or bt.601.
 - The primaries, transfer characteristic, and color matrix MUST all follow that color space.
