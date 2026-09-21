@@ -2,7 +2,7 @@
 
 ## Version
 
-0.3.0
+0.3.1
 
 ## Introduction
 
@@ -166,7 +166,7 @@ Writers SHOULD retain as much of the raw video's visual information as these req
 
 This transcode step can happen 'offline' after the data have been saved in a temporary video file, and there is no longer time pressure to encode frames in real time. The following ffmpeg settings have been validated to convert videos that declare their color space and have well-ordered time stamps into high-quality archival videos that meet the [Primary Data Format](#primary-data-format):
 
-- output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:sws_dither=none,format=yuv420p10le,colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p" -c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
+- output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:flags=accurate_rnd+full_chroma_int+full_chroma_inp:sws_dither=none,format=yuv420p10le,colorspace=all=bt709:dither=none,scale=out_range=tv:flags=accurate_rnd+full_chroma_int:sws_dither=bayer,format=yuv420p" -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
 
 These settings are a combination of a video filter chain that convert input pixel data into bt.709 color space, and codec settings that compress it using a high-quality codec into a standard video format that is widely supported.
 
@@ -183,11 +183,11 @@ The offline filters rely on the presentation timestamps and color tags. Many oth
 
 #### Higher bit-depth recordings
 
-For 10-bit storage the offline encoder must also change:
+For 10-bit storage, change the offline encoding arguments to:
 
 ```
--vf "colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p10le"
--c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p10le -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
+-vf "scale=out_color_matrix=bt709:out_range=full:flags=accurate_rnd+full_chroma_int+full_chroma_inp:sws_dither=none,format=yuv420p10le,colorspace=all=bt709:dither=none,scale=out_range=tv:flags=accurate_rnd+full_chroma_int:sws_dither=none,format=yuv420p10le"
+-c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p10le -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
 ```
 
 ### File Quality Assurances
