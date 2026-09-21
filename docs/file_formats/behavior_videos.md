@@ -107,7 +107,9 @@ For higher bit depth (more than eight) recordings, change the online encoding ar
   - output arguments: `-vf "format=yuv420p10le,scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
   - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
 
-The pixel format given to the encoder can differ from the pixel format of the video it writes: NVENC takes `p010le` input to write a 10-bit YUV video. NVENC only supports 10 bit depth recordings: higher-bit-depth recordings will be downsampled to 10 bits with the settings above.
+The pixel format given to the encoder can differ from the pixel format of the video it writes: NVENC takes `p010le` input to write a 10-bit YUV video, which GPUs before NVIDIA's Blackwell generation can encode as HEVC but not as H.264. NVENC only supports 10 bit depth recordings: higher-bit-depth recordings will be downsampled to 10 bits with the settings above.
+
+The `format=yuv420p10le` step at the head of the filter chain is required for `gray` input: without it, `hevc_nvenc` writes near-zero chroma and the video plays green.
 
 #### Python implementation and availability of online encoding settings
 
