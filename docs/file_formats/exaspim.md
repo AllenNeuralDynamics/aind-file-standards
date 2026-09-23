@@ -106,7 +106,7 @@ A neuron-reconstruction parquet file MUST include an `nr` key in the Parquet met
 | `annotator` | string | **OPTIONAL.** Name(s) of the person who created the reconstruction annotation. |
 | `peer_reviewer` | string | **OPTIONAL.** Name(s) of the peer reviewer who assessed the reconstruction. |
 | `proofreader` | string | **OPTIONAL.** Name(s) of the person who proofread the reconstruction. |
-| `doi` | string | **OPTIONAL.** Digital Object Identifier associated with the reconstruction. |
+| `doi` | string | **OPTIONAL.** Digital Object Identifier associated with the reconstruction (specific version). |
 | `doi_cell` | string | **OPTIONAL.** Digital Object Identifier associated with the cell (linking all versions of reconstruction). |
 | `date` | string | **OPTIONAL.** Date the reconstruction was created, formatted as ISO 8601. |
 | `version` | string | **OPTIONAL.** Version identifier for the reconstruction. |
