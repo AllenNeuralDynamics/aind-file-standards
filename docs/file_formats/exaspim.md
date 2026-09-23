@@ -95,7 +95,7 @@ Neuron reconstructions are saved in three formats: SWC, parquet, and Neuroglance
 
 ###  neuron-reconstruction parquet
 
-A neuron-reconstruction parquet file MUST include an `nr` key in the Parquet metadata (see [FileMetaData::key_value_metadata](https://github.com/apache/parquet-format#metadata)). The value of this key MUST be a JSON-encoded UTF-8 string representing the file metadata that validates against the neuron-reconstruction metadata JSON schema (TO BE ADDED). The metadata fields are described below.
+A neuron-reconstruction parquet file MUST include an `nr` key in the Parquet metadata (see [FileMetaData::key_value_metadata](https://github.com/apache/parquet-format#metadata)). The value of this key MUST be a JSON-encoded UTF-8 string representing the file metadata that validates against the [neuron-reconstruction metadata JSON schema](resources/neuron-reconstruction.metadata.schema.json). The metadata fields are described below.
 
 | Field name | Type | Description |
 | --- | --- | --- |
