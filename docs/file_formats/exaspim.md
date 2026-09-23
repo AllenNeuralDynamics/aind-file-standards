@@ -103,9 +103,9 @@ A neuron-reconstruction parquet file MUST include an `nr` key in the Parquet met
 | `atlas_coordinate_space` | string | **REQUIRED.** Identifier and version of the atlas coordinate space used for the reconstruction. SHOULD be empty if reconstruction is not registered to an atlas, in which case coordinates MUST be physical coordinates of the sample. |
 | `subject_id` | string | **REQUIRED.** Unique identifier for the subject from which the cell was obtained. |
 | `cell_id` | string | **REQUIRED.** Unique identifier for the reconstructed cell. |
-| `annotator` | string | **OPTIONAL.** Name of the person who created the reconstruction annotation. |
-| `peer_reviewer` | string | **OPTIONAL.** Name of the peer reviewer who assessed the reconstruction. |
-| `proofreader` | string | **OPTIONAL.** Name of the person who proofread the reconstruction. |
+| `annotator` | string | **OPTIONAL.** Name(s) of the person who created the reconstruction annotation. |
+| `peer_reviewer` | string | **OPTIONAL.** Name(s) of the peer reviewer who assessed the reconstruction. |
+| `proofreader` | string | **OPTIONAL.** Name(s) of the person who proofread the reconstruction. |
 | `doi` | string | **OPTIONAL.** Digital Object Identifier associated with the reconstruction. |
 | `doi_cell` | string | **OPTIONAL.** Digital Object Identifier associated with the cell (linking all versions of reconstruction). |
 | `date` | string | **OPTIONAL.** Date the reconstruction was created, formatted as ISO 8601. |
@@ -115,14 +115,16 @@ A neuron-reconstruction parquet file MUST include an `nr` key in the Parquet met
 | `label_virus` | string | **OPTIONAL.** Viral construct used to label the reconstructed cell. |
 
 It also MUST include a set of standardized columns (compatible with the SWC format), described below. Additional columns MAY be included as needed for specific use cases.
+Usage of the `type` column SHOULD be restricted to the commonly used SWC node types 1-4, which correspond to soma, axon, dendrite, and apical dendrite, respectively.
+Where necessary, additional positive integer values MAY be used, following the full SWC standard (swc-specification.readthedocs.io/en/1.0.3/swc.html) with the addition of NULL rather than 0 for unspecified values.
 
 | Column name | Type | Description |
 | --- | --- | --- |
 | `id` | positive integer | **REQUIRED.** Unique identifier for the node. |
-| `type` | integer | **REQUIRED.** SWC node type identifier. |
+| `type` | positive integer | **REQUIRED.** SWC node type identifier. |
 | `x` | float | **REQUIRED.** Node x-coordinate in the coordinate space, in micrometers. |
 | `y` | float | **REQUIRED.** Node y-coordinate in the coordinate space, in micrometers. |
 | `z` | float | **REQUIRED.** Node z-coordinate in the coordinate space, in micrometers. |
-| `parent` | integer | **REQUIRED.** Identifier of the node's parent; use `-1` for a root node. |
+| `parent` | integer | **REQUIRED.** Identifier of the node's parent; MUST be `-1` for the root node and a positive integer for all other nodes. |
 | `radius` | float | **REQUIRED.** Radius of the node in the coordinate space, in micrometers. SHOULD be null if the radius is not available. |
 | `atlas_annotation_id` | integer | **OPTIONAL.** Atlas annotation identifier at the node location; SHOULD be null for nodes without an annotation, and absent entirely if no atlas annotations are assigned. |
