@@ -99,7 +99,7 @@ The following nvidia-accelerated ffmpeg settings encode video on acquiring compu
   - output arguments: `-vf "scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v h264_nvenc -pix_fmt yuv420p -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p3 -rc vbr -cq 18 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
   - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
 
-These settings have been validated and benchmarked to keep up with 3x500fps monochrome cameras with modern computers.
+These settings have been validated and benchmarked to keep up with 3x500fps monochrome cameras with modern computers. The input arguments and `setparams` flags are appropriate for monochrome videos with full color range.
 
 #### Higher bit-depth recordings
 
