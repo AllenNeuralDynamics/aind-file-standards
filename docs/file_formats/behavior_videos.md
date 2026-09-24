@@ -2,7 +2,7 @@
 
 ## Version
 
-0.3.0
+0.3.1
 
 ## Introduction
 
@@ -104,10 +104,12 @@ These settings have been validated and benchmarked to keep up with 3x500fps mono
 #### Higher bit-depth recordings
 
 For higher bit depth (more than eight) recordings, change the online encoding arguments to:
-  - output arguments: `-vf "format=yuv420p10le,scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
+  - output arguments: `-vf "scale=out_range=full,format=yuv420p10le,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
   - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
 
-The pixel format given to the encoder can differ from the pixel format of the video it writes: NVENC takes `p010le` input to write a 10-bit YUV video. NVENC only supports 10 bit depth recordings: higher-bit-depth recordings will be downsampled to 10 bits with the settings above.
+The pixel format given to the encoder can differ from the pixel format of the video it writes: NVENC takes `p010le` input to write a 10-bit YUV video, which GPUs before NVIDIA's Blackwell generation can encode as HEVC but not as H.264. NVENC only supports 10 bit depth recordings: higher-bit-depth recordings will be downsampled to 10 bits with the settings above.
+
+The `format=yuv420p10le` step is required for `gray` input: without it, `hevc_nvenc` writes near-zero chroma and the video plays green. It follows `scale` because, placed first, it converts the frames to limited range and discards levels that `scale` cannot restore.
 
 #### Python implementation and availability of online encoding settings
 
@@ -166,7 +168,7 @@ Writers SHOULD retain as much of the raw video's visual information as these req
 
 This transcode step can happen 'offline' after the data have been saved in a temporary video file, and there is no longer time pressure to encode frames in real time. The following ffmpeg settings have been validated to convert videos that declare their color space and have well-ordered time stamps into high-quality archival videos that meet the [Primary Data Format](#primary-data-format):
 
-- output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:sws_dither=none,format=yuv420p10le,colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p" -c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
+- output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:flags=accurate_rnd+full_chroma_int+full_chroma_inp:sws_dither=none,format=yuv420p10le,colorspace=all=bt709:dither=none,scale=out_range=tv:flags=accurate_rnd+full_chroma_int:sws_dither=bayer,format=yuv420p" -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
 
 These settings are a combination of a video filter chain that convert input pixel data into bt.709 color space, and codec settings that compress it using a high-quality codec into a standard video format that is widely supported.
 
@@ -183,11 +185,11 @@ The offline filters rely on the presentation timestamps and color tags. Many oth
 
 #### Higher bit-depth recordings
 
-For 10-bit storage the offline encoder must also change:
+For 10-bit storage, change the offline encoding arguments to:
 
 ```
--vf "colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p10le"
--c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p10le -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
+-vf "scale=out_color_matrix=bt709:out_range=full:flags=accurate_rnd+full_chroma_int+full_chroma_inp:sws_dither=none,format=yuv420p10le,colorspace=all=bt709:dither=none,scale=out_range=tv:flags=accurate_rnd+full_chroma_int:sws_dither=none,format=yuv420p10le"
+-c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p10le -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
 ```
 
 ### File Quality Assurances
