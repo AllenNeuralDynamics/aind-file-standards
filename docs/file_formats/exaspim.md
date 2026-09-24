@@ -127,4 +127,4 @@ Where necessary, additional positive integer values MAY be used, following the f
 | `z` | float | **REQUIRED.** Node z-coordinate in the coordinate space, in micrometers. |
 | `parent` | integer | **REQUIRED.** Identifier of the node's parent; MUST be `-1` for the root node and a positive integer for all other nodes. |
 | `radius` | float | **REQUIRED.** Radius of the node in the coordinate space, in micrometers. SHOULD be null if the radius is not available. |
-| `atlas_annotation_id` | integer | **OPTIONAL.** Atlas annotation identifier at the node location; SHOULD be null for nodes without an annotation, and absent entirely if no atlas annotations are assigned. |
+| `atlas_annotation_value` | integer | **OPTIONAL.** Atlas annotation value at the node location, defining a unique label in the atlas terminology; SHOULD be null for nodes without an annotation, and absent entirely if no atlas annotations are assigned. SHOULD refer to the most specific annotation available (leaf nodes of terminology). |
