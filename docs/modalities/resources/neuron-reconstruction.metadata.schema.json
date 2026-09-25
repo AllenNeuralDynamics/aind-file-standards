@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alleninstitute.org/aind-file-standards/neuron-reconstruction.metadata.schema.json",
+  "title": "Neuron Reconstruction Parquet Metadata",
+  "description": "Metadata encoded as the value of the nr key in a neuron-reconstruction Parquet file.",
+  "type": "object",
+  "properties": {
+    "atlas_annotation_set": {
+      "type": "string",
+      "description": "Identifier and version of the atlas annotation set used for the reconstruction. Empty when no annotations are assigned."
+    },
+    "atlas_coordinate_space": {
+      "type": "string",
+      "description": "Identifier and version of the atlas coordinate space used for the reconstruction. Empty when the reconstruction is not registered to an atlas."
+    },
+    "subject_id": {
+      "type": "string",
+      "description": "Unique identifier for the subject from which the cell was obtained."
+    },
+    "cell_id": {
+      "type": "string",
+      "description": "Unique identifier for the reconstructed cell."
+    },
+    "annotator": {
+      "type": "string",
+      "description": "Name or names of the people who created the reconstruction annotation."
+    },
+    "peer_reviewer": {
+      "type": "string",
+      "description": "Name or names of the peer reviewers who assessed the reconstruction."
+    },
+    "proofreader": {
+      "type": "string",
+      "description": "Name or names of the people who proofread the reconstruction."
+    },
+    "doi": {
+      "type": "string",
+      "description": "Digital Object Identifier associated with the reconstruction (specific version)."
+    },
+    "doi_cell": {
+      "type": "string",
+      "description": "Digital Object Identifier associated with the cell across reconstruction versions."
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time the reconstruction was created, formatted according to ISO 8601."
+    },
+    "version": {
+      "type": "string",
+      "description": "Version identifier for the reconstruction."
+    },
+    "genotype": {
+      "type": "string",
+      "description": "Genotype of the subject."
+    },
+    "label_fluorophore": {
+      "type": "string",
+      "description": "Fluorophore used to label the reconstructed cell."
+    },
+    "label_virus": {
+      "type": "string",
+      "description": "Viral construct used to label the reconstructed cell."
+    }
+  },
+  "required": [
+    "atlas_annotation_set",
+    "atlas_coordinate_space",
+    "subject_id",
+    "cell_id"
+  ]
+}
