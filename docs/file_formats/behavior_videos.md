@@ -162,15 +162,15 @@ Writers SHOULD retain as much of the raw video's visual information as these req
 
 #### Preview videos and poster images
 
-Each camera folder MAY also hold a preview video, `video_preview.mp4`, and a poster image, `video_poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
+Each camera folder MAY also hold a preview video, `preview.mp4`, and a poster image, `poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
 
 ```plaintext
 📦behavior-videos
 ┗ 📂BodyCamera
 ┃ ┣ 📜metadata.csv
 ┃ ┣ 📜video.mp4
-┃ ┣ 📜video_preview.mp4
-┃ ┗ 📜video_poster.jpg
+┃ ┣ 📜preview.mp4
+┃ ┗ 📜poster.jpg
 ```
 
 For a primary video recorded at `FPS`:
