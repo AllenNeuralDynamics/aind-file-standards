@@ -2,7 +2,7 @@
 
 ## Version
 
-0.3.0
+0.4.0
 
 ## Introduction
 
@@ -160,6 +160,31 @@ Writers SHOULD retain as much of the raw video's visual information as these req
 - Sensor values SHOULD be quantized as little as possible. Linear sensor values SHOULD NOT be encoded into a non-linear transfer characteristic such as bt.709 at limited fixed-point precision, as a FLIR camera's on-board gamma correction does.
 - The range SHOULD be narrowed at most once, as the final step, and SHOULD be dithered when it is. Intermediate steps SHOULD NOT use dithering.
 
+#### Preview videos and poster images
+
+Each camera folder MAY also hold a preview video, `preview.mp4`, and a poster image, `poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
+
+```plaintext
+📦behavior-videos
+┗ 📂BodyCamera
+┃ ┣ 📜metadata.csv
+┃ ┣ 📜video.mp4
+┃ ┣ 📜preview.mp4
+┃ ┗ 📜poster.jpg
+```
+
+For a primary video recorded at `FPS`:
+
+- The preview MUST meet the requirements of the primary video above.
+- The preview MUST keep whole frames rather than resample them: for a decimation factor `N`, preview frame `k` is frame `k * N` of the primary video, both counted from 0. Consumers can recover `N` as the ratio of the two videos' `r_frame_rate`, as `ffprobe` reports them.
+- The preview's frame rate, `FPS / N`, SHOULD fall between 25 and 35 fps, preferring a whole-number rate and otherwise the rate closest to 30 fps. Where no `N` gives a rate in that range, `N` SHOULD be `round(FPS / 30)`, so a source slower than 25 fps keeps every frame. A 500 fps source gets `N = 20` and a 25 fps preview.
+- The preview SHOULD keep the resolution of a primary video that fits within 1920x1080, and MAY reduce a larger one.
+- The preview's keyframes SHOULD be no more than two seconds apart, so a browser can seek quickly.
+- The preview SHOULD be encoded from the same frames as the primary video rather than from the primary video file, so it is compressed only once.
+- The poster MUST be a JPEG encoded as sRGB, since browsers display a JPEG without an ICC profile as sRGB.
+- The poster SHOULD show the frame one second in, since the first frame can be blank or dark.
+- The poster SHOULD be encoded from the source video rather than from the primary video, so it goes through one color conversion rather than two.
+
 ### Application notes
 
 #### Offline encoding
@@ -190,7 +215,44 @@ For 10-bit storage the offline encoder must also change:
 -c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p10le -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
 ```
 
+#### Preview encoding
+
+The following ffmpeg settings encode a preview for a decimation factor `N` and preview frame rate `PREVIEW_FPS`:
+
+```
+-vf "select=not(mod(n\,N))" -fps_mode passthrough
+-c:v libx264 -preset medium -crf 27 -pix_fmt yuv420p -g <2 * PREVIEW_FPS>
+-metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
+```
+
+`select` leaves the stream's frame rate at the source's, so without `-fps_mode passthrough` ffmpeg duplicates the kept frames back up to it. `-g` sets the two-second keyframe interval.
+
+Run these settings as a second output of the [offline encoding](#offline-encoding) ffmpeg process, taking frames after the offline filters.
+
+#### Poster encoding
+
+The following ffmpeg settings encode a poster from source frame `FRAME`:
+
+```
+-vf "select=eq(n\,FRAME),scale=out_color_matrix=bt709:out_range=full:flags=accurate_rnd+full_chroma_int+full_chroma_inp:sws_dither=none,zscale=t=iec61966-2-1:r=full"
+-c:v mjpeg -pix_fmt yuvj420p -q:v 3 -frames:v 1 -update 1
+```
+
+`FRAME` is `round(FPS)`, the frame one second in, and must be less than the number of frames in the source, since a `select` that matches no frame writes no file and ffmpeg still exits successfully.
+
+Run these settings as another output of the offline encoding process, taking frames after any repairs from [Converting non-compliant inputs](#converting-non-compliant-inputs-into-archival-long-term-videos) but before the offline filters.
+
+#### Python implementation and availability of preview and poster settings
+
+These settings are accessible in python environments through `aind-video-utils`, which writes the preview and poster in the same ffmpeg process as the primary video.
+
+### Relationship to aind-data-schema
+
+Preview videos and poster images belong to the raw data asset that holds their primary video, rather than to a derived asset, so consumers find them without looking up another asset.
+
 ### File Quality Assurances
 
 - `ffprobe` MUST report the video stream's pixel format, range, and color space correctly.
 - The primary data format MUST honor the quality assurance of the raw data format.
+- The frame-count checks of the raw data format apply to the primary video, not to the preview or poster.
+- A preview MUST hold `ceil(nb_frames / N)` frames, where `nb_frames` is the number of frames in the primary video.
