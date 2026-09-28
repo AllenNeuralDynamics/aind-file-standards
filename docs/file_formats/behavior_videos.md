@@ -178,11 +178,11 @@ For a primary video recorded at `FPS`:
 - The preview MUST meet the requirements of the primary video above.
 - The preview MUST keep whole frames rather than resample them: for a decimation factor `N`, preview frame `k` is frame `k * N` of the primary video, both counted from 0. Consumers can recover `N` as the ratio of the two videos' `r_frame_rate`, as `ffprobe` reports them.
 - The preview's frame rate, `FPS / N`, SHOULD fall between 25 and 35 fps, preferring a whole-number rate and otherwise the rate closest to 30 fps. Where no `N` gives a rate in that range, `N` SHOULD be `round(FPS / 30)`, so a source slower than 25 fps keeps every frame. A 500 fps source gets `N = 20` and a 25 fps preview.
-- The preview SHOULD keep the resolution of a primary video that fits within 1920x1080, and MAY reduce a larger one.
+- The preview SHOULD keep the resolution of a primary video if it is less than a megapixel, and MAY reduce larger resolutions.
 - The preview's keyframes SHOULD be no more than two seconds apart, so a browser can seek quickly.
 - The preview SHOULD be encoded from the same frames as the primary video rather than from the primary video file, so it is compressed only once.
 - The poster MUST be a JPEG encoded as sRGB, since browsers display a JPEG without an ICC profile as sRGB.
-- The poster SHOULD show the frame one second in, since the first frame can be blank or dark.
+- The poster SHOULD show frame `floor(nb_frames / 2)` of the primary video, counted from 0, where `nb_frames` is the number of frames in the primary video.
 - The poster SHOULD be encoded from the source video rather than from the primary video, so it goes through one color conversion rather than two.
 
 ### Application notes
@@ -238,17 +238,13 @@ The following ffmpeg settings encode a poster from source frame `FRAME`:
 -c:v mjpeg -pix_fmt yuvj420p -q:v 3 -frames:v 1 -update 1
 ```
 
-`FRAME` is `round(FPS)`, the frame one second in, and must be less than the number of frames in the source, since a `select` that matches no frame writes no file and ffmpeg still exits successfully.
+`FRAME` is `floor(nb_frames / 2)`, where `nb_frames` is the number of frames in the source. Matroska records no frame count, so for an `.mkv` source `ffprobe` reports `nb_frames` as `N/A`, and the frames have to be counted before encoding: `ffprobe -count_packets -show_entries stream=nb_read_packets` reads the whole file but decodes nothing.
 
 Run these settings as another output of the offline encoding process, taking frames after any repairs from [Converting non-compliant inputs](#converting-non-compliant-inputs-into-archival-long-term-videos) but before the offline filters.
 
 #### Python implementation and availability of preview and poster settings
 
 These settings are accessible in python environments through `aind-video-utils`, which writes the preview and poster in the same ffmpeg process as the primary video.
-
-### Relationship to aind-data-schema
-
-Preview videos and poster images belong to the raw data asset that holds their primary video, rather than to a derived asset, so consumers find them without looking up another asset.
 
 ### File Quality Assurances
 
