@@ -162,7 +162,7 @@ Writers SHOULD retain as much of the raw video's visual information as these req
 
 #### Preview videos and poster images
 
-Each camera folder MAY also hold a preview video, `preview.mp4`, and a poster image, `poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
+Each camera folder MAY also hold a preview video, `preview.mp4`, its timing, `metadata_preview.parquet`, and a poster image, `poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard, and `metadata_preview.parquet` holds the rows of `metadata.csv` for the frames it keeps. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
 
 ```plaintext
 📦behavior-videos
@@ -170,6 +170,7 @@ Each camera folder MAY also hold a preview video, `preview.mp4`, and a poster im
 ┃ ┣ 📜metadata.csv
 ┃ ┣ 📜video.mp4
 ┃ ┣ 📜preview.mp4
+┃ ┣ 📜metadata_preview.parquet
 ┃ ┗ 📜poster.jpg
 ```
 
@@ -177,7 +178,8 @@ For a primary video recorded at `FPS`:
 
 - The preview MUST meet the requirements of the primary video above.
 - The preview MUST keep whole frames rather than resample them: for a decimation factor `N`, preview frame `k` is frame `k * N` of the primary video, both counted from 0. Consumers can recover `N` as the ratio of the two videos' `r_frame_rate`, as `ffprobe` reports them.
-- The preview's frame rate, `FPS / N`, SHOULD fall between 25 and 35 fps, preferring a whole-number rate and otherwise the rate closest to 30 fps. Where no `N` gives a rate in that range, `N` SHOULD be `round(FPS / 30)`, so a source slower than 25 fps keeps every frame. A 500 fps source gets `N = 20` and a 25 fps preview.
+- A preview MUST have a `metadata_preview.parquet` holding the columns of `metadata.csv` and its rows `0, N, 2N, …`, with their values unchanged, so its row `k` describes preview frame `k`.
+- The preview's frame rate, `FPS / N`, SHOULD fall between 25 and 35 fps, preferring a whole-number rate and otherwise the rate closest to 30 fps. Where no `N` gives a rate in that range, `N` SHOULD be `max(1, round(FPS / 30))`, so a source slower than 25 fps keeps every frame. A 500 fps source gets `N = 20` and a 25 fps preview.
 - The preview SHOULD keep the resolution of a primary video if it is less than a megapixel, and MAY reduce larger resolutions.
 - The preview's keyframes SHOULD be no more than two seconds apart, so a browser can seek quickly.
 - The preview SHOULD be encoded from the same frames as the primary video rather than from the primary video file, so it is compressed only once.
@@ -229,6 +231,28 @@ The following ffmpeg settings encode a preview for a decimation factor `N` and p
 
 Run these settings as a second output of the [offline encoding](#offline-encoding) ffmpeg process, taking frames after the offline filters.
 
+#### Preview metadata
+
+The following Python writes `metadata_preview.parquet` from every `N`th row of `metadata.csv`, starting with the first:
+
+```python
+import pyarrow as pa
+import pyarrow.csv
+import pyarrow.parquet
+
+table = pyarrow.csv.read_csv("metadata.csv")
+kept = table.take(pa.array(range(0, table.num_rows, N)))
+encodings = {
+    field.name: "DELTA_BINARY_PACKED" if pa.types.is_integer(field.type) else "BYTE_STREAM_SPLIT"
+    for field in kept.schema
+}
+pyarrow.parquet.write_table(
+    kept, "metadata_preview.parquet", compression="snappy", use_dictionary=False, column_encoding=encodings
+)
+```
+
+`pyarrow` reads whole-number columns as 64-bit integers and the rest as 64-bit floats, which hold the values of `metadata.csv` unchanged. Delta encoding stores each counter or clock column as its steps, which are nearly constant, and byte-stream splitting groups the slowly changing high bytes of each float, so both compress well. Dictionary encoding only adds overhead, since no value repeats. Snappy compression is used because some JavaScript readers, such as `hyparquet`, need a plugin for zstd.
+
 #### Poster encoding
 
 The following ffmpeg settings encode a poster from source frame `FRAME`:
@@ -252,3 +276,4 @@ These settings are accessible in python environments through `aind-video-utils`,
 - The primary data format MUST honor the quality assurance of the raw data format.
 - The frame-count checks of the raw data format apply to the primary video, not to the preview or poster.
 - A preview MUST hold `ceil(nb_frames / N)` frames, where `nb_frames` is the number of frames in the primary video.
+- `metadata_preview.parquet` MUST hold one row per preview frame.
