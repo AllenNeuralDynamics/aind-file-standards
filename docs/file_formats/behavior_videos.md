@@ -249,24 +249,6 @@ df.iloc[::N].to_parquet(
 )
 ```
 
-Alternatively, a more space-optimized version is below:
-
-```python
-import pyarrow as pa
-import pyarrow.csv
-import pyarrow.parquet
-
-table = pyarrow.csv.read_csv("metadata.csv")
-kept = table.take(pa.array(range(0, table.num_rows, N)))
-encodings = {
-    field.name: "DELTA_BINARY_PACKED" if pa.types.is_integer(field.type) else "BYTE_STREAM_SPLIT"
-    for field in kept.schema
-}
-pyarrow.parquet.write_table(
-    kept, "preview_metadata.parquet", compression="snappy", use_dictionary=False, column_encoding=encodings
-)
-```
-
 
 #### Poster encoding
 
