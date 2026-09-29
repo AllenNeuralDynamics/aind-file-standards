@@ -178,7 +178,7 @@ For a primary video recorded at `FPS`:
 
 - The preview MUST meet the requirements of the primary video above.
 - The preview MUST keep whole frames rather than resample them: for a decimation factor `N`, preview frame `k` is frame `k * N` of the primary video, both counted from 0. Consumers can recover `N` as the ratio of the two videos' `r_frame_rate`, as `ffprobe` reports them.
-- A preview MUST have a `metadata_preview.parquet` holding rows `0, N, 2N, …` of `metadata.csv`, so its row `k` describes preview frame `k`. It MUST hold the `ReferenceTime` column and MAY hold the other columns of `metadata.csv`, each with its values unchanged.
+- A preview MUST have a `metadata_preview.parquet` holding rows `0, N, 2N, …` of `metadata.csv`, so its row `k` describes preview frame `k`. It MUST hold the `ReferenceTime` column and MAY hold the other columns of `metadata.csv`, each with its values unchanged. Since the transformation is lossy, any dropped frames are assumed to have been corrected prior to the creation of this file.
 - The preview's frame rate, `FPS / N`, SHOULD fall between 25 and 35 fps, preferring a whole-number rate and otherwise the rate closest to 30 fps. Where no `N` gives a rate in that range, `N` SHOULD be `max(1, round(FPS / 30))`, so a source slower than 25 fps keeps every frame. A 500 fps source gets `N = 20` and a 25 fps preview.
 - The preview SHOULD keep the resolution of a primary video if it is less than a megapixel, and MAY reduce larger resolutions.
 - The preview's keyframes SHOULD be no more than two seconds apart, so a browser can seek quickly.
