@@ -162,7 +162,7 @@ Writers SHOULD retain as much of the raw video's visual information as these req
 
 #### Preview videos and poster images
 
-Each camera folder MAY also hold a preview video, `preview.mp4`, its timing, `metadata_preview.parquet`, and a poster image, `poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard, and `metadata_preview.parquet` holds the rows of `metadata.csv` for the frames it keeps. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
+Each camera folder MAY also hold a preview video, `preview.mp4`, its timing, `metadata_preview.parquet`, and a poster image, `poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard, and `metadata_preview.parquet` holds the times of the frames it keeps, taken from `metadata.csv`. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
 
 ```plaintext
 📦behavior-videos
@@ -178,7 +178,7 @@ For a primary video recorded at `FPS`:
 
 - The preview MUST meet the requirements of the primary video above.
 - The preview MUST keep whole frames rather than resample them: for a decimation factor `N`, preview frame `k` is frame `k * N` of the primary video, both counted from 0. Consumers can recover `N` as the ratio of the two videos' `r_frame_rate`, as `ffprobe` reports them.
-- A preview MUST have a `metadata_preview.parquet` holding the columns of `metadata.csv` and its rows `0, N, 2N, …`, with their values unchanged, so its row `k` describes preview frame `k`.
+- A preview MUST have a `metadata_preview.parquet` holding rows `0, N, 2N, …` of `metadata.csv`, so its row `k` describes preview frame `k`. It MUST hold the `ReferenceTime` column and MAY hold the other columns of `metadata.csv`, each with its values unchanged.
 - The preview's frame rate, `FPS / N`, SHOULD fall between 25 and 35 fps, preferring a whole-number rate and otherwise the rate closest to 30 fps. Where no `N` gives a rate in that range, `N` SHOULD be `max(1, round(FPS / 30))`, so a source slower than 25 fps keeps every frame. A 500 fps source gets `N = 20` and a 25 fps preview.
 - The preview SHOULD keep the resolution of a primary video if it is less than a megapixel, and MAY reduce larger resolutions.
 - The preview's keyframes SHOULD be no more than two seconds apart, so a browser can seek quickly.
