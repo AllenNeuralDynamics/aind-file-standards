@@ -162,7 +162,7 @@ Writers SHOULD retain as much of the raw video's visual information as these req
 
 #### Preview videos and poster images
 
-Each camera folder MAY also hold a preview video, `preview.mp4`, its timing, `metadata_preview.parquet`, and a poster image, `poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard, and `metadata_preview.parquet` holds the times of the frames it keeps, taken from `metadata.csv`. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
+Each camera folder MAY also hold a preview video, `preview.mp4`, its timing, `preview_metadata.parquet`, and a poster image, `poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard, and `metadata_preview.parquet` holds the times of the frames it keeps, taken from `metadata.csv`. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
 
 ```plaintext
 📦behavior-videos
