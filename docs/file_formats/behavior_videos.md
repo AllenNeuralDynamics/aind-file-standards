@@ -251,7 +251,6 @@ pyarrow.parquet.write_table(
 )
 ```
 
-`pyarrow` reads whole-number columns as 64-bit integers and the rest as 64-bit floats, which hold the values of `metadata.csv` unchanged. Delta encoding stores each counter or clock column as its steps, which are nearly constant, and byte-stream splitting groups the slowly changing high bytes of each float, so both compress well. Dictionary encoding only adds overhead, since no value repeats. Snappy compression is used because some JavaScript readers, such as `hyparquet`, need a plugin for zstd.
 
 #### Poster encoding
 
