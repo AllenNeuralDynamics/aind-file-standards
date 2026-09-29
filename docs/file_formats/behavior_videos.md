@@ -162,7 +162,7 @@ Writers SHOULD retain as much of the raw video's visual information as these req
 
 #### Preview videos and poster images
 
-Each camera folder MAY also hold a preview video, `preview.mp4`, its timing, `preview_metadata.parquet`, and a poster image, `poster.jpg`, beside the primary video. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard, and `metadata_preview.parquet` holds the times of the frames it keeps, taken from `metadata.csv`. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
+Each camera folder MAY also hold a preview video, `preview.mp4`. If this file is present, a `preview_metadata.parquet` containing its timestamp metadata MUST also be present. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard, and `preview_metadata.parquet` holds the times of the frames it keeps, taken from `metadata.csv`. Additionally, a poster image, `poster.jpg`, MAY also exist beside the primary video. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
 
 ```plaintext
 📦behavior-videos
@@ -170,7 +170,7 @@ Each camera folder MAY also hold a preview video, `preview.mp4`, its timing, `pr
 ┃ ┣ 📜metadata.csv
 ┃ ┣ 📜video.mp4
 ┃ ┣ 📜preview.mp4
-┃ ┣ 📜metadata_preview.parquet
+┃ ┣ 📜preview_metadata.parquet
 ┃ ┗ 📜poster.jpg
 ```
 
@@ -178,7 +178,7 @@ For a primary video recorded at `FPS`:
 
 - The preview MUST meet the requirements of the primary video above.
 - The preview MUST keep whole frames rather than resample them: for a decimation factor `N`, preview frame `k` is frame `k * N` of the primary video, both counted from 0. Consumers can recover `N` as the ratio of the two videos' `r_frame_rate`, as `ffprobe` reports them.
-- A preview MUST have a `metadata_preview.parquet` holding rows `0, N, 2N, …` of `metadata.csv`, so its row `k` describes preview frame `k`. It MUST hold the `ReferenceTime` column and MAY hold the other columns of `metadata.csv`, each with its values unchanged. Since the transformation is lossy, any dropped frames are assumed to have been corrected prior to the creation of this file.
+- A preview MUST have a `preview_metadata.parquet` holding rows `0, N, 2N, …` of `metadata.csv`, so its row `k` describes preview frame `k`. It MUST hold the `ReferenceTime` column and MAY hold the other columns of `metadata.csv`, each with its values unchanged. Since the transformation is lossy, any dropped frames are assumed to have been corrected prior to the creation of this file.
 - The preview's frame rate, `FPS / N`, SHOULD fall between 25 and 35 fps, preferring a whole-number rate and otherwise the rate closest to 30 fps. Where no `N` gives a rate in that range, `N` SHOULD be `max(1, round(FPS / 30))`, so a source slower than 25 fps keeps every frame. A 500 fps source gets `N = 20` and a 25 fps preview.
 - The preview SHOULD keep the resolution of a primary video if it is less than a megapixel, and MAY reduce larger resolutions.
 - The preview's keyframes SHOULD be no more than two seconds apart, so a browser can seek quickly.
@@ -233,7 +233,23 @@ Run these settings as a second output of the [offline encoding](#offline-encodin
 
 #### Preview metadata
 
-The following Python writes `metadata_preview.parquet` from every `N`th row of `metadata.csv`, starting with the first:
+The following Python writes `preview_metadata.parquet` from every `N`th row of `metadata.csv`, starting with the first:
+
+```python
+import pandas as pd
+N = 10
+df = pd.read_csv(
+    "metadata.csv",
+    usecols=["ReferenceTime"],
+    dtype={"ReferenceTime": "float64"},
+)
+df.iloc[::N].to_parquet(
+    "preview_metadata.parquet",
+    index=False,
+)
+```
+
+Alternatively, a more space-optimized version is below:
 
 ```python
 import pyarrow as pa
@@ -247,7 +263,7 @@ encodings = {
     for field in kept.schema
 }
 pyarrow.parquet.write_table(
-    kept, "metadata_preview.parquet", compression="snappy", use_dictionary=False, column_encoding=encodings
+    kept, "preview_metadata.parquet", compression="snappy", use_dictionary=False, column_encoding=encodings
 )
 ```
 
@@ -275,4 +291,4 @@ These settings are accessible in python environments through `aind-video-utils`,
 - The primary data format MUST honor the quality assurance of the raw data format.
 - The frame-count checks of the raw data format apply to the primary video, not to the preview or poster.
 - A preview MUST hold `ceil(nb_frames / N)` frames, where `nb_frames` is the number of frames in the primary video.
-- `metadata_preview.parquet` MUST hold one row per preview frame.
+- `preview_metadata.parquet` MUST hold one row per preview frame.
