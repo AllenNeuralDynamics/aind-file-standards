@@ -2,17 +2,27 @@
 
 ## Version
 
-0.2.1
+0.4.0
 
 ## Introduction
 
 This document describes the standards for acquiring video data from behavior experiments. The goal is to ensure that the data is correctly acquired, logged, and stored in a way that is compatible with AIND's data processing pipelines. We will draw the line on including metadata that relates to the video data itself and NOT to the hardware or software that acquired it. This is to ensure that the data format is self-contained, maintainable and potentially reusable by other applications.
 
-## Acquisition/Raw/Primary Data Format
+## Raw Data Format
+
+### File format
+
+Raw videos are the files written by the computers attached to the cameras. Unlike most raw data, they are compressed as they are acquired. Their format depends on the scientific question and on software and hardware constraints, but:
+
+- Raw videos MUST declare their color space metadata.
+- Cameras without advanced on-chip image processors, such as FLIR cameras, MUST acquire images without on-board gamma correction.
+- Raw videos SHOULD be saved in a matroska container, `video.mkv`, which is robust to abnormal termination.
+
+We strongly discourage the use of RAW, uncompressed data.
 
 Following SciComp standards, video data from behavior experiments MUST be saved to the `behavior-videos` modality folder.
 
-Inside this folder, each camera MUST have its own directory, named `<CameraName>`. Inside each camera folder, there MUST be two files: `video.<extension>` and `metadata.csv`. The `video.<extension>` file MUST contain the video data, and the `metadata.csv` file MUST contain the metadata for the video.
+Inside this folder, each camera MUST have its own directory, named `<CameraName>`. Each camera folder MUST contain `video.<extension>` and `metadata.csv`. The `video.<extension>` file MUST contain the video data, and the `metadata.csv` file MUST contain the metadata for the video, and be comma-delimited with headers.
 
 `<CameraName>` SHOULD match the name defined in the rig metadata file (`rig.json`)
 
@@ -22,10 +32,10 @@ The folder structure will thus be:
 📦behavior-videos
 ┣ 📂BodyCamera
 ┃ ┣ 📜metadata.csv
-┃ ┗ 📜video.mp4
+┃ ┗ 📜video.mkv
 ┗ 📂FaceCamera
 ┃ ┣ 📜metadata.csv
-┃ ┗ 📜video.mp4
+┃ ┗ 📜video.mkv
 ```
 
 If multiple streams from the same camera are acquired in the same session, an optional `datetime` suffix MAY be added to the container's name:
@@ -33,76 +43,20 @@ If multiple streams from the same camera are acquired in the same session, an op
 ```plaintext
 📦behavior-videos
 ┣ 📂BodyCamera_2023-12-25T133015
-┃ ┣ 📜metadata.cs
-┃ ┗ 📜video.mp4
+┃ ┣ 📜metadata.csv
+┃ ┗ 📜video.mkv
 ┗ 📂BodyCamera_2023-12-25T145001
 ┃ ┣ 📜metadata.csv
-┃ ┗ 📜video.mp4
+┃ ┗ 📜video.mkv
 ```
 
-The metadata file is expected to contain the following columns:
+The metadata file MUST contain the following columns:
 
 - `ReferenceTime` - Time of the trigger given by hardware (e.g. Harp)
 
 - `CameraFrameNumber` – Frame counter given by the camera API or manually added by user (e.g. using OS counter for webcams)
 
 - `CameraFrameTime` – Frame acquisition time given by the camera API or manually added by the user (e.g. using OS scheduler for webcams).
-
-
-As for the video, since the format will depend on the scientific question and software/hardware constrains, we will not enforce a specification. However, we strongly discourage the use of RAW, uncompressed data, and should the user not have a preference, the following default SHOULD be used:
-
-Use a separate online encoder and offline encoder for use during acquisition, and long-term storage, respectively
-
-For the online encoder:
-
-- MUST acquire without any gamma correction
-- SHOULD acquire with the mkv format so that files are not corrupted if acquisition is
-  abnormally terminated, i.e. the video files should be named like `video.mkv`
-- Use `ffmpeg` with the following encoding codec string for online encoding (optimized for compression quality and speed):
-
-  Note: this has been tested with monochrome videos with the raw pixel format
-  `gray`. For color videos, the input arguments might need to be altered to
-  match the color space of the input.
-
-  - output arguments: `-vf "scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v h264_nvenc -pix_fmt yuv420p -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p3 -rc vbr -cq 18 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
-  - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
-
-
-For offline re-encoding (optimized for quality and size):
-
-- Use mp4 container for the final video, i.e. the video should be named like `video.mp4`.
-- output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:sws_dither=none,format=yuv420p10le,colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p" -c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
-
-#### Higher bit-depth recordings
-
-Note: this hasn't been tested as thoroughly.
-
-For higher bit depth (more than eight) recordings, change the output arguments of the online encoding to be as follows:
-  - output arguments: `-vf "format=yuv420p10le,scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
-
-The HEVC encoder may need to be used to support 10 bit depth, and the pixel format has
-been changed to `p010le` which is a yuv420-like 10 bit pixel format that is
-accepted by NVENC. We also recommend using `.mkv` videos at the rig, to reduce
-the risk of data loss.
-
-Note that this saves the pixel data at 10 bit depth, even if the camera is
-acquiring 12 or higher. NVENC does not support saving more than 10 bit pixel
-depths. However, saving 10 bit pixel depth before gamma encoding will result in
-more accurate gamma encoding for the second stage encoding.
-
-There is an intermediate pixel format, yuv420p10le, which is
-necessary at the time of writing for gray pixel format inputs due to incorrect
-chroma initialization for p010le. Depending on your pixel format, and recent
-changes to ffmpeg, this may not be necessary.
-
-For the video to retain 10 bit depth for long-term storage, the offline encoder MUST also be changed. For example, set the output arguments to:
-```
--vf "colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p10le"
--c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p10le
--metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
-```
-
-However, acquiring at 10 bits, gamma encoding, and saving 8 bit-depth videos for long-term storage is sufficient for many applications.
 
 ### Application notes
 
@@ -138,9 +92,32 @@ Logging can be implemented via the [FFMPEG operator](https://allenneuraldynamics
 
 While we suggest using the aforementioned recipes, the user is free to use any software that can acquire video data, provided it is validated and logged in the correct format.
 
+#### Online encoding
+
+The following nvidia-accelerated ffmpeg settings encode video on acquiring computers attached to many high-speed cameras, and produce raw videos that meet the fidelity requirements of the [Primary Data Format](#primary-data-format):
+
+  - output arguments: `-vf "scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v h264_nvenc -pix_fmt yuv420p -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p3 -rc vbr -cq 18 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
+  - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
+
+These settings have been validated and benchmarked to keep up with 3x500fps monochrome cameras with modern computers. The input arguments and `setparams` flags are appropriate for monochrome videos with full color range.
+
+#### Higher bit-depth recordings
+
+For higher bit depth (more than eight) recordings, change the online encoding arguments to:
+  - output arguments: `-vf "format=yuv420p10le,scale=out_range=full,setparams=range=full:colorspace=bt709:color_primaries=bt709:color_trc=linear" -c:v hevc_nvenc -pix_fmt p010le -color_range full -colorspace bt709 -color_trc linear -tune hq -preset p4 -rc vbr -cq 12 -b:v 0M -metadata author="Allen Institute for Neural Dynamics" -maxrate 700M -bufsize 350M -f matroska -write_crc32 0`
+  - input_arguments: `-colorspace bt709 -color_primaries bt709 -color_range full -color_trc linear`
+
+The pixel format given to the encoder can differ from the pixel format of the video it writes: NVENC takes `p010le` input to write a 10-bit YUV video. NVENC only supports 10 bit depth recordings: higher-bit-depth recordings will be downsampled to 10 bits with the settings above.
+
+#### Python implementation and availability of online encoding settings
+
+They are accessible in python environments through `aind-video-utils`.
+
 ### Relationship to aind-data-schema
 
 `<CameraName>` SHOULD match the name defined in the rig metadata file (`rig.json`). Several fields in the metadata can be automatically extracted from this file format (e.g. start and stop of the stream, resolution of the video). However, the user SHOULD ensure that any data pertaining to the hardware configuration (e.g. camera model, exposure time, gain, camera position, etc...) is logged independently from this file format herein described.
+
+aind-data-schema gives uploaded assets a `data_level` of `raw`, so primary videos live in the raw data asset rather than a derived one, even though it has been converted during upload.
 
 ### File Quality Assurances
 
@@ -160,3 +137,140 @@ The following features should be true if the data asset is to be considered vali
 - If using a stable frame rate (this should be inferred from a rig configuration file), the average frame rate SHOULD match the theoretical frame rate;
 
 (optional) If the optional start and stop events are provided, the following temporal order SHOULD be asserted: `All(StartTrigger < Frames  < StopTrigger>)`
+
+## Primary Data Format
+
+### File format
+
+Primary videos are the archival videos an uploaded data asset holds, converted from raw videos by the upload job. A primary video keeps the folder structure and `metadata.csv` of the [Raw Data Format](#raw-data-format), and MUST be named `video.<extension>` and SHOULD be named `video.mp4`.
+
+Archival videos SHOULD accurately represent the captured scene across platforms:
+
+- The container SHOULD be mp4. It SHOULD have fast start, with the `moov` atom at the beginning of the file, and SHOULD contain a `colr` atom.
+- The codec MUST be h264 (AVC) or h265 (HEVC), and SHOULD be h264.
+- The pixel format MUST be either yuv420p or yuv420p10le. Implementations SHOULD use yuv420p unless 10-bit precision is required.
+- The range MUST be standard (limited), not full (pc).
+- The color space SHOULD be bt.709, and MAY be bt.2020 or bt.601.
+- The primaries, transfer characteristic, and color matrix MUST all follow that color space.
+- The transfer characteristic MUST NOT be linear.
+
+Writers SHOULD retain as much of the raw video's visual information as these requirements allow:
+
+- Writers MUST map sensor zero to black and sensor full scale to white, whatever the recorded content. Exposure is the experimenter's choice.
+- Sensor values SHOULD be quantized as little as possible. Linear sensor values SHOULD NOT be encoded into a non-linear transfer characteristic such as bt.709 at limited fixed-point precision, as a FLIR camera's on-board gamma correction does.
+- The range SHOULD be narrowed at most once, as the final step, and SHOULD be dithered when it is. Intermediate steps SHOULD NOT use dithering.
+
+#### Preview videos and poster images
+
+Each camera folder MAY also hold a preview video, `preview.mp4`. If this file is present, a `preview_metadata.parquet` containing its timestamp metadata MUST also be present. A preview is a copy of the primary video at a lower frame rate, for streaming to a browser or dashboard, and `preview_metadata.parquet` holds the times of the frames it keeps, taken from `metadata.csv`. Additionally, a poster image, `poster.jpg`, MAY also exist beside the primary video. A poster is one frame, which a QC page or `<video poster=...>` can show without decoding video.
+
+```plaintext
+📦behavior-videos
+┗ 📂BodyCamera
+┃ ┣ 📜metadata.csv
+┃ ┣ 📜video.mp4
+┃ ┣ 📜preview.mp4
+┃ ┣ 📜preview_metadata.parquet
+┃ ┗ 📜poster.jpg
+```
+
+For a primary video recorded at `FPS`:
+
+- The preview MUST meet the requirements of the primary video above.
+- The preview MUST keep whole frames rather than resample them: for a decimation factor `N`, preview frame `k` is frame `k * N` of the primary video, both counted from 0. Consumers can recover `N` as the ratio of the two videos' `r_frame_rate`, as `ffprobe` reports them.
+- A preview MUST have a `preview_metadata.parquet` holding rows `0, N, 2N, …` of `metadata.csv`, so its row `k` describes preview frame `k`. It MUST hold the `ReferenceTime` column and MAY hold the other columns of `metadata.csv`, each with its values unchanged. Since the transformation is lossy, any dropped frames are assumed to have been corrected prior to the creation of this file.
+- The preview's frame rate, `FPS / N`, SHOULD fall between 25 and 35 fps, preferring a whole-number rate and otherwise the rate closest to 30 fps. Where no `N` gives a rate in that range, `N` SHOULD be `max(1, round(FPS / 30))`, so a source slower than 25 fps keeps every frame. A 500 fps source gets `N = 20` and a 25 fps preview.
+- The preview SHOULD keep the resolution of a primary video if it is less than a megapixel, and MAY reduce larger resolutions.
+- The preview's keyframes SHOULD be no more than two seconds apart, so a browser can seek quickly.
+- The preview SHOULD be encoded from the same frames as the primary video rather than from the primary video file, so it is compressed only once.
+- The poster MUST be a JPEG encoded as sRGB, since browsers display a JPEG without an ICC profile as sRGB.
+- The poster SHOULD show frame `floor(nb_frames / 2)` of the primary video, counted from 0, where `nb_frames` is the number of frames in the primary video.
+- The poster SHOULD be encoded from the source video rather than from the primary video, so it goes through one color conversion rather than two.
+
+### Application notes
+
+#### Offline encoding
+
+This transcode step can happen 'offline' after the data have been saved in a temporary video file, and there is no longer time pressure to encode frames in real time. The following ffmpeg settings have been validated to convert videos that declare their color space and have well-ordered time stamps into high-quality archival videos that meet the [Primary Data Format](#primary-data-format):
+
+- output arguments: `-vf "scale=out_color_matrix=bt709:out_range=full:sws_dither=none,format=yuv420p10le,colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p" -c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr`
+
+These settings are a combination of a video filter chain that convert input pixel data into bt.709 color space, and codec settings that compress it using a high-quality codec into a standard video format that is widely supported.
+
+#### Converting non-compliant inputs into archival long-term videos
+
+The offline filters rely on the presentation timestamps and color tags. Many other sources fail to tag the color space, or mangle presentation timestamps, such as h264 in AVI. In this case, the transcoder can repair whichever is wrong ahead of the offline filters:
+
+```
+-vf "setpts=N/(FPS)/TB,setparams=color_primaries=bt709:color_trc=linear:colorspace=COLORSPACE:range=RANGE,<offline filters>"
+```
+
+- `setpts` re-stamps each frame from its index `N` at the recorded rate `FPS`. AVI stores no presentation timestamps, so ffmpeg reconstructs them, and a frame stamped ahead of its neighbours makes the frames after it look out of order. ffmpeg drops those: 6 of the first 1000 in one 500 fps AIND recording, behind a single frame stamped 6 frames ahead. Re-stamping leaves a conforming source unchanged and discards nothing this standard relies on, since `metadata.csv` carries the timing.
+- `setparams` needs to set only the tags a source lacks or has wrong. AIND's Bonsai recordings hold linear light, hence `color_trc=linear`, with no primary rotation, hence `color_primaries=bt709`. `COLORSPACE` is `gbr` for RGB pixel formats, and otherwise the matrix that converted to YUV: `smpte170m` if libswscale's default did. `RANGE` is `pc` or `tv` as recorded. A wrong value shifts black and white levels, and some AIND mpeg4 yuv420p recordings are TV range despite carrying no tag.
+
+#### Higher bit-depth recordings
+
+For 10-bit storage the offline encoder must also change:
+
+```
+-vf "colorspace=ispace=bt709:all=bt709:dither=none,scale=out_range=tv:sws_dither=none,format=yuv420p10le"
+-c:v libx264 -preset veryslow -crf 18 -pix_fmt yuv420p10le -metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
+```
+
+#### Preview encoding
+
+The following ffmpeg settings encode a preview for a decimation factor `N` and preview frame rate `PREVIEW_FPS`:
+
+```
+-vf "select=not(mod(n\,N))" -fps_mode passthrough
+-c:v libx264 -preset medium -crf 27 -pix_fmt yuv420p -g <2 * PREVIEW_FPS>
+-metadata author="Allen Institute for Neural Dynamics" -movflags +faststart+write_colr
+```
+
+`select` leaves the stream's frame rate at the source's, so without `-fps_mode passthrough` ffmpeg duplicates the kept frames back up to it. `-g` sets the two-second keyframe interval.
+
+Run these settings as a second output of the [offline encoding](#offline-encoding) ffmpeg process, taking frames after the offline filters.
+
+#### Preview metadata
+
+The following Python writes `preview_metadata.parquet` from every `N`th row of `metadata.csv`, starting with the first:
+
+```python
+import pandas as pd
+N = 10
+df = pd.read_csv(
+    "metadata.csv",
+    usecols=["ReferenceTime"],
+    dtype={"ReferenceTime": "float64"},
+)
+df.iloc[::N].to_parquet(
+    "preview_metadata.parquet",
+    index=False,
+)
+```
+
+
+#### Poster encoding
+
+The following ffmpeg settings encode a poster from source frame `FRAME`:
+
+```
+-vf "select=eq(n\,FRAME),scale=out_color_matrix=bt709:out_range=full:flags=accurate_rnd+full_chroma_int+full_chroma_inp:sws_dither=none,zscale=t=iec61966-2-1:r=full"
+-c:v mjpeg -pix_fmt yuvj420p -q:v 3 -frames:v 1 -update 1
+```
+
+`FRAME` is `floor(nb_frames / 2)`, where `nb_frames` is the number of frames in the source. Matroska records no frame count, so for an `.mkv` source `ffprobe` reports `nb_frames` as `N/A`, and the frames have to be counted before encoding: `ffprobe -count_packets -show_entries stream=nb_read_packets` reads the whole file but decodes nothing.
+
+Run these settings as another output of the offline encoding process, taking frames after any repairs from [Converting non-compliant inputs](#converting-non-compliant-inputs-into-archival-long-term-videos) but before the offline filters.
+
+#### Python implementation and availability of preview and poster settings
+
+These settings are accessible in python environments through `aind-video-utils`, which writes the preview and poster in the same ffmpeg process as the primary video.
+
+### File Quality Assurances
+
+- `ffprobe` MUST report the video stream's pixel format, range, and color space correctly.
+- The primary data format MUST honor the quality assurance of the raw data format.
+- The frame-count checks of the raw data format apply to the primary video, not to the preview or poster.
+- A preview MUST hold `ceil(nb_frames / N)` frames, where `nb_frames` is the number of frames in the primary video.
+- `preview_metadata.parquet` MUST hold one row per preview frame.
