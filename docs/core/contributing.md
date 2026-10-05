@@ -27,7 +27,7 @@ Useful standards should be relatively stable and have longevity (see [`How stand
 
 ### Follow the standard template structure
 
-Contributions for existing or new standards should follow the template structure outlined in the `Template.md` file. This will ensure that all standards are consistent and legible. On top of the template structure, each proposed change should also be consistent with the `Core Standards` principles included in this repository.
+Contributions for existing or new standards should follow the template structure outlined in the `Template.md` file. This will ensure that all standards are consistent and legible. On top of the template structure, each proposed change should also be consistent with the `Core Standards` principles included in this repository. New standards must also be added to `mkdocs.yml` and `.github/CODEOWNERS`.
 
 ### Is it a file format or a modality?
 
