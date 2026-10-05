@@ -1,11 +1,13 @@
 # These roughly follow the order: Maintainer, SciComp, Scientist
 # File format documentation standards
-docs/file_formats/behavior_videos.md @bruno-f-cruz @jwong-nd @galenlynch
-docs/file_formats/ecephys.md @alejoe91 @jsiegle
-docs/file_formats/fip.md @bruno-f-cruz @j-friedrich @arjunsridhar12345 @Ahad-Allen @hagikent
+docs/file_formats/behavior_*.md @bruno-f-cruz @galenlynch
 docs/file_formats/harp.md @bruno-f-cruz @arjunsridhar12345 @jsiegle
 docs/file_formats/nwb.md @arielleleon @dyf @saskiad @alexpiet
-docs/file_formats/planar_ophys.md @arielleleon
+docs/modalities/ecephys.md @alejoe91 @jsiegle
+docs/modalities/fip.md @bruno-f-cruz @j-friedrich @arjunsridhar12345 @hagikent
+docs/modalities/planar_ophys.md @arielleleon
+docs/modalities/exaspim.md @tmchartrand @sharmishtaa @carshadi
+docs/modalities/slap2.md @j-friedrich @m-xie
 
 # Core documentation
 docs/core/* @bruno-f-cruz @dyf @arielleleon

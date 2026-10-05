@@ -40,6 +40,7 @@ theme:
 hooks:
 - docs/_mkdocs_hooks/_build.py
 - docs/_mkdocs_hooks/_translate_admonition.py
+- docs/_mkdocs_hooks/_codeowners.py
 plugins:
 - search
 - git-revision-date-localized:
@@ -73,6 +74,7 @@ nav:
   - Nwb: file_formats/nwb.md
 - Modalities:
   - Ecephys: modalities/ecephys.md
+  - Exaspim: modalities/exaspim.md
   - Fip: modalities/fip.md
   - Planar Ophys: modalities/planar_ophys.md
   - Slap2: modalities/slap2.md
