@@ -26,7 +26,7 @@ Numbering on fibers, patch cords and ROIs is always 0-indexed.
 - **N** to represent the total number of implanted fibers in a given mouse (1 ≤ N ≤ K)
 - **K** to represent the total number of patch cords/ROIs defined by the hardware (current rigs use K = 4, but this document is written to allow other values)
 
-The mapping between ROIs and patch cords is implicitly defined by the software (each ROI is drawn over the visible end of its corresponding patch cord). However, the mapping between patch cords and implanted fibers is determined by the experimenter at the time of the experiment and should be documented in metadata (see the "Relationship to aind-data-schema" section below for more detail).
+The mapping between ROIs and patch cords is implicitly defined by the software (each ROI is drawn over the visible end of its corresponding patch cord). Therefore, ROI number is assumed to always match patch cord number. However, the mapping between patch cords and implanted fibers is determined by the experimenter at the time of the experiment and should be documented in metadata (see the "Relationship to aind-data-schema" section below for more detail).
 
 ## Raw Data Format
 
@@ -73,11 +73,11 @@ Each fiber photometry session will primarily be analyzed by using the average si
 * `CameraFrameNumber` Frame counter given by the camera API
 * `CameraFrameTime` Frame acquisition time given by the camera API
 * `Background` CMOS dark count floor signal
-* `ROI_0`, `ROI_1`, …, `ROI_{K-1}` Average signal values from the corresponding patch cord's ROI (one column per patch cord/ROI)
+* `ROI_0`, `ROI_1`, …, `ROI_{K-1}` Average signal values from the corresponding patch cord's ROI (one column per ROI)
 
-Note: The number of columns `ROI_0` through `ROI_{K-1}` corresponds to the configured patch cords and ROIs for the rig that are marked as enabled for that acquisition by the operator. 
+Note: The number of columns `ROI_0` through `ROI_{K-1}` corresponds to the enabled ROIs for that acquisition. 
 
-**Note on naming convention**: An older version of FIP acquisition used column headers `Fiber_0`, `Fiber_1`, …, `Fiber_{K-1}`. This was somewhat misleading as these columns actually represent data from `ROI_0`, `ROI_1`, …, `ROI_{K-1}`, respectively. This file standard now reflects the updated use of `ROI_{i}` as column headers. However, downstream readers that are internal to AIND should maintain functionality for the old `Fiber_{i}` convention so that tools remain backward compatible. The relationship between ROIs and implanted fibers in the mouse is not captured in this file format and should be documented separately in metadata (see Relationship to aind-data-schema section below).
+**Note on naming convention**: Downstream readers that are internal to AIND should maintain functionality for the old `Fiber_{i}` column header convention that was replaced by `ROI_{i}` so that tools remain backward compatible. The relationship between ROIs and implanted fibers in the mouse is not captured in this file format and should be documented separately in metadata (see Relationship to aind-data-schema section below).
 
 #### Raw sensor data
 
@@ -221,6 +221,6 @@ The following are expected to be true for all FIP data collected under this stan
     > Dropped frames are not normal and should not be taken lightly. If you encounter dropped frames, please contact the data acquisition team for further investigation.
 * The difference between the derivative of `CameraFrameTime` and `ReferenceTime` is expected to be very small (i.e.: abs(max(diff(`CameraFrameTime`) - diff(`ReferenceTime`))) < 0.2ms). If this is not the case, it may indicate a problem with frame exposure.
 * All rows in the `<color>.csv` files will be present in the corresponding camera metadata files. The opposite is not guaranteed to be true.
-* A `<color>.csv` file contains one column for each ROI marked as enabled by the operator for that acquisition. Each column is named `ROI_k`, where `k` is that ROI/patch cord's number. Disabled ROIs have no columns in the file. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
-* The naming of the ROI columns in the `<color>.csv` files is guaranteed to be sequential, starting from `ROI_0` and going up to `ROI_{K-1}` for each enabled ROI. **Important**: These columns reflect patch cord/ROI index, not necessarily the implanted fiber that each patch cord connects to. If N < K (where N is the number of implanted fibers), then patch cords N through K-1 are unused. Consult acquisition.json metadata to determine the patch_cord-to-fiber mapping for each session.
+* A `<color>.csv` file contains one column for each enabled ROI for that acquisition. Each column is named `ROI_k`, where `k` is that ROI/patch cord's number. Disabled ROIs have no columns in the file. A `Background` column is always present. The order of the columns in the `<color>.csv` files is not guaranteed to be the same across different sessions. It is thus recommended to use the header as the index for the columns.
+* The naming of the ROI columns in the `<color>.csv` files is guaranteed to be increasing, starting from `ROI_0` and going up to `ROI_{K-1}` for each enabled ROI. **Important**: These columns reflect ROI index, not necessarily the implanted fiber that each patch cord connects to. If N < K (where N is the number of implanted fibers), then patch cords N through K-1 are unused. Consult acquisition.json metadata to determine the patch_cord-to-fiber mapping for each session.
 * The `regions.json` in the FIP session are guaranteed to be static within a session. The number and order of the ROIs are expected to be the same across the two cameras.
