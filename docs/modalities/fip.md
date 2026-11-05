@@ -122,7 +122,7 @@ FipCircle
 │   └── y: number                 pixel coordinate
 ├── radius: number                pixels
 ├── roi_number: integer | null    zero-based ROI number
-├── fiber_number: integer | null  operator-specified implanted fiber assignment
+├── fiber_number: integer | null  configured fiber implant assignment
 ├── name: string | null           optional label
 └── enabled: boolean              whether its signal is written to the CSV
 ```
@@ -216,7 +216,7 @@ if __name__ == '__main__':
 
 #### Acquiring data under this format
 
-Data acquisition code that generates data in this format is available from the [data acquisition repository](https://github.com/AllenNeuralDynamics/FIP_DAQ_Control).
+Data acquisition code that generates data in this format is available from the [data acquisition repository](https://github.com/AllenNeuralDynamics/Aind.Physiology.Fip).
 
 ### Relationship to aind-data-schema
 
@@ -224,12 +224,12 @@ The FIP file format documents ROI-based measurements from patch cords. To fully 
 
 * **procedures.json**: Documents implanted fiber numbers and locations (stereotactic coordinates) and viral injection metadata (stereotactic coordinates, materials, viral constructs)
 
-* **acquisition.json**: Documents which patch cords were connected to which implanted fibers during the experiment. This mapping is stored in the [connections](https://aind-data-schema.readthedocs.io/en/latest/components/connections.html#connection) list in the [DataStream object](https://aind-data-schema.readthedocs.io/en/latest/acquisition.html#datastream).
-    * The aind-data-schema does not define ROIs as a separate concept independent of patch cords; therefore, acquisitions following this schema MUST follow the convention that `ROI_i` is drawn over the end of patch cord `i`, such that the column `ROI_i` in each CSV contains data from patch cord `i`. 
-    * Our standard convention is to define one patch cord configuration `i` for each ROI `i` with `enabled: true` and a `fiber_number` that corresponds to an actual fiber implant number in the `procedures.json`.
-    * To identify the implanted fiber represented by each `ROI_i` column in a `<color>.csv` using this metadata, first associate ROI `i` with patch cord `i`, then use this metadata's `DataStream.connections` to find the implanted fiber connected to patch cord `i`. Refer to `procedures.json` to identify that fiber’s implant details.
-    * If `acquisition.json` is available for a recording, use its connection metadata as the authoritative, ground-truth mapping between patch cords and implanted fibers. 
-    * The fiber to patch cord mapping is critical for correctly interpreting the data, as experimenters may not always connect a given patch cord to the implanted fiber with the same number (e.g., if a particular implanted fiber is damaged or if a different configuration is needed for the experiment). This also documents the intended measurement for each fiber (e.g., norepinephrine, dopamine, calcium) which is stored in the [channel config](https://aind-data-schema.readthedocs.io/en/latest/components/configs.html#channel) of each [PatchCordConfig](https://aind-data-schema.readthedocs.io/en/latest/components/configs.html#patchcordconfig), as provided by the scientist in the surgical request.
+* **acquisition.json**: Documents which patch cords were connected to which implanted fibers during the experiment. This mapping is stored in the [connections](https://aind-data-schema.readthedocs.io/en/latest/components/connections.html#connection) list in the [DataStream object](https://aind-data-schema.readthedocs.io/en/latest/acquisition.html#datastream). If `acquisition.json` is available for a recording, use its connection metadata as the authoritative, ground-truth mapping between patch cords and implanted fibers. The fiber to patch cord mapping is critical for correctly interpreting the data, as experimenters may not always connect a given patch cord to the implanted fiber with the same number (e.g., if a particular implanted fiber is damaged or if a different configuration is needed for the experiment). This also documents the intended measurement for each fiber (e.g., norepinephrine, dopamine, calcium) which is stored in the [channel config](https://aind-data-schema.readthedocs.io/en/latest/components/configs.html#channel) of each [PatchCordConfig](https://aind-data-schema.readthedocs.io/en/latest/components/configs.html#patchcordconfig), as provided by the scientist in the surgical request.
+    * _ROI to patch cord mapping_: The aind-data-schema does not define ROIs as a separate concept independent of patch cords; therefore, acquisitions using this schema MUST follow the convention that `ROI_i` is drawn over the end of patch cord `i`, such that the column `ROI_i` in each CSV contains data from patch cord `i`.
+        * Any errors identified post-acquisition in the ROI to patch cord mapping require corrections to the extracted `<color>.csv` data and to the `regions.json`. Using the raw frames from the binary files, correct the ROI positions and re-extract fluorescent values for each `<color>.csv`, then update `regions.json` to reflect the new ROI geometry. 
+    * _Patch cord to fiber mapping_: Our standard convention defines one patch cord configuration `i` for each ROI `i` with `enabled: true` and a `fiber_number` that corresponds to an actual fiber implant number in the `procedures.json`.
+        * To identify the implanted fiber represented by each `ROI_i` column in a `<color>.csv`, first associate ROI `i` with patch cord `i`, then use this metadata's `DataStream.connections` to find the implanted fiber connected to patch cord `i`. Refer to `procedures.json` to identify that fiber’s implant details.
+        * Any errors identified post-acquisition in the patch cord to fiber mapping **must** be corrected directly in `acquisition.json`; re-extraction of fluorescence values is not required.
 
 ### File Quality Assurances
 
